@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SMS.Core/SMS.Core.csproj" Id="24571195-3da6-4021-8b4b-cc8288891c18" />
+  <Project Path="SMS.Repository/SMS.Repository.csproj" Id="fe8f038a-0481-4947-a09a-b0f5eb0a080b" />
+  <Project Path="SMS.Service/SMS.Service.csproj" Id="4a086f17-7914-46ee-afb7-3d21716d0737" />
+  <Project Path="SMS.WinForms/SMS.WinForms.csproj" Id="225025f4-f80f-4e72-94f1-aa01b159591d" />
+</Solution>
