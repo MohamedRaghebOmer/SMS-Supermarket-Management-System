@@ -3,6 +3,7 @@ using SMS.Core.DTOs;
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace SMS.Repository
@@ -87,6 +88,23 @@ namespace SMS.Repository
                 }
 
                 return Helper.CreateDBResponse<Country>(country, code, message);
+            }
+        }
+
+        public async Task<DBResponse<bool>> ExistsAsync(int countryId)
+        {
+            using (SqlConnection conn = Helper.CreateConnection())
+            using (SqlCommand cmd = Helper.CreateCommand(conn, "uspCountries_ExistsById"))
+            {
+                // Input Parameters
+                cmd.Parameters.Add("@CountryId", SqlDbType.Int).Value = countryId;
+                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+
+                await conn.OpenAsync();
+                object result = await cmd.ExecuteScalarAsync();
+                bool exists = result != null;
+
+                return Helper.CreateDBResponse<bool>(exists, code, message);
             }
         }
 
