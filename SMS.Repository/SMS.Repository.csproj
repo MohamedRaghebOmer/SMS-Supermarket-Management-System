@@ -46,6 +46,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="LogToDB.cs" />
+    <Compile Include="PersonRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

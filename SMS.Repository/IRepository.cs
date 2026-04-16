@@ -23,6 +23,13 @@ namespace SMS.Repository
         Task<DBResponse<T>> GetAsync(int id);
 
         /// <summary>
+        /// Checks if the record with the given id exists in the datastore or not.
+        /// </summary>
+        /// <param name="id">Record id wanted to check.</param>
+        /// <returns>Returns true if a record with given id exists in the datastore otherwise return false.</returns>
+        Task<DBResponse<bool>> ExistsAsync(int id);
+
+        /// <summary>
         /// Asynchronously retrieves all records from the data source.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. The task result contains a <see
