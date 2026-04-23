@@ -1,6 +1,90 @@
+USE [master]
+GO
+/****** Object:  Database [SMS]    Script Date: 19/4/2026 8:26:06 PM ******/
+CREATE DATABASE [SMS]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'SMS', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL17.MSSQLSERVER\MSSQL\DATA\SMS.mdf' , SIZE = 73728KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'SMS_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL17.MSSQLSERVER\MSSQL\DATA\SMS_log.ldf' , SIZE = 73728KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [SMS] SET COMPATIBILITY_LEVEL = 170
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [SMS].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [SMS] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [SMS] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [SMS] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [SMS] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [SMS] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [SMS] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [SMS] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [SMS] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [SMS] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [SMS] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [SMS] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [SMS] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [SMS] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [SMS] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [SMS] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [SMS] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [SMS] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [SMS] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [SMS] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [SMS] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [SMS] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [SMS] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [SMS] SET RECOVERY FULL 
+GO
+ALTER DATABASE [SMS] SET  MULTI_USER 
+GO
+ALTER DATABASE [SMS] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [SMS] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [SMS] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [SMS] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [SMS] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [SMS] SET OPTIMIZED_LOCKING = OFF 
+GO
+ALTER DATABASE [SMS] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+ALTER DATABASE [SMS] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [SMS] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
 USE [SMS]
 GO
-/****** Object:  Table [dbo].[Categories]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Categories]    Script Date: 19/4/2026 8:26:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -20,7 +104,7 @@ CREATE TABLE [dbo].[Categories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Countries]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Countries]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -34,7 +118,7 @@ CREATE TABLE [dbo].[Countries](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CustomerLedger]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[CustomerLedger]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -43,8 +127,8 @@ CREATE TABLE [dbo].[CustomerLedger](
 	[LedgerId] [int] IDENTITY(1,1) NOT NULL,
 	[CustomerId] [int] NOT NULL,
 	[EntryDate] [datetime2](7) NOT NULL,
-	[EntryType] [nvarchar](20) NOT NULL,
-	[ReferenceType] [nvarchar](20) NOT NULL,
+	[EntryType] [tinyint] NOT NULL,
+	[ReferenceType] [tinyint] NOT NULL,
 	[ReferenceId] [int] NULL,
 	[DebitAmount] [decimal](18, 2) NOT NULL,
 	[CreditAmount] [decimal](18, 2) NOT NULL,
@@ -58,7 +142,7 @@ CREATE TABLE [dbo].[CustomerLedger](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Customers]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Customers]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -84,7 +168,26 @@ CREATE TABLE [dbo].[Customers](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[People]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Logs]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Logs](
+	[LogId] [int] IDENTITY(1,1) NOT NULL,
+	[LogLevel] [tinyint] NOT NULL,
+	[Message] [nvarchar](max) NOT NULL,
+	[Exception] [nvarchar](max) NULL,
+	[StackTrace] [nvarchar](max) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[Source] [nvarchar](100) NULL,
+ CONSTRAINT [PK__Logs__5E5486486144BF7E] PRIMARY KEY CLUSTERED 
+(
+	[LogId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[People]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -118,7 +221,7 @@ CREATE TABLE [dbo].[People](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Products]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Products]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -151,7 +254,7 @@ CREATE TABLE [dbo].[Products](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ProductStock]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[ProductStock]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -167,7 +270,7 @@ CREATE TABLE [dbo].[ProductStock](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ReturnItems]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[ReturnItems]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -186,7 +289,7 @@ CREATE TABLE [dbo].[ReturnItems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Returns]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Returns]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -206,23 +309,23 @@ CREATE TABLE [dbo].[Returns](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[RolePagePermissions]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[RoleEntityPermissions]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[RolePagePermissions](
+CREATE TABLE [dbo].[RoleEntityPermissions](
 	[RoleId] [int] NOT NULL,
-	[PageId] [int] NOT NULL,
-	[PermissionMask] [int] NOT NULL,
- CONSTRAINT [PK_RolePermissions] PRIMARY KEY CLUSTERED 
+	[EntityId] [int] NOT NULL,
+	[PermissionsMask] [int] NOT NULL,
+ CONSTRAINT [PK_RoleEntityPermissions] PRIMARY KEY CLUSTERED 
 (
 	[RoleId] ASC,
-	[PageId] ASC
+	[EntityId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Roles]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Roles]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -230,6 +333,7 @@ GO
 CREATE TABLE [dbo].[Roles](
 	[RoleId] [int] IDENTITY(1,1) NOT NULL,
 	[RoleName] [nvarchar](50) NOT NULL,
+	[RoleDescription] [nvarchar](250) NULL,
 	[IsActive] [bit] NOT NULL,
 	[CreatedAt] [datetime2](7) NOT NULL,
  CONSTRAINT [PK__Roles__8AFACE1AB24626B7] PRIMARY KEY CLUSTERED 
@@ -242,7 +346,7 @@ CREATE TABLE [dbo].[Roles](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SaleItems]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[SaleItems]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -262,7 +366,7 @@ CREATE TABLE [dbo].[SaleItems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Sales]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Sales]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -288,27 +392,26 @@ CREATE TABLE [dbo].[Sales](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SystemPages]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[SystemEntities]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[SystemPages](
-	[PageId] [int] IDENTITY(1,1) NOT NULL,
-	[PageTitle] [nvarchar](100) NOT NULL,
-	[ModuleName] [nvarchar](50) NULL,
+CREATE TABLE [dbo].[SystemEntities](
+	[EntityId] [int] IDENTITY(1,1) NOT NULL,
+	[EntityName] [nvarchar](100) NOT NULL,
 	[Description] [nvarchar](250) NULL,
  CONSTRAINT [PK__Permissi__EFA6FB2F14BB0FB2] PRIMARY KEY CLUSTERED 
 (
-	[PageId] ASC
+	[EntityId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
  CONSTRAINT [UQ__Permissi__0FFDA357949D7C60] UNIQUE NONCLUSTERED 
 (
-	[PageTitle] ASC
+	[EntityName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SystemSettings]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[SystemSettings]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -324,7 +427,7 @@ CREATE TABLE [dbo].[SystemSettings](
 	[UpdatedAt] [datetime2](7) NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Units]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Units]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -344,7 +447,7 @@ CREATE TABLE [dbo].[Units](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[UserActivityLogs]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[UserActivityLogs]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -366,7 +469,7 @@ CREATE TABLE [dbo].[UserActivityLogs](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 11/4/2026 3:04:09 AM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 19/4/2026 8:26:07 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -396,9 +499,210 @@ CREATE TABLE [dbo].[Users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UX_Countries_CountryName]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [UX_Countries_CountryName] ON [dbo].[Countries]
+(
+	[CountryName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_CustomerLedger_CreatedBy]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_CustomerLedger_CreatedBy] ON [dbo].[CustomerLedger]
+(
+	[CreatedBy] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_CustomerLedger_CustomerId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_CustomerLedger_CustomerId] ON [dbo].[CustomerLedger]
+(
+	[CustomerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_CustomerLedger_CustomerId_EntryDate]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_CustomerLedger_CustomerId_EntryDate] ON [dbo].[CustomerLedger]
+(
+	[CustomerId] ASC,
+	[EntryDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UX_CustomerLedger_Reference]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [UX_CustomerLedger_Reference] ON [dbo].[CustomerLedger]
+(
+	[ReferenceType] ASC,
+	[ReferenceId] ASC
+)
+WHERE ([ReferenceId] IS NOT NULL)
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Customers_PersonId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Customers_PersonId] ON [dbo].[Customers]
+(
+	[PersonId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Logs_CreatedAt]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Logs_CreatedAt] ON [dbo].[Logs]
+(
+	[CreatedAt] DESC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Logs_Level_Date]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Logs_Level_Date] ON [dbo].[Logs]
+(
+	[LogLevel] ASC,
+	[CreatedAt] DESC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Logs_LogLevel]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Logs_LogLevel] ON [dbo].[Logs]
+(
+	[LogLevel] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ_People_Email_NotNull]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_People_Email_NotNull] ON [dbo].[People]
+(
+	[Email] ASC
+)
+WHERE ([Email] IS NOT NULL)
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UX_Persons_ImageGuid]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [UX_Persons_ImageGuid] ON [dbo].[People]
+(
+	[ImageGuid] ASC
+)
+WHERE ([ImageGuid] IS NOT NULL)
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Products_CategoryId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Products_CategoryId] ON [dbo].[Products]
+(
+	[CategoryId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Products_UnitId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Products_UnitId] ON [dbo].[Products]
+(
+	[UnitId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UX_Products_ImageGuid]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [UX_Products_ImageGuid] ON [dbo].[Products]
+(
+	[ImageGuid] ASC
+)
+WHERE ([ImageGuid] IS NOT NULL)
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ReturnItems_ProductId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ReturnItems_ProductId] ON [dbo].[ReturnItems]
+(
+	[ProductId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ReturnItems_ReturnId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ReturnItems_ReturnId] ON [dbo].[ReturnItems]
+(
+	[ReturnId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_ReturnItems_SaleItemId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_ReturnItems_SaleItemId] ON [dbo].[ReturnItems]
+(
+	[SaleItemId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Returns_CreatedBy]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Returns_CreatedBy] ON [dbo].[Returns]
+(
+	[CreatedBy] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Returns_CustomerId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Returns_CustomerId] ON [dbo].[Returns]
+(
+	[CustomerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Returns_SaleId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Returns_SaleId] ON [dbo].[Returns]
+(
+	[SaleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_SaleItems_ProductId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_SaleItems_ProductId] ON [dbo].[SaleItems]
+(
+	[ProductId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_SaleItems_SaleId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_SaleItems_SaleId] ON [dbo].[SaleItems]
+(
+	[SaleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Sales_CashierId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Sales_CashierId] ON [dbo].[Sales]
+(
+	[CashierId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Sales_CustomerId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Sales_CustomerId] ON [dbo].[Sales]
+(
+	[CustomerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_UserActivityLogs_ActionDate]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_UserActivityLogs_ActionDate] ON [dbo].[UserActivityLogs]
+(
+	[ActionDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_UserActivityLogs_ActionType]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_UserActivityLogs_ActionType] ON [dbo].[UserActivityLogs]
+(
+	[ActionType] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_UserActivityLogs_IpAddress]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_UserActivityLogs_IpAddress] ON [dbo].[UserActivityLogs]
+(
+	[IpAddress] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_UserActivityLogs_UserId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_UserActivityLogs_UserId] ON [dbo].[UserActivityLogs]
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Users_PersonId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Users_PersonId] ON [dbo].[Users]
+(
+	[PersonId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Users_RoleId]    Script Date: 19/4/2026 8:26:07 PM ******/
+CREATE NONCLUSTERED INDEX [IX_Users_RoleId] ON [dbo].[Users]
+(
+	[RoleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
 ALTER TABLE [dbo].[Categories] ADD  CONSTRAINT [DF__Categorie__IsAct__778AC167]  DEFAULT ((1)) FOR [IsActive]
 GO
 ALTER TABLE [dbo].[CustomerLedger] ADD  CONSTRAINT [DF__CustomerL__Entry__6A30C649]  DEFAULT (sysdatetime()) FOR [EntryDate]
+GO
+ALTER TABLE [dbo].[CustomerLedger] ADD  CONSTRAINT [DF_CustomerLedger_EntryType]  DEFAULT ((5)) FOR [EntryType]
 GO
 ALTER TABLE [dbo].[CustomerLedger] ADD  CONSTRAINT [DF__CustomerL__Debit__6B24EA82]  DEFAULT ((0)) FOR [DebitAmount]
 GO
@@ -411,6 +715,8 @@ GO
 ALTER TABLE [dbo].[Customers] ADD  CONSTRAINT [DF__Customers__IsBlo__6477ECF3]  DEFAULT ((0)) FOR [IsBlocked]
 GO
 ALTER TABLE [dbo].[Customers] ADD  CONSTRAINT [DF__Customers__Curre__656C112C]  DEFAULT ((0)) FOR [CurrentBalance]
+GO
+ALTER TABLE [dbo].[Logs] ADD  CONSTRAINT [DF_Logs_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 GO
 ALTER TABLE [dbo].[People] ADD  CONSTRAINT [DF__Persons__Created__4BAC3F29]  DEFAULT (sysdatetime()) FOR [CreatedAt]
 GO
@@ -429,6 +735,8 @@ GO
 ALTER TABLE [dbo].[Returns] ADD  CONSTRAINT [DF__Returns__ReturnD__1AD3FDA4]  DEFAULT (sysdatetime()) FOR [ReturnDate]
 GO
 ALTER TABLE [dbo].[Returns] ADD  CONSTRAINT [DF__Returns__Created__1BC821DD]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[RoleEntityPermissions] ADD  DEFAULT ((0)) FOR [PermissionsMask]
 GO
 ALTER TABLE [dbo].[Roles] ADD  CONSTRAINT [DF__Roles__IsActive__4F7CD00D]  DEFAULT ((1)) FOR [IsActive]
 GO
@@ -525,15 +833,19 @@ REFERENCES [dbo].[Users] ([UserId])
 GO
 ALTER TABLE [dbo].[Returns] CHECK CONSTRAINT [FK_Returns_Users]
 GO
-ALTER TABLE [dbo].[RolePagePermissions]  WITH CHECK ADD  CONSTRAINT [FK_RolePermissions_Permissions] FOREIGN KEY([PageId])
-REFERENCES [dbo].[SystemPages] ([PageId])
-GO
-ALTER TABLE [dbo].[RolePagePermissions] CHECK CONSTRAINT [FK_RolePermissions_Permissions]
-GO
-ALTER TABLE [dbo].[RolePagePermissions]  WITH CHECK ADD  CONSTRAINT [FK_RolePermissions_Roles] FOREIGN KEY([RoleId])
+ALTER TABLE [dbo].[RoleEntityPermissions]  WITH CHECK ADD  CONSTRAINT [FK_RoleEntityPermissions_Roles] FOREIGN KEY([RoleId])
 REFERENCES [dbo].[Roles] ([RoleId])
+ON UPDATE CASCADE
+ON DELETE CASCADE
 GO
-ALTER TABLE [dbo].[RolePagePermissions] CHECK CONSTRAINT [FK_RolePermissions_Roles]
+ALTER TABLE [dbo].[RoleEntityPermissions] CHECK CONSTRAINT [FK_RoleEntityPermissions_Roles]
+GO
+ALTER TABLE [dbo].[RoleEntityPermissions]  WITH CHECK ADD  CONSTRAINT [FK_RoleEntityPermissions_SystemEntities] FOREIGN KEY([EntityId])
+REFERENCES [dbo].[SystemEntities] ([EntityId])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RoleEntityPermissions] CHECK CONSTRAINT [FK_RoleEntityPermissions_SystemEntities]
 GO
 ALTER TABLE [dbo].[SaleItems]  WITH CHECK ADD  CONSTRAINT [FK_SaleItems_Products] FOREIGN KEY([ProductId])
 REFERENCES [dbo].[Products] ([ProductId])
@@ -570,6 +882,10 @@ REFERENCES [dbo].[Roles] ([RoleId])
 GO
 ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Roles]
 GO
+ALTER TABLE [dbo].[CustomerLedger]  WITH CHECK ADD  CONSTRAINT [CK_CustomerLedger_Balance] CHECK  (([BalanceAfter]=(([BalanceBefore]+[DebitAmount])-[CreditAmount])))
+GO
+ALTER TABLE [dbo].[CustomerLedger] CHECK CONSTRAINT [CK_CustomerLedger_Balance]
+GO
 ALTER TABLE [dbo].[CustomerLedger]  WITH CHECK ADD  CONSTRAINT [CK_CustomerLedger_CreditAmount] CHECK  (([CreditAmount]>=(0)))
 GO
 ALTER TABLE [dbo].[CustomerLedger] CHECK CONSTRAINT [CK_CustomerLedger_CreditAmount]
@@ -578,27 +894,5612 @@ ALTER TABLE [dbo].[CustomerLedger]  WITH CHECK ADD  CONSTRAINT [CK_CustomerLedge
 GO
 ALTER TABLE [dbo].[CustomerLedger] CHECK CONSTRAINT [CK_CustomerLedger_DebitAmount]
 GO
-ALTER TABLE [dbo].[CustomerLedger]  WITH CHECK ADD  CONSTRAINT [CK_CustomerLedger_EntryType] CHECK  (([EntryType]='Adjustment' OR [EntryType]='Fee' OR [EntryType]='Return' OR [EntryType]='Payment' OR [EntryType]='Sale'))
+ALTER TABLE [dbo].[CustomerLedger]  WITH CHECK ADD  CONSTRAINT [CK_CustomerLedger_EntryType] CHECK  (([EntryType]=(5) OR [EntryType]=(4) OR [EntryType]=(3) OR [EntryType]=(2) OR [EntryType]=(1)))
 GO
 ALTER TABLE [dbo].[CustomerLedger] CHECK CONSTRAINT [CK_CustomerLedger_EntryType]
+GO
+ALTER TABLE [dbo].[CustomerLedger]  WITH CHECK ADD  CONSTRAINT [CK_CustomerLedger_OneSideOnly] CHECK  (([DebitAmount]=(0) AND [CreditAmount]>(0) OR [DebitAmount]>(0) AND [CreditAmount]=(0)))
+GO
+ALTER TABLE [dbo].[CustomerLedger] CHECK CONSTRAINT [CK_CustomerLedger_OneSideOnly]
+GO
+ALTER TABLE [dbo].[CustomerLedger]  WITH CHECK ADD  CONSTRAINT [CK_CustomerLedger_ReferenceType] CHECK  (([ReferenceType]=(3) OR [ReferenceType]=(2) OR [ReferenceType]=(1)))
+GO
+ALTER TABLE [dbo].[CustomerLedger] CHECK CONSTRAINT [CK_CustomerLedger_ReferenceType]
 GO
 ALTER TABLE [dbo].[Customers]  WITH CHECK ADD  CONSTRAINT [CK_Customers_PaymentDay] CHECK  (([PaymentDay]>=(1) AND [PaymentDay]<=(31)))
 GO
 ALTER TABLE [dbo].[Customers] CHECK CONSTRAINT [CK_Customers_PaymentDay]
 GO
+ALTER TABLE [dbo].[Logs]  WITH CHECK ADD  CONSTRAINT [CK_Logs_LogLevel] CHECK  (([LogLevel]=(3) OR [LogLevel]=(2) OR [LogLevel]=(1)))
+GO
+ALTER TABLE [dbo].[Logs] CHECK CONSTRAINT [CK_Logs_LogLevel]
+GO
 ALTER TABLE [dbo].[People]  WITH CHECK ADD  CONSTRAINT [CK_People_Gender] CHECK  (([Gender]=(2) OR [Gender]=(1)))
 GO
 ALTER TABLE [dbo].[People] CHECK CONSTRAINT [CK_People_Gender]
+GO
+ALTER TABLE [dbo].[RoleEntityPermissions]  WITH CHECK ADD  CONSTRAINT [CHK_RoleEntityPermissions_PermissionsMask] CHECK  (([PermissionsMask]>=(0)))
+GO
+ALTER TABLE [dbo].[RoleEntityPermissions] CHECK CONSTRAINT [CHK_RoleEntityPermissions_PermissionsMask]
 GO
 ALTER TABLE [dbo].[Sales]  WITH CHECK ADD  CONSTRAINT [CK_Sales_PaymentMethod] CHECK  (([PaymentMethod]=(1) OR [PaymentMethod]=(0) OR [PaymentMethod] IS NULL))
 GO
 ALTER TABLE [dbo].[Sales] CHECK CONSTRAINT [CK_Sales_PaymentMethod]
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Male=1, Female=2' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'People', @level2type=N'COLUMN',@level2name=N'Gender'
+/****** Object:  StoredProcedure [dbo].[spLogs_Insert]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Read=1 Write=2 Delete=4 Update=8' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RolePagePermissions', @level2type=N'COLUMN',@level2name=N'PermissionMask'
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[spLogs_Insert]
+    @LogLevel NVARCHAR(20),
+    @Message NVARCHAR(MAX),
+    @Exception NVARCHAR(MAX) = NULL,
+    @StackTrace NVARCHAR(MAX) = NULL,
+    @Source NVARCHAR(100) = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        -- Normalize
+        SET @LogLevel = TRIM(@LogLevel);
+        SET @Message = TRIM(@Message);
+        SET @Exception = TRIM(@Exception);
+        SET @StackTrace = TRIM(@StackTrace);
+        SET @Source = TRIM(@Source);
+
+        -- Convert empty to NULL
+        SET @Exception = NULLIF(@Exception, '');
+        SET @StackTrace = NULLIF(@StackTrace, '');
+        SET @Source = NULLIF(@Source, '');
+
+        -- Validation
+        IF @Message IS NULL OR @Message = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = 'Message is required.';
+            RETURN;
+        END
+
+        -- LogLevel validation
+        IF @LogLevel NOT IN (1, 2, 3)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = 'Invalid LogLevel.';
+            RETURN;
+        END
+
+        -- Insert
+        INSERT INTO [dbo].[Logs]
+        ([LogLevel], [Message], [Exception], [StackTrace], [Source])
+        VALUES
+        (@LogLevel, @Message, @Exception, @StackTrace, @Source);
+
+        SET @NewId = CAST(SCOPE_IDENTITY() AS INT);
+        SET @StatusCode = 1;
+        SET @StatusMessage = 'Record inserted successfully';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCategories_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- ============================================================================================
+-- SECTION 1: STATUS-CODE STANDARDIZATION (@StatusCode INT OUTPUT)
+-- Status enum: Success = 1, ValidationError = -1, NotFound = -2, UnexpectedError = -99
+-- ============================================================================================
+
+CREATE   PROCEDURE [dbo].[uspCategories_Create]
+    @CategoryName NVARCHAR(100),
+    @CategoryDescription NVARCHAR(250) = NULL,
+    @IsActive BIT = 1,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+    SET @CategoryName = TRIM(@CategoryName);
+    SET @CategoryDescription = TRIM(@CategoryDescription);
+
+    BEGIN TRY
+        IF (@CategoryName IS NULL OR @CategoryName = '')
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Category name is required.';
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = @CategoryName)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A category with this name already exists.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Categories] ([CategoryName], [CategoryDescription], [IsActive])
+        VALUES (@CategoryName, @CategoryDescription, @IsActive);
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Category created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCategories_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCategories_Delete]
+    @CategoryId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF (@CategoryId IS NULL OR @CategoryId <= 0)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Category Id.';
+            RETURN;
+        END
+
+        -- INSTEAD OF DELETE trigger performs soft delete (IsActive = 0)
+        DELETE FROM [dbo].[Categories] WHERE [CategoryId] = @CategoryId;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Category not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Category deactivated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCategories_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspCategories_GetAll]
+				@StatusCode INT OUTPUT,
+				@StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SET @StatusCode = 0;
+	SET @StatusMessage = N'';
+
+BEGIN TRY
+		SELECT
+			[CategoryId],
+			[CategoryName],
+			[CategoryDescription],
+			[IsActive]
+		FROM [dbo].[Categories];
+
+	SET @StatusCode = 1;
+	SET @StatusMessage = N'Categories retrieved successfully.';
+END TRY
+BEGIN CATCH
+		SET @StatusCode = -99;
+		SET @StatusMessage = ERROR_MESSAGE();
+END CATCH
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[uspCategories_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCategories_GetById]
+    @CategoryId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @CategoryId IS NULL OR @CategoryId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Category Id.';
+            RETURN;
+        END
+
+        SELECT [CategoryId], [CategoryName], [CategoryDescription], [IsActive]
+        FROM [dbo].[Categories]
+        WHERE [CategoryId] = @CategoryId;
+        
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Category not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Category retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCategories_GetByName]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCategories_GetByName]
+    @CategoryName NVARCHAR(100),
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+    SET @CategoryName = TRIM(@Categoryname);
+
+    BEGIN TRY
+        IF @CategoryName IS NULL OR @CategoryName = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Category Name.';
+            RETURN;
+        END
+
+        SELECT [CategoryId], [CategoryName], [CategoryDescription], [IsActive]
+        FROM [dbo].[Categories]
+        WHERE [CategoryName] = @CategoryName;
+        
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Category not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Category retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCategories_GetPaged]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- ============================================================================================
+-- SECTION 2: PAGINATED GET ALL PROCEDURES
+-- All *_GetAll procedures now use keyset paging with explicit column lists.
+-- ============================================================================================
+
+CREATE   PROCEDURE [dbo].[uspCategories_GetPaged]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastCategoryId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        IF @LastCategoryId IS NOT NULL AND @LastCategoryId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Last Category Id must be positive or null.';
+        END
+
+        SELECT TOP (@PageSize)
+            [CategoryId],
+            [CategoryName],
+            [CategoryDescription],
+            [IsActive]
+        FROM [dbo].[Categories]
+        WHERE (@LastCategoryId IS NULL OR [CategoryId] < @LastCategoryId)
+        ORDER BY [CategoryId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Categories retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCategories_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCategories_Update]
+    @CategoryId INT,
+    @CategoryName NVARCHAR(100),
+    @CategoryDescription NVARCHAR(250) = NULL,
+    @IsActive BIT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @CategoryId IS NULL OR @CategoryId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Category Id.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = @CategoryName AND [CategoryId] <> @CategoryId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another category with this name already exists.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Categories]
+        SET [CategoryName] = @CategoryName,
+            [CategoryDescription] = @CategoryDescription,
+            [IsActive] = @IsActive
+        WHERE [CategoryId] = @CategoryId;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Category not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Category updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCountries_Create]
+    @CountryName NVARCHAR(50),
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+    SET @CountryName = TRIM(@CountryName);
+
+    BEGIN TRY
+        IF (@CountryName IS NULL OR @CountryName = '')
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Country name is required.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Countries] WHERE [CountryName] = @CountryName)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A country with this name already exists.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Countries] ([CountryName])
+        VALUES (@CountryName);
+
+        SET @NewId = CAST(SCOPE_IDENTITY() AS INT);
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Country created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCountries_Delete]
+    @CountryId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF (@CountryId <= 0)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Country Id.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[People] WHERE [NationalityCountryId] = @CountryId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete country. It is referenced by one or more people.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[Countries] WHERE [CountryId] = @CountryId;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Country not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Country deleted successfully.';
+
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_ExistsById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspCountries_ExistsById]
+    @CountryId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @CountryId IS NULL OR @CountryId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid country id';
+            RETURN;
+        END
+        
+        SELECT 1
+        FROM [dbo].[Countries]
+        WHERE [CountryId] = @CountryId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Query executed successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[uspCountries_GetAll]
+			     @StatusCode INT OUTPUT,
+				 @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SET @StatusCode = 0;
+	SET	@StatusMessage = N'';
+
+	BEGIN TRY
+
+		SELECT [CountryId], [CountryName]
+		FROM [dbo].[Countries];
+
+		SET @StatusCode = 1;
+		SET @StatusMessage = N'All countries retrieved successfully.';
+
+	END TRY
+	BEGIN CATCH
+		SET @StatusCode = -99;
+		SET @StatusMessage = ERROR_MESSAGE();
+	END CATCH
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCountries_GetById]
+    @CountryId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF (@CountryId <= 0)
+            BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Invalid CountryId.';
+            RETURN;
+        END
+
+        SELECT [CountryId], [CountryName]
+        FROM [dbo].[Countries]
+        WHERE [CountryId] = @CountryId
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Country not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Country retrieved successfully.';
+
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_GetByName]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspCountries_GetByName]
+				@CountryName NVARCHAR(50),
+				@StatusCode INT OUTPUT,
+				@StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+	SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+	SET @CountryName = TRIM(@CountryName)
+
+	BEGIN TRY
+		IF (@CountryName IS NULL OR @CountryName = '')
+		BEGIN
+			SET @StatusCode = -1;
+			SET @StatusMessage = N'Country name is required.';
+			RETURN;
+		END
+
+		SELECT [CountryId], [CountryName]
+		FROM Countries
+		WHERE [CountryName] = @CountryName;
+
+		IF @@ROWCOUNT = 0
+		BEGIN
+			SET @StatusCode = -2;
+			SET @StatusMessage = N'Country not found.';
+			RETURN;
+		END
+
+		SET @StatusCode = 1;
+		SET @StatusMessage = N'Country retrieved successfully.';
+
+	END TRY
+	BEGIN CATCH
+		SET @StatusCode = -99;
+		SET @StatusMessage = ERROR_MESSAGE();
+	END CATCH
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_GetPaged]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCountries_GetPaged]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastCountryId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [CountryId],
+            [CountryName]
+        FROM [dbo].[Countries]
+        WHERE (@LastCountryId IS NULL OR [CountryId] < @LastCountryId)
+        ORDER BY [CountryId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Countries retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCountries_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCountries_Update]
+    @CountryId INT,
+    @CountryName NVARCHAR(50),
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+    SET @CountryName = TRIM(@CountryName);
+
+    BEGIN TRY
+        IF (@CountryId <= 0)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid CountryId.';
+            RETURN;
+        END
+
+        IF (@CountryName IS NULL OR @CountryName = '')
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Country name is required.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Countries] WHERE [CountryName] = @CountryName AND [CountryId] <> @CountryId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another country with this name already exists.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Countries]
+        SET [CountryName] = @CountryName
+        WHERE [CountryId] = @CountryId;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Country not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Country updated successfully.';
+
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomerLedger_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomerLedger_Create]
+    @CustomerId INT,
+    @EntryType TINYINT,
+    @ReferenceType TINYINT,
+    @ReferenceId INT = NULL,
+    @DebitAmount DECIMAL(18, 2) = 0,
+    @CreditAmount DECIMAL(18, 2) = 0,
+    @CreatedBy INT,
+    @Notes NVARCHAR(250) = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+    SET @Notes = TRIM(@Notes);
+
+    BEGIN TRY
+        IF @CustomerId IS NULL OR @CustomerId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Customer Id';
+            RETURN;
+        END
+
+        IF @EntryType IS NULL OR @EntryType NOT IN (1, 2, 3, 4, 5)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Entry Type.';
+            RETURN;
+        END
+
+        IF @ReferenceType IS NULL OR @ReferenceType NOT IN (1, 2, 3)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Reference Type.';
+            RETURN;
+        END
+
+        IF @ReferenceId IS NOT NULL AND @ReferenceId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Reference Id.';
+            RETURN;
+        END
+
+        IF @DebitAmount IS NULL OR @DebitAmount < 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Debit amount cannot be negative.';
+            RETURN;
+        END
+
+        IF @CreditAmount IS NULL OR @CreditAmount < 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Credit amount cannot be negative.';
+            RETURN;
+        END
+
+        IF @DebitAmount = 0 AND @CreditAmount = 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Debit amount and credit amount can not be both zero.';
+            RETURN
+        END
+
+        IF @CreatedBy IS NULL OR @CreatedBy <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = 'Invalid User Id.';
+            RETURN;
+        END
+
+        IF @DebitAmount > 0 AND @CreditAmount > 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot have both Debit and Credit amounts.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @CreatedBy)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'User (CreatedBy) not found.';
+            RETURN;
+        END
+
+        DECLARE @BalanceBefore DECIMAL(18, 2);
+        DECLARE @BalanceAfter DECIMAL(18, 2);
+
+        BEGIN TRANSACTION;
+
+        -- Lock the customer row to prevent race conditions with concurrent ledger entries
+        SELECT @BalanceBefore = [CurrentBalance] 
+        FROM [dbo].[Customers] WITH (UPDLOCK, HOLDLOCK) 
+        WHERE [CustomerId] = @CustomerId;
+
+        SET @BalanceAfter = @BalanceBefore + @DebitAmount - @CreditAmount;
+
+        INSERT INTO [dbo].[CustomerLedger] ([CustomerId], [EntryDate], [EntryType], [ReferenceType], [ReferenceId],
+                                            [DebitAmount], [CreditAmount], [BalanceBefore], [BalanceAfter], [CreatedBy], [Notes])
+        VALUES (@CustomerId, SYSDATETIME(), @EntryType, @ReferenceType, @ReferenceId,
+                @DebitAmount, @CreditAmount, @BalanceBefore, @BalanceAfter, @CreatedBy, @Notes);
+
+        UPDATE [dbo].[Customers]
+        SET [CurrentBalance] = @BalanceAfter
+        WHERE [CustomerId] = @CustomerId;
+
+        SET @NewId = CAST(SCOPE_IDENTITY() AS INT);
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Ledger entry created successfully.';
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomerLedger_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomerLedger_Delete]
+    @LedgerId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        -- Financial ledger entries should not be deleted to maintain audit trail integrity.
+        -- Use reversal/adjustment entries instead to correct errors.
+        SET @StatusCode = -1;
+        SET @StatusMessage = N'Ledger entries cannot be deleted. Use an adjustment entry to correct errors and maintain audit trail integrity.';
+        RETURN;
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomerLedger_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomerLedger_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        SELECT
+            [LedgerId],
+            [CustomerId],
+            [EntryDate],
+            [EntryType],
+            [ReferenceType],
+            [ReferenceId],
+            [DebitAmount],
+            [CreditAmount],
+            [BalanceBefore],
+            [BalanceAfter],
+            [CreatedBy],
+            [Notes]
+        FROM [dbo].[CustomerLedger]
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Ledger entries retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomerLedger_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomerLedger_GetById]
+    @LedgerId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @LedgerId IS NULL OR @LedgerId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Ledger Id.';
+            RETURN;
+        END
+
+        SELECT [LedgerId], [CustomerId], [EntryDate], [EntryType], [ReferenceType], [ReferenceId],
+               [DebitAmount], [CreditAmount], [BalanceBefore], [BalanceAfter], [CreatedBy], [Notes]
+        FROM [dbo].[CustomerLedger]
+        WHERE [LedgerId] = @LedgerId;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Ledger entry not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Ledger entry retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomerLedger_GetCustomerLedger]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspCustomerLedger_GetCustomerLedger]
+				@CustomerId INT,
+				@StatusCode INT OUTPUT,
+				@StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SET @StatusCode = 0;
+	SET @StatusMessage = N'';
+
+	IF @CustomerId IS NULL OR @CustomerId <= 0
+	BEGIN
+		SET @StatusCode = -1;
+		SET @StatusMessage = N'Invalid Customer Id.';
+		RETURN;
+	END
+
+	BEGIN TRY
+		IF NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+		BEGIN
+			SET @StatusCode = -2;
+			SET @StatusMessage = 'Customer not found.';
+			RETURN;
+
+        SELECT [LedgerId], [CustomerId], [EntryDate], [EntryType], [ReferenceType], [ReferenceId],
+               [DebitAmount], [CreditAmount], [BalanceBefore], [BalanceAfter], [CreatedBy], [Notes]
+        FROM [dbo].[CustomerLedger]
+		WHERE [CustomerId] = @CustomerId;
+
+		SET @StatusCode = 1;
+		
+		IF @@ROWCOUNT = 0
+			SET @StatusMessage = N'There is no Ledger avaliable to this customer.';
+		ELSE
+			SET @StatusMessage = N'Ledger retrieved successfully.';
+
+		END
+	END TRY
+	BEGIN CATCH
+		SET @StatusCode = -99;
+		SET @StatusMessage = ERROR_MESSAGE();
+	END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomerLedger_GetPaged]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomerLedger_GetPaged]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastLedgerId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        IF @LastLedgerId IS NOT NULL AND @LastLedgerId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = 'Invalid Ledger Id.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [LedgerId],
+            [CustomerId],
+            [EntryDate],
+            [EntryType],
+            [ReferenceType],
+            [ReferenceId],
+            [DebitAmount],
+            [CreditAmount],
+            [BalanceBefore],
+            [BalanceAfter],
+            [CreatedBy],
+            [Notes]
+        FROM [dbo].[CustomerLedger]
+        WHERE (@LastLedgerId IS NULL OR [LedgerId] < @LastLedgerId)
+        ORDER BY [LedgerId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Ledger entries retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomerLedger_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomerLedger_Update]
+    @LedgerId INT,
+    @Notes NVARCHAR(250) = NULL,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @LedgerId IS NULL OR @LedgerId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid Ledger Id.';
+            RETURN;
+        END
+
+        -- Only Notes field can be updated to preserve financial audit trail integrity.
+        -- EntryType, ReferenceType, ReferenceId, and amounts are immutable once created.
+        UPDATE [dbo].[CustomerLedger]
+        SET [Notes] = @Notes
+        WHERE [LedgerId] = @LedgerId;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Ledger entry not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Ledger entry updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomers_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomers_Create]
+    @PersonId INT,
+    @PaymentDay TINYINT,
+    @IsActive BIT = 1,
+    @IsBlocked BIT = 0,
+    @Notes NVARCHAR(250) = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[People] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Person not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This person already has a customer account.';
+            RETURN;
+        END
+
+        IF @PaymentDay < 1 OR @PaymentDay > 31
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Payment day must be between 1 and 31.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Customers] ([PersonId], [JoinDate], [IsActive], [IsBlocked], [PaymentDay], [CurrentBalance], [Notes])
+        VALUES (@PersonId, CONVERT(DATE, SYSDATETIME()), @IsActive, @IsBlocked, @PaymentDay, 0, @Notes);
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Customer created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomers_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomers_Delete]
+    @CustomerId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        -- INSTEAD OF DELETE trigger performs soft delete (IsActive = 0)
+        DELETE FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Customer deactivated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomers_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomers_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastCustomerId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [CustomerId],
+            [PersonId],
+            [JoinDate],
+            [IsActive],
+            [IsBlocked],
+            [PaymentDay],
+            [CurrentBalance],
+            [LastPaymentDate],
+            [NextDueDate],
+            [Notes]
+        FROM [dbo].[Customers]
+        WHERE (@LastCustomerId IS NULL OR [CustomerId] < @LastCustomerId)
+        ORDER BY [CustomerId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Customers retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomers_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomers_GetById]
+    @CustomerId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        SELECT [CustomerId], [PersonId], [JoinDate], [IsActive], [IsBlocked], [PaymentDay],
+               [CurrentBalance], [LastPaymentDate], [NextDueDate], [Notes]
+        FROM [dbo].[Customers]
+        WHERE [CustomerId] = @CustomerId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Customer retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspCustomers_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspCustomers_Update]
+    @CustomerId INT,
+    @PaymentDay TINYINT,
+    @IsActive BIT,
+    @IsBlocked BIT,
+    @NextDueDate DATE = NULL,
+    @Notes NVARCHAR(250) = NULL,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        IF @PaymentDay < 1 OR @PaymentDay > 31
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Payment day must be between 1 and 31.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Customers]
+        SET [PaymentDay] = @PaymentDay,
+            [IsActive] = @IsActive,
+            [IsBlocked] = @IsBlocked,
+            [NextDueDate] = @NextDueDate,
+            [Notes] = @Notes
+        WHERE [CustomerId] = @CustomerId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Customer updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspPeople_Create]
+    @NationalNo NVARCHAR(20),
+    @FirstName NVARCHAR(50),
+    @SecondName NVARCHAR(50),
+    @ThirdName NVARCHAR(50) = NULL,
+    @LastName NVARCHAR(50),
+    @DateOfBirth DATE,
+    @Gender TINYINT,
+    @Address NVARCHAR(200),
+    @Phone NVARCHAR(20),
+    @NationalityCountryId INT,
+    @ImageGuid UNIQUEIDENTIFIER = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    -- Trim NVARCHAR inputs
+    SET @NationalNo = LTRIM(RTRIM(@NationalNo));
+    SET @FirstName = LTRIM(RTRIM(@FirstName));
+    SET @SecondName = LTRIM(RTRIM(@SecondName));
+    SET @ThirdName = LTRIM(RTRIM(@ThirdName));
+    SET @LastName = LTRIM(RTRIM(@LastName));
+    SET @Address = LTRIM(RTRIM(@Address));
+    SET @Phone = LTRIM(RTRIM(@Phone));
+
+    BEGIN TRY
+        -- Validate input data
+        IF @NationalNo IS NULL OR @NationalNo = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'National No. is required';
+            RETURN;
+        END
+
+        IF @FirstName IS NULL OR @FirstName = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'First name is required.';
+            RETURN;
+        END
+
+        IF @SecondName IS NULL OR @SecondName = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Second name is required.' ;
+            RETURN;
+        END
+
+        IF @LastName IS NULL OR @LastName = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Last name is required.';
+            RETURN;
+        END
+
+        IF @DateOfBirth IS NULL OR @DateOfBirth > DATEADD(YEAR, -18, CAST(GETDATE() AS DATE))
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Person must be older than 18 years old.';
+            RETURN;
+        END
+
+        IF @Gender != 1 AND @Gender != 2
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid gender.';
+            RETURN;
+        END
+
+        IF @Address IS NULL OR @Address = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Address is required.';
+            RETURN;
+        END
+
+        IF @Phone IS NULL OR @Phone = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Phone is required.';
+            RETURN;
+        END
+
+        IF @NationalityCountryId IS NULL OR @NationalityCountryId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid country id.';
+            RETURN;
+        END
+
+
+
+        IF EXISTS (SELECT 1 FROM [dbo].[People] WHERE [NationalNo] = @NationalNo)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A person with this national number already exists.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Countries] WHERE [CountryId] = @NationalityCountryId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Country not found.';
+            RETURN;
+        END
+
+        IF @ImageGuid IS NOT NULL AND EXISTS (SELECT 1 FROM [dbo].[People] WHERE [ImageGuid] = @ImageGuid)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This image is already associated with another person.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[People] ([NationalNo], [FirstName], [SecondName], [ThirdName], [LastName], 
+                                    [DateOfBirth], [Gender], [Address], [Phone], [NationalityCountryId], 
+                                    [ImageGuid], [CreatedAt])
+        VALUES (@NationalNo, @FirstName, @SecondName, @ThirdName, @LastName,
+                @DateOfBirth, @Gender, @Address, @Phone, @NationalityCountryId,
+                @ImageGuid, SYSDATETIME());
+
+        SET @NewId = CAST(SCOPE_IDENTITY() AS INT);
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Person created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspPeople_Delete]
+    @PersonId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[People] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Person not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete person. They are associated with a user account.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete person. They are associated with a customer account.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[People] WHERE [PersonId] = @PersonId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Person deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        IF ERROR_NUMBER() = 547
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Unable to delete the person due to data associated with it.';
+            RETURN;
+        END
+
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_ExistsById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspPeople_ExistsById]
+    @PersonId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PersonId IS NULL OR @PersonId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid person id';
+            RETURN;
+        END
+        
+        SELECT 1
+        FROM [dbo].[People]
+        WHERE [PersonId] = @PersonId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Query executed successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_ExistsByNationalNo]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspPeople_ExistsByNationalNo]
+    @NationalNo NVARCHAR(20),
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+    SET @NationalNo = TRIM(@NationalNo);
+
+    BEGIN TRY
+        IF @NationalNo IS NULL OR @NationalNo = ''
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid national no';
+            RETURN;
+        END
+        
+        SELECT 1
+        FROM [dbo].[People]
+        WHERE [NationalNo] = @NationalNo;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Query executed successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspPeople_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        SELECT
+            [PersonId],
+            [NationalNo],
+            [FirstName],
+            [SecondName],
+            [ThirdName],
+            [LastName],
+            [DateOfBirth],
+            [Gender],
+            [Address],
+            [Phone],
+            [NationalityCountryId],
+            [ImageGuid],
+            [CreatedAt],
+            [Email]
+        FROM [dbo].[People];
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'People retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspPeople_GetById]
+    @PersonId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PersonId IS NULL OR @PersonId <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid person id.';
+            RETURN;
+        END
+        
+        SELECT [PersonId], [NationalNo], [FirstName], [SecondName], [ThirdName], [LastName],
+               [DateOfBirth], [Gender], [Address], [Phone], [NationalityCountryId],
+               [ImageGuid], [CreatedAt], [Email]
+        FROM [dbo].[People]
+        WHERE [PersonId] = @PersonId;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Person not found.';
+            RETURN;
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Person retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_GetByNationalNo]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[uspPeople_GetByNationalNo]
+    @NationalNo NVARCHAR(20),
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        SELECT [PersonId], [NationalNo], [FirstName], [SecondName], [ThirdName], [LastName],
+               [DateOfBirth], [Gender], [Address], [Phone], [NationalityCountryId],
+               [ImageGuid], [CreatedAt], [Email]
+        FROM [dbo].[People]
+        WHERE [NationalNo] = @NationalNo;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = 'Person not found.';
+        END
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Person retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_GetPaged]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspPeople_GetPaged]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastPersonId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [PersonId],
+            [NationalNo],
+            [FirstName],
+            [SecondName],
+            [ThirdName],
+            [LastName],
+            [DateOfBirth],
+            [Gender],
+            [Address],
+            [Phone],
+            [NationalityCountryId],
+            [ImageGuid],
+            [CreatedAt],
+            [Email]
+        FROM [dbo].[People]
+        WHERE (@LastPersonId IS NULL OR [PersonId] < @LastPersonId)
+        ORDER BY [PersonId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'People retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspPeople_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspPeople_Update]
+    @PersonId INT,
+    @NationalNo NVARCHAR(20),
+    @FirstName NVARCHAR(50),
+    @SecondName NVARCHAR(50),
+    @ThirdName NVARCHAR(50) = NULL,
+    @LastName NVARCHAR(50),
+    @DateOfBirth DATE,
+    @Gender CHAR(1),
+    @Address NVARCHAR(200),
+    @Phone NVARCHAR(20),
+    @NationalityCountryId INT,
+    @ImageGuid UNIQUEIDENTIFIER = NULL,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[People] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Person not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[People] WHERE [NationalNo] = @NationalNo AND [PersonId] <> @PersonId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another person with this national number already exists.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Countries] WHERE [CountryId] = @NationalityCountryId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Country not found.';
+            RETURN;
+        END
+
+        IF @ImageGuid IS NOT NULL AND EXISTS (SELECT 1 FROM [dbo].[People] WHERE [ImageGuid] = @ImageGuid AND [PersonId] <> @PersonId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This image is already associated with another person.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[People]
+        SET [NationalNo] = @NationalNo,
+            [FirstName] = @FirstName,
+            [SecondName] = @SecondName,
+            [ThirdName] = @ThirdName,
+            [LastName] = @LastName,
+            [DateOfBirth] = @DateOfBirth,
+            [Gender] = @Gender,
+            [Address] = @Address,
+            [Phone] = @Phone,
+            [NationalityCountryId] = @NationalityCountryId,
+            [ImageGuid] = @ImageGuid
+        WHERE [PersonId] = @PersonId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Person updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProducts_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProducts_Create]
+    @CategoryId INT,
+    @ProductName NVARCHAR(150),
+    @SKU NVARCHAR(50),
+    @Description NVARCHAR(250) = NULL,
+    @UnitId INT,
+    @CostPrice DECIMAL(18, 2),
+    @SellPrice DECIMAL(18, 2),
+    @DiscountPercent DECIMAL(5, 2) = 0,
+    @ImageGuid UNIQUEIDENTIFIER = NULL,
+    @IsActive BIT = 1,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryId] = @CategoryId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Category not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Units] WHERE [UnitId] = @UnitId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Unit not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductName] = @ProductName)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A product with this name already exists.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [SKU] = @SKU)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A product with this SKU already exists.';
+            RETURN;
+        END
+
+        IF @ImageGuid IS NOT NULL AND EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ImageGuid] = @ImageGuid)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This image is already associated with another product.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Products] ([CategoryId], [ProductName], [SKU], [Description], [UnitId],
+                                      [CostPrice], [SellPrice], [DiscountPercent], [ImageGuid], [IsActive], [CreatedAt])
+        VALUES (@CategoryId, @ProductName, @SKU, @Description, @UnitId,
+                @CostPrice, @SellPrice, @DiscountPercent, @ImageGuid, @IsActive, SYSDATETIME());
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProducts_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProducts_Delete]
+    @ProductId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product not found.';
+            RETURN;
+        END
+
+        -- INSTEAD OF DELETE trigger performs soft delete (IsActive = 0)
+        DELETE FROM [dbo].[Products] WHERE [ProductId] = @ProductId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product deactivated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProducts_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProducts_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastProductId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [ProductId],
+            [CategoryId],
+            [ProductName],
+            [SKU],
+            [Description],
+            [UnitId],
+            [CostPrice],
+            [SellPrice],
+            [DiscountPercent],
+            [ImageGuid],
+            [IsActive],
+            [CreatedAt],
+            [UpdatedAt]
+        FROM [dbo].[Products]
+        WHERE (@LastProductId IS NULL OR [ProductId] < @LastProductId)
+        ORDER BY [ProductId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Products retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProducts_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProducts_GetById]
+    @ProductId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product not found.';
+            RETURN;
+        END
+
+        SELECT [ProductId], [CategoryId], [ProductName], [SKU], [Description], [UnitId],
+               [CostPrice], [SellPrice], [DiscountPercent], [ImageGuid], [IsActive], [CreatedAt], [UpdatedAt]
+        FROM [dbo].[Products]
+        WHERE [ProductId] = @ProductId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProducts_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProducts_Update]
+    @ProductId INT,
+    @CategoryId INT,
+    @ProductName NVARCHAR(150),
+    @SKU NVARCHAR(50),
+    @Description NVARCHAR(250) = NULL,
+    @UnitId INT,
+    @CostPrice DECIMAL(18, 2),
+    @SellPrice DECIMAL(18, 2),
+    @DiscountPercent DECIMAL(5, 2),
+    @ImageGuid UNIQUEIDENTIFIER = NULL,
+    @IsActive BIT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryId] = @CategoryId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Category not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Units] WHERE [UnitId] = @UnitId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Unit not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductName] = @ProductName AND [ProductId] <> @ProductId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another product with this name already exists.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [SKU] = @SKU AND [ProductId] <> @ProductId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another product with this SKU already exists.';
+            RETURN;
+        END
+
+        IF @ImageGuid IS NOT NULL AND EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ImageGuid] = @ImageGuid AND [ProductId] <> @ProductId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This image is already associated with another product.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Products]
+        SET [CategoryId] = @CategoryId,
+            [ProductName] = @ProductName,
+            [SKU] = @SKU,
+            [Description] = @Description,
+            [UnitId] = @UnitId,
+            [CostPrice] = @CostPrice,
+            [SellPrice] = @SellPrice,
+            [DiscountPercent] = @DiscountPercent,
+            [ImageGuid] = @ImageGuid,
+            [IsActive] = @IsActive
+        WHERE [ProductId] = @ProductId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProductStock_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProductStock_Create]
+    @ProductId INT,
+    @QuantityOnHand DECIMAL(18, 3) = 0,
+    @ReorderLevel DECIMAL(18, 3) = 0,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Stock record already exists for this product.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[ProductStock] ([ProductId], [QuantityOnHand], [ReorderLevel], [LastUpdated])
+        VALUES (@ProductId, @QuantityOnHand, @ReorderLevel, SYSDATETIME());
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product stock created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProductStock_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProductStock_Delete]
+    @ProductId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product stock not found.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product stock deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProductStock_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProductStock_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastProductId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [ProductId],
+            [QuantityOnHand],
+            [ReorderLevel],
+            [LastUpdated]
+        FROM [dbo].[ProductStock]
+        WHERE (@LastProductId IS NULL OR [ProductId] < @LastProductId)
+        ORDER BY [ProductId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product stock records retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProductStock_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProductStock_GetById]
+    @ProductId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product stock not found.';
+            RETURN;
+        END
+
+        SELECT [ProductId], [QuantityOnHand], [ReorderLevel], [LastUpdated]
+        FROM [dbo].[ProductStock]
+        WHERE [ProductId] = @ProductId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product stock retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspProductStock_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspProductStock_Update]
+    @ProductId INT,
+    @QuantityOnHand DECIMAL(18, 3),
+    @ReorderLevel DECIMAL(18, 3),
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product stock not found.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[ProductStock]
+        SET [QuantityOnHand] = @QuantityOnHand,
+            [ReorderLevel] = @ReorderLevel,
+            [LastUpdated] = SYSDATETIME()
+        WHERE [ProductId] = @ProductId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Product stock updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturnItems_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturnItems_Create]
+    @ReturnId INT,
+    @SaleItemId INT = NULL,
+    @ProductId INT,
+    @Quantity DECIMAL(18, 3),
+    @UnitPrice DECIMAL(18, 2),
+    @LineTotal DECIMAL(18, 2),
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Returns] WHERE [ReturnId] = @ReturnId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Return not found.';
+            RETURN;
+        END
+
+        IF @SaleItemId IS NOT NULL
+        BEGIN
+            DECLARE @SaleItemProductId INT;
+            DECLARE @SaleItemQuantity DECIMAL(18, 3);
+            DECLARE @AlreadyReturnedQuantity DECIMAL(18, 3);
+
+            SELECT @SaleItemProductId = [ProductId], @SaleItemQuantity = [Quantity]
+            FROM [dbo].[SaleItems] 
+            WHERE [SaleItemId] = @SaleItemId;
+
+            IF @SaleItemProductId IS NULL
+            BEGIN
+                SET @StatusCode = -2;
+                SET @StatusMessage = N'Sale item not found.';
+                RETURN;
+            END
+
+            -- Validate that ProductId matches the original sale item
+            IF @ProductId <> @SaleItemProductId
+            BEGIN
+                SET @StatusCode = -1;
+                SET @StatusMessage = N'Product does not match the original sale item product.';
+                RETURN;
+            END
+
+            -- Calculate total quantity already returned for this sale item
+            SELECT @AlreadyReturnedQuantity = ISNULL(SUM([Quantity]), 0)
+            FROM [dbo].[ReturnItems]
+            WHERE [SaleItemId] = @SaleItemId;
+
+            -- Validate that total returned quantity doesn't exceed original sale quantity
+            IF (@AlreadyReturnedQuantity + @Quantity) > @SaleItemQuantity
+            BEGIN
+                SET @StatusCode = -1;
+                SET @StatusMessage = N'Return quantity exceeds available. Original: ' + CAST(@SaleItemQuantity AS NVARCHAR(50)) + 
+                                     ', Already returned: ' + CAST(@AlreadyReturnedQuantity AS NVARCHAR(50)) + 
+                                     ', Requested: ' + CAST(@Quantity AS NVARCHAR(50));
+                RETURN;
+            END
+        END
+        ELSE
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+            BEGIN
+                SET @StatusCode = -2;
+                SET @StatusMessage = N'Product not found.';
+                RETURN;
+            END
+        END
+
+        INSERT INTO [dbo].[ReturnItems] ([ReturnId], [SaleItemId], [ProductId], [Quantity], [UnitPrice], [LineTotal])
+        VALUES (@ReturnId, @SaleItemId, @ProductId, @Quantity, @UnitPrice, @LineTotal);
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return item created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturnItems_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturnItems_Delete]
+    @ReturnItemId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        DECLARE @ReturnId INT;
+
+        SELECT @ReturnId = [ReturnId] FROM [dbo].[ReturnItems] WHERE [ReturnItemId] = @ReturnItemId;
+
+        IF @ReturnId IS NULL
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Return item not found.';
+            RETURN;
+        END
+
+        BEGIN TRANSACTION;
+
+        DELETE FROM [dbo].[ReturnItems] WHERE [ReturnItemId] = @ReturnItemId;
+
+        -- Recalculate and update parent Return total
+        UPDATE [dbo].[Returns]
+        SET [ReturnTotal] = ISNULL((SELECT SUM([LineTotal]) FROM [dbo].[ReturnItems] WHERE [ReturnId] = @ReturnId), 0)
+        WHERE [ReturnId] = @ReturnId;
+
+        COMMIT TRANSACTION;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return item deleted and return total recalculated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturnItems_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturnItems_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastReturnItemId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [ReturnItemId],
+            [ReturnId],
+            [SaleItemId],
+            [ProductId],
+            [Quantity],
+            [UnitPrice],
+            [LineTotal]
+        FROM [dbo].[ReturnItems]
+        WHERE (@LastReturnItemId IS NULL OR [ReturnItemId] < @LastReturnItemId)
+        ORDER BY [ReturnItemId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return items retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturnItems_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturnItems_GetById]
+    @ReturnItemId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[ReturnItems] WHERE [ReturnItemId] = @ReturnItemId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Return item not found.';
+            RETURN;
+        END
+
+        SELECT [ReturnItemId], [ReturnId], [SaleItemId], [ProductId], [Quantity], [UnitPrice], [LineTotal]
+        FROM [dbo].[ReturnItems]
+        WHERE [ReturnItemId] = @ReturnItemId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return item retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturnItems_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturnItems_Update]
+    @ReturnItemId INT,
+    @SaleItemId INT = NULL,
+    @ProductId INT,
+    @Quantity DECIMAL(18, 3),
+    @UnitPrice DECIMAL(18, 2),
+    @LineTotal DECIMAL(18, 2),
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        DECLARE @CurrentQuantity DECIMAL(18, 3);
+
+        SELECT @CurrentQuantity = [Quantity]
+        FROM [dbo].[ReturnItems]
+        WHERE [ReturnItemId] = @ReturnItemId;
+
+        IF @CurrentQuantity IS NULL
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Return item not found.';
+            RETURN;
+        END
+
+        IF @SaleItemId IS NOT NULL
+        BEGIN
+            DECLARE @SaleItemProductId INT;
+            DECLARE @SaleItemQuantity DECIMAL(18, 3);
+            DECLARE @AlreadyReturnedQuantity DECIMAL(18, 3);
+
+            SELECT @SaleItemProductId = [ProductId], @SaleItemQuantity = [Quantity]
+            FROM [dbo].[SaleItems] 
+            WHERE [SaleItemId] = @SaleItemId;
+
+            IF @SaleItemProductId IS NULL
+            BEGIN
+                SET @StatusCode = -2;
+                SET @StatusMessage = N'Sale item not found.';
+                RETURN;
+            END
+
+            -- Validate that ProductId matches the original sale item
+            IF @ProductId <> @SaleItemProductId
+            BEGIN
+                SET @StatusCode = -1;
+                SET @StatusMessage = N'Product does not match the original sale item product.';
+                RETURN;
+            END
+
+            -- Calculate total quantity already returned for this sale item (excluding current return item)
+            SELECT @AlreadyReturnedQuantity = ISNULL(SUM([Quantity]), 0)
+            FROM [dbo].[ReturnItems]
+            WHERE [SaleItemId] = @SaleItemId AND [ReturnItemId] <> @ReturnItemId;
+
+            -- Validate that total returned quantity doesn't exceed original sale quantity
+            IF (@AlreadyReturnedQuantity + @Quantity) > @SaleItemQuantity
+            BEGIN
+                SET @StatusCode = -1;
+                SET @StatusMessage = N'Return quantity exceeds available. Original: ' + CAST(@SaleItemQuantity AS NVARCHAR(50)) + 
+                                     ', Already returned (other items): ' + CAST(@AlreadyReturnedQuantity AS NVARCHAR(50)) + 
+                                     ', Requested: ' + CAST(@Quantity AS NVARCHAR(50));
+                RETURN;
+            END
+        END
+        ELSE
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+            BEGIN
+                SET @StatusCode = -2;
+                SET @StatusMessage = N'Product not found.';
+                RETURN;
+            END
+        END
+
+        UPDATE [dbo].[ReturnItems]
+        SET [SaleItemId] = @SaleItemId,
+            [ProductId] = @ProductId,
+            [Quantity] = @Quantity,
+            [UnitPrice] = @UnitPrice,
+            [LineTotal] = @LineTotal
+        WHERE [ReturnItemId] = @ReturnItemId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return item updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturns_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturns_Create]
+    @SaleId INT,
+    @CustomerId INT = NULL,
+    @CreatedBy INT,
+    @ReturnReason NVARCHAR(250) = NULL,
+    @ReturnTotal DECIMAL(18, 2),
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Sales] WHERE [SaleId] = @SaleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale not found.';
+            RETURN;
+        END
+
+        IF @CustomerId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @CreatedBy)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'User (CreatedBy) not found.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Returns] ([SaleId], [CustomerId], [ReturnDate], [CreatedBy], [ReturnReason], [ReturnTotal], [CreatedAt])
+        VALUES (@SaleId, @CustomerId, SYSDATETIME(), @CreatedBy, @ReturnReason, @ReturnTotal, SYSDATETIME());
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturns_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturns_Delete]
+    @ReturnId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Returns] WHERE [ReturnId] = @ReturnId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Return not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[ReturnItems] WHERE [ReturnId] = @ReturnId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete return. It has associated return items. Delete the items first.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[Returns] WHERE [ReturnId] = @ReturnId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturns_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturns_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastReturnId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [ReturnId],
+            [SaleId],
+            [CustomerId],
+            [ReturnDate],
+            [CreatedBy],
+            [ReturnReason],
+            [ReturnTotal],
+            [CreatedAt]
+        FROM [dbo].[Returns]
+        WHERE (@LastReturnId IS NULL OR [ReturnId] < @LastReturnId)
+        ORDER BY [ReturnId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Returns retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturns_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturns_GetById]
+    @ReturnId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Returns] WHERE [ReturnId] = @ReturnId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Return not found.';
+            RETURN;
+        END
+
+        SELECT [ReturnId], [SaleId], [CustomerId], [ReturnDate], [CreatedBy], [ReturnReason], [ReturnTotal], [CreatedAt]
+        FROM [dbo].[Returns]
+        WHERE [ReturnId] = @ReturnId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspReturns_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspReturns_Update]
+    @ReturnId INT,
+    @CustomerId INT = NULL,
+    @ReturnReason NVARCHAR(250) = NULL,
+    @ReturnTotal DECIMAL(18, 2),
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Returns] WHERE [ReturnId] = @ReturnId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Return not found.';
+            RETURN;
+        END
+
+        IF @CustomerId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Returns]
+        SET [CustomerId] = @CustomerId,
+            [ReturnReason] = @ReturnReason,
+            [ReturnTotal] = @ReturnTotal
+        WHERE [ReturnId] = @ReturnId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Return updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRolePagePermissions_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRolePagePermissions_Create]
+    @RoleId INT,
+    @PageId INT,
+    @PermissionMask INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleId] = @RoleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[SystemPages] WHERE [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'System page not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[RolePagePermissions] WHERE [RoleId] = @RoleId AND [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Permission already exists for this role and page.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[RolePagePermissions] ([RoleId], [PageId], [PermissionMask])
+        VALUES (@RoleId, @PageId, @PermissionMask);
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role page permission created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRolePagePermissions_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRolePagePermissions_Delete]
+    @RoleId INT,
+    @PageId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[RolePagePermissions] WHERE [RoleId] = @RoleId AND [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role page permission not found.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[RolePagePermissions] WHERE [RoleId] = @RoleId AND [PageId] = @PageId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role page permission deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRolePagePermissions_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRolePagePermissions_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastRoleId INT = NULL,
+    @LastPageId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [RoleId],
+            [PageId],
+            [PermissionMask]
+        FROM [dbo].[RolePagePermissions]
+        WHERE (
+            (@LastRoleId IS NULL AND @LastPageId IS NULL)
+            OR [RoleId] < @LastRoleId
+            OR ([RoleId] = @LastRoleId AND [PageId] < @LastPageId)
+        )
+        ORDER BY [RoleId] DESC, [PageId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role page permissions retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRolePagePermissions_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRolePagePermissions_GetById]
+    @RoleId INT,
+    @PageId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[RolePagePermissions] WHERE [RoleId] = @RoleId AND [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role page permission not found.';
+            RETURN;
+        END
+
+        SELECT [RoleId], [PageId], [PermissionMask]
+        FROM [dbo].[RolePagePermissions]
+        WHERE [RoleId] = @RoleId AND [PageId] = @PageId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role page permission retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRolePagePermissions_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRolePagePermissions_Update]
+    @RoleId INT,
+    @PageId INT,
+    @PermissionMask INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[RolePagePermissions] WHERE [RoleId] = @RoleId AND [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role page permission not found.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[RolePagePermissions]
+        SET [PermissionMask] = @PermissionMask
+        WHERE [RoleId] = @RoleId AND [PageId] = @PageId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role page permission updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRoles_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRoles_Create]
+    @RoleName NVARCHAR(50),
+    @IsActive BIT = 1,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleName] = @RoleName)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A role with this name already exists.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Roles] ([RoleName], [IsActive], [CreatedAt])
+        VALUES (@RoleName, @IsActive, SYSDATETIME());
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRoles_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRoles_Delete]
+    @RoleId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleId] = @RoleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role not found.';
+            RETURN;
+        END
+
+        -- INSTEAD OF DELETE trigger performs soft delete (IsActive = 0)
+        DELETE FROM [dbo].[Roles] WHERE [RoleId] = @RoleId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role deactivated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRoles_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRoles_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastRoleId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [RoleId],
+            [RoleName],
+            [IsActive],
+            [CreatedAt]
+        FROM [dbo].[Roles]
+        WHERE (@LastRoleId IS NULL OR [RoleId] < @LastRoleId)
+        ORDER BY [RoleId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Roles retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRoles_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRoles_GetById]
+    @RoleId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleId] = @RoleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role not found.';
+            RETURN;
+        END
+
+        SELECT [RoleId], [RoleName], [IsActive], [CreatedAt]
+        FROM [dbo].[Roles]
+        WHERE [RoleId] = @RoleId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspRoles_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspRoles_Update]
+    @RoleId INT,
+    @RoleName NVARCHAR(50),
+    @IsActive BIT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleId] = @RoleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleName] = @RoleName AND [RoleId] <> @RoleId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another role with this name already exists.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Roles]
+        SET [RoleName] = @RoleName,
+            [IsActive] = @IsActive
+        WHERE [RoleId] = @RoleId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Role updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSaleItems_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSaleItems_Create]
+    @SaleId INT,
+    @ProductId INT,
+    @Quantity DECIMAL(18, 3),
+    @UnitPrice DECIMAL(18, 2),
+    @DiscountAmount DECIMAL(18, 2) = 0,
+    @LineTotal DECIMAL(18, 2),
+    @CostPriceAtSale DECIMAL(18, 2) = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Sales] WHERE [SaleId] = @SaleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product not found.';
+            RETURN;
+        END
+
+        -- Check if sufficient stock is available
+        DECLARE @AvailableStock DECIMAL(18, 3);
+        SELECT @AvailableStock = [QuantityOnHand] FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId;
+
+        IF @AvailableStock IS NULL
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product stock record not found.';
+            RETURN;
+        END
+
+        IF @AvailableStock < @Quantity
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Insufficient stock. Available: ' + CAST(@AvailableStock AS NVARCHAR(50)) + ', Requested: ' + CAST(@Quantity AS NVARCHAR(50));
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[SaleItems] ([SaleId], [ProductId], [Quantity], [UnitPrice], [DiscountAmount], [LineTotal], [CostPriceAtSale])
+        VALUES (@SaleId, @ProductId, @Quantity, @UnitPrice, @DiscountAmount, @LineTotal, @CostPriceAtSale);
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale item created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSaleItems_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSaleItems_Delete]
+    @SaleItemId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        DECLARE @SaleId INT;
+        
+        SELECT @SaleId = [SaleId] FROM [dbo].[SaleItems] WHERE [SaleItemId] = @SaleItemId;
+
+        IF @SaleId IS NULL
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale item not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[ReturnItems] WHERE [SaleItemId] = @SaleItemId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete sale item. It has associated return items.';
+            RETURN;
+        END
+
+        BEGIN TRANSACTION;
+
+        DELETE FROM [dbo].[SaleItems] WHERE [SaleItemId] = @SaleItemId;
+
+        -- Recalculate and update parent Sale totals
+        UPDATE [dbo].[Sales]
+        SET [SubTotal] = ISNULL((SELECT SUM([UnitPrice] * [Quantity]) FROM [dbo].[SaleItems] WHERE [SaleId] = @SaleId), 0),
+            [DiscountAmount] = ISNULL((SELECT SUM([DiscountAmount]) FROM [dbo].[SaleItems] WHERE [SaleId] = @SaleId), 0),
+            [NetTotal] = ISNULL((SELECT SUM([LineTotal]) FROM [dbo].[SaleItems] WHERE [SaleId] = @SaleId), 0)
+        WHERE [SaleId] = @SaleId;
+
+        COMMIT TRANSACTION;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale item deleted and sale totals recalculated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSaleItems_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSaleItems_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastSaleItemId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [SaleItemId],
+            [SaleId],
+            [ProductId],
+            [Quantity],
+            [UnitPrice],
+            [DiscountAmount],
+            [LineTotal],
+            [CostPriceAtSale]
+        FROM [dbo].[SaleItems]
+        WHERE (@LastSaleItemId IS NULL OR [SaleItemId] < @LastSaleItemId)
+        ORDER BY [SaleItemId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale items retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSaleItems_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSaleItems_GetById]
+    @SaleItemId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[SaleItems] WHERE [SaleItemId] = @SaleItemId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale item not found.';
+            RETURN;
+        END
+
+        SELECT [SaleItemId], [SaleId], [ProductId], [Quantity], [UnitPrice], [DiscountAmount], [LineTotal], [CostPriceAtSale]
+        FROM [dbo].[SaleItems]
+        WHERE [SaleItemId] = @SaleItemId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale item retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSaleItems_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSaleItems_Update]
+    @SaleItemId INT,
+    @ProductId INT,
+    @Quantity DECIMAL(18, 3),
+    @UnitPrice DECIMAL(18, 2),
+    @DiscountAmount DECIMAL(18, 2),
+    @LineTotal DECIMAL(18, 2),
+    @CostPriceAtSale DECIMAL(18, 2) = NULL,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        DECLARE @OldProductId INT;
+        DECLARE @OldQuantity DECIMAL(18, 3);
+
+        SELECT @OldProductId = [ProductId], @OldQuantity = [Quantity]
+        FROM [dbo].[SaleItems] 
+        WHERE [SaleItemId] = @SaleItemId;
+
+        IF @OldProductId IS NULL
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale item not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [ProductId] = @ProductId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Product not found.';
+            RETURN;
+        END
+
+        -- Check if sufficient stock is available for the net change
+        DECLARE @AvailableStock DECIMAL(18, 3);
+        DECLARE @NetQuantityNeeded DECIMAL(18, 3);
+
+        IF @ProductId = @OldProductId
+        BEGIN
+            -- Same product: only need additional stock if quantity increased
+            SET @NetQuantityNeeded = @Quantity - @OldQuantity;
+            SELECT @AvailableStock = [QuantityOnHand] FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId;
+            
+            IF @NetQuantityNeeded > 0 AND @AvailableStock < @NetQuantityNeeded
+            BEGIN
+                SET @StatusCode = -1;
+                SET @StatusMessage = N'Insufficient stock. Additional needed: ' + CAST(@NetQuantityNeeded AS NVARCHAR(50)) + ', Available: ' + CAST(@AvailableStock AS NVARCHAR(50));
+                RETURN;
+            END
+        END
+        ELSE
+        BEGIN
+            -- Different product: need full quantity from new product
+            SELECT @AvailableStock = [QuantityOnHand] FROM [dbo].[ProductStock] WHERE [ProductId] = @ProductId;
+            
+            IF @AvailableStock IS NULL
+            BEGIN
+                SET @StatusCode = -2;
+                SET @StatusMessage = N'Product stock record not found for new product.';
+                RETURN;
+            END
+
+            IF @AvailableStock < @Quantity
+            BEGIN
+                SET @StatusCode = -1;
+                SET @StatusMessage = N'Insufficient stock for new product. Available: ' + CAST(@AvailableStock AS NVARCHAR(50)) + ', Requested: ' + CAST(@Quantity AS NVARCHAR(50));
+                RETURN;
+            END
+        END
+
+        UPDATE [dbo].[SaleItems]
+        SET [ProductId] = @ProductId,
+            [Quantity] = @Quantity,
+            [UnitPrice] = @UnitPrice,
+            [DiscountAmount] = @DiscountAmount,
+            [LineTotal] = @LineTotal,
+            [CostPriceAtSale] = @CostPriceAtSale
+        WHERE [SaleItemId] = @SaleItemId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale item updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSales_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSales_Create]
+    @CustomerId INT = NULL,
+    @CashierId INT,
+    @PaymentMethod TINYINT = NULL,
+    @SubTotal DECIMAL(18, 2),
+    @DiscountAmount DECIMAL(18, 2) = 0,
+    @NetTotal DECIMAL(18, 2),
+    @PaidAmount DECIMAL(18, 2) = 0,
+    @ChangeAmount DECIMAL(18, 2) = 0,
+    @IsCredit BIT = 0,
+    @Notes NVARCHAR(250) = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @CustomerId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @CashierId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Cashier (User) not found.';
+            RETURN;
+        END
+
+        IF @PaymentMethod IS NOT NULL AND @PaymentMethod NOT IN (0, 1)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid payment method. Valid values: 0 (Cash), 1 (Card), NULL.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Sales] ([SaleDate], [CustomerId], [CashierId], [PaymentMethod], [SubTotal],
+                                   [DiscountAmount], [NetTotal], [PaidAmount], [ChangeAmount], [IsCredit], [Notes], [CreatedAt])
+        VALUES (SYSDATETIME(), @CustomerId, @CashierId, @PaymentMethod, @SubTotal,
+                @DiscountAmount, @NetTotal, @PaidAmount, @ChangeAmount, @IsCredit, @Notes, SYSDATETIME());
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSales_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSales_Delete]
+    @SaleId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Sales] WHERE [SaleId] = @SaleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[SaleItems] WHERE [SaleId] = @SaleId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete sale. It has associated sale items. Delete the items first.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Returns] WHERE [SaleId] = @SaleId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete sale. It has associated returns.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[Sales] WHERE [SaleId] = @SaleId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSales_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSales_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastSaleId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [SaleId],
+            [SaleDate],
+            [CustomerId],
+            [CashierId],
+            [PaymentMethod],
+            [SubTotal],
+            [DiscountAmount],
+            [NetTotal],
+            [PaidAmount],
+            [ChangeAmount],
+            [IsCredit],
+            [Notes],
+            [CreatedAt],
+            [UpdatedAt]
+        FROM [dbo].[Sales]
+        WHERE (@LastSaleId IS NULL OR [SaleId] < @LastSaleId)
+        ORDER BY [SaleId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sales retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSales_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSales_GetById]
+    @SaleId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Sales] WHERE [SaleId] = @SaleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale not found.';
+            RETURN;
+        END
+
+        SELECT [SaleId], [SaleDate], [CustomerId], [CashierId], [PaymentMethod], [SubTotal],
+               [DiscountAmount], [NetTotal], [PaidAmount], [ChangeAmount], [IsCredit], [Notes], [CreatedAt], [UpdatedAt]
+        FROM [dbo].[Sales]
+        WHERE [SaleId] = @SaleId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSales_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSales_Update]
+    @SaleId INT,
+    @CustomerId INT = NULL,
+    @PaymentMethod TINYINT = NULL,
+    @SubTotal DECIMAL(18, 2),
+    @DiscountAmount DECIMAL(18, 2),
+    @NetTotal DECIMAL(18, 2),
+    @PaidAmount DECIMAL(18, 2),
+    @ChangeAmount DECIMAL(18, 2),
+    @IsCredit BIT,
+    @Notes NVARCHAR(250) = NULL,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Sales] WHERE [SaleId] = @SaleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Sale not found.';
+            RETURN;
+        END
+
+        IF @CustomerId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[Customers] WHERE [CustomerId] = @CustomerId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Customer not found.';
+            RETURN;
+        END
+
+        IF @PaymentMethod IS NOT NULL AND @PaymentMethod NOT IN (0, 1)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Invalid payment method. Valid values: 0 (Cash), 1 (Card), NULL.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Sales]
+        SET [CustomerId] = @CustomerId,
+            [PaymentMethod] = @PaymentMethod,
+            [SubTotal] = @SubTotal,
+            [DiscountAmount] = @DiscountAmount,
+            [NetTotal] = @NetTotal,
+            [PaidAmount] = @PaidAmount,
+            [ChangeAmount] = @ChangeAmount,
+            [IsCredit] = @IsCredit,
+            [Notes] = @Notes
+        WHERE [SaleId] = @SaleId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Sale updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSystemPages_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSystemPages_Create]
+    @PageTitle NVARCHAR(100),
+    @ModuleName NVARCHAR(50) = NULL,
+    @Description NVARCHAR(250) = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF EXISTS (SELECT 1 FROM [dbo].[SystemPages] WHERE [PageTitle] = @PageTitle)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A page with this title already exists.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[SystemPages] ([PageTitle], [ModuleName], [Description])
+        VALUES (@PageTitle, @ModuleName, @Description);
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'System page created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSystemPages_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSystemPages_Delete]
+    @PageId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[SystemPages] WHERE [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'System page not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[RolePagePermissions] WHERE [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete page. It has associated role permissions.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[SystemPages] WHERE [PageId] = @PageId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'System page deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSystemPages_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSystemPages_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastPageId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [PageId],
+            [PageTitle],
+            [ModuleName],
+            [Description]
+        FROM [dbo].[SystemPages]
+        WHERE (@LastPageId IS NULL OR [PageId] < @LastPageId)
+        ORDER BY [PageId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'System pages retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSystemPages_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSystemPages_GetById]
+    @PageId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[SystemPages] WHERE [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'System page not found.';
+            RETURN;
+        END
+
+        SELECT [PageId], [PageTitle], [ModuleName], [Description]
+        FROM [dbo].[SystemPages]
+        WHERE [PageId] = @PageId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'System page retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSystemPages_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSystemPages_Update]
+    @PageId INT,
+    @PageTitle NVARCHAR(100),
+    @ModuleName NVARCHAR(50) = NULL,
+    @Description NVARCHAR(250) = NULL,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[SystemPages] WHERE [PageId] = @PageId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'System page not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[SystemPages] WHERE [PageTitle] = @PageTitle AND [PageId] <> @PageId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another page with this title already exists.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[SystemPages]
+        SET [PageTitle] = @PageTitle,
+            [ModuleName] = @ModuleName,
+            [Description] = @Description
+        WHERE [PageId] = @PageId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'System page updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSystemSettings_Get]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSystemSettings_Get]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[SystemSettings])
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'System settings not found. The settings row does not exist.';
+            RETURN;
+        END
+
+        SELECT [MaxCreditLimit], [MinimumPaymentPercent], [GraceDays], [FeesFrequencyDays],
+               [FeesPercent], [CapPercent], [AllowCreditSales], [UpdatedAt]
+        FROM [dbo].[SystemSettings];
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'System settings retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspSystemSettings_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspSystemSettings_Update]
+    @MaxCreditLimit DECIMAL(18, 2),
+    @MinimumPaymentPercent DECIMAL(5, 2),
+    @GraceDays INT,
+    @FeesFrequencyDays INT,
+    @FeesPercent DECIMAL(5, 2),
+    @CapPercent DECIMAL(5, 2),
+    @AllowCreditSales BIT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[SystemSettings])
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'System settings not found. Cannot update non-existent settings.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[SystemSettings]
+        SET [MaxCreditLimit] = @MaxCreditLimit,
+            [MinimumPaymentPercent] = @MinimumPaymentPercent,
+            [GraceDays] = @GraceDays,
+            [FeesFrequencyDays] = @FeesFrequencyDays,
+            [FeesPercent] = @FeesPercent,
+            [CapPercent] = @CapPercent,
+            [AllowCreditSales] = @AllowCreditSales;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'System settings updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUnits_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUnits_Create]
+    @UnitName NVARCHAR(20),
+    @Symbol NVARCHAR(10),
+    @IsDecimal BIT,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF EXISTS (SELECT 1 FROM [dbo].[Units] WHERE [UnitName] = @UnitName)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'A unit with this name already exists.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Units] ([UnitName], [Symbol], [IsDecimal])
+        VALUES (@UnitName, @Symbol, @IsDecimal);
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Unit created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUnits_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUnits_Delete]
+    @UnitId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Units] WHERE [UnitId] = @UnitId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Unit not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [UnitId] = @UnitId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Cannot delete unit. It is referenced by one or more products.';
+            RETURN;
+        END
+
+        DELETE FROM [dbo].[Units] WHERE [UnitId] = @UnitId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Unit deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUnits_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUnits_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastUnitId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [UnitId],
+            [UnitName],
+            [Symbol],
+            [IsDecimal]
+        FROM [dbo].[Units]
+        WHERE (@LastUnitId IS NULL OR [UnitId] < @LastUnitId)
+        ORDER BY [UnitId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Units retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUnits_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUnits_GetById]
+    @UnitId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Units] WHERE [UnitId] = @UnitId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Unit not found.';
+            RETURN;
+        END
+
+        SELECT [UnitId], [UnitName], [Symbol], [IsDecimal]
+        FROM [dbo].[Units]
+        WHERE [UnitId] = @UnitId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Unit retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUnits_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUnits_Update]
+    @UnitId INT,
+    @UnitName NVARCHAR(20),
+    @Symbol NVARCHAR(10),
+    @IsDecimal BIT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Units] WHERE [UnitId] = @UnitId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Unit not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Units] WHERE [UnitName] = @UnitName AND [UnitId] <> @UnitId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Another unit with this name already exists.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Units]
+        SET [UnitName] = @UnitName,
+            [Symbol] = @Symbol,
+            [IsDecimal] = @IsDecimal
+        WHERE [UnitId] = @UnitId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Unit updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUserActivityLogs_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUserActivityLogs_Create]
+    @UserId INT,
+    @ActionType NVARCHAR(50),
+    @EntityName NVARCHAR(50) = NULL,
+    @EntityId INT = NULL,
+    @Details NVARCHAR(400) = NULL,
+    @IpAddress NVARCHAR(45) = NULL,
+    @IsDeleted BIT = 0,
+    @DeletedAt DATETIME2 = NULL,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @UserId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'User not found.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[UserActivityLogs] ([UserId], [ActionType], [EntityName], [EntityId], [ActionDate], [Details], [IpAddress], [IsDeleted], [DeletedAt])
+        VALUES (@UserId, @ActionType, @EntityName, @EntityId, SYSDATETIME(), @Details, @IpAddress, @IsDeleted, @DeletedAt);
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Activity log created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUserActivityLogs_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUserActivityLogs_Delete]
+    @LogId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[UserActivityLogs] WHERE [LogId] = @LogId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Activity log not found.';
+            RETURN;
+        END
+
+        -- Soft delete (Set 'IsDeleted' = true)
+        UPDATE UserActivityLogs
+        SET [IsDeleted] = 1, [DeletedAt] = SYSDATETIME()
+        WHERE [LogId] = @LogId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Activity log deleted successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUserActivityLogs_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUserActivityLogs_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastLogId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [LogId],
+            [UserId],
+            [ActionType],
+            [ActionDate]
+        FROM [dbo].[UserActivityLogs]
+        WHERE [IsDeleted] = 0 AND (@LastLogId IS NULL OR [LogId] < @LastLogId)
+        ORDER BY [LogId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Activity logs retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUserActivityLogs_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUserActivityLogs_GetById]
+    @LogId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[UserActivityLogs] WHERE [LogId] = @LogId AND [IsDeleted] = 0)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Activity log not found.';
+            RETURN;
+        END
+
+        SELECT [LogId], [UserId], [ActionType], [ActionDate]
+        FROM [dbo].[UserActivityLogs]
+        WHERE [IsDeleted] = 0
+          AND [LogId] = @LogId
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Activity log retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUserActivityLogs_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUserActivityLogs_Update]
+    @LogId INT,
+    @UserId INT,
+    @ActionType NVARCHAR(50),
+    @EntityName NVARCHAR(50) = NULL,
+    @EntityId INT = NULL,
+    @ActionDate DATETIME2(7),
+    @Details NVARCHAR(400) = NULL,
+    @IpAddress NVARCHAR(45) = NULL,
+    @IsDeleted BIT,
+    @DeletedAt DATETIME2,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[UserActivityLogs] WHERE [LogId] = @LogId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Activity log not found.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @UserId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'User not found.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[UserActivityLogs]
+        SET [UserId] = @UserId,
+            [ActionType] = @ActionType,
+            [EntityName] = @EntityName,
+            [EntityId] = @EntityId,
+            [ActionDate] = @ActionDate,
+            [Details] = @Details,
+            [IpAddress] = @IpAddress,
+            [IsDeleted] = @IsDeleted,
+            [DeletedAt] = @DeletedAt
+        WHERE [LogId] = @LogId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Activity log updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUsers_Create]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUsers_Create]
+    @PersonId INT,
+    @Username NVARCHAR(50),
+    @PasswordHash NVARCHAR(255),
+    @RoleId INT,
+    @IsActive BIT = 1,
+    @NewId INT OUTPUT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @NewId = 0;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[People] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Person not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [PersonId] = @PersonId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This person already has a user account.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [Username] = @Username)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This username is already taken.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleId] = @RoleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role not found.';
+            RETURN;
+        END
+
+        INSERT INTO [dbo].[Users] ([PersonId], [Username], [PasswordHash], [RoleId], [IsActive], [CreatedAt])
+        VALUES (@PersonId, @Username, @PasswordHash, @RoleId, @IsActive, SYSDATETIME());
+
+        SET @NewId = SCOPE_IDENTITY();
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'User created successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUsers_Delete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUsers_Delete]
+    @UserId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @UserId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'User not found.';
+            RETURN;
+        END
+
+        -- INSTEAD OF DELETE trigger performs soft delete (IsActive = 0)
+        DELETE FROM [dbo].[Users] WHERE [UserId] = @UserId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'User deactivated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUsers_GetAll]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUsers_GetAll]
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT,
+    @PageSize INT = 100,
+    @LastUserId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF @PageSize IS NULL OR @PageSize <= 0
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'Page size must be greater than zero.';
+            RETURN;
+        END
+
+        SELECT TOP (@PageSize)
+            [UserId],
+            [PersonId],
+            [Username],
+            [PasswordHash],
+            [TokenHash],
+            [RoleId],
+            [IsActive],
+            [LastLoginAt],
+            [CreatedAt],
+            [UpdatedAt]
+        FROM [dbo].[Users]
+        WHERE (@LastUserId IS NULL OR [UserId] < @LastUserId)
+        ORDER BY [UserId] DESC;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'Users retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUsers_GetById]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUsers_GetById]
+    @UserId INT,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @UserId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'User not found.';
+            RETURN;
+        END
+
+        SELECT [UserId], [PersonId], [Username], [PasswordHash], [TokenHash], [RoleId],
+               [IsActive], [LastLoginAt], [CreatedAt], [UpdatedAt]
+        FROM [dbo].[Users]
+        WHERE [UserId] = @UserId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'User retrieved successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  StoredProcedure [dbo].[uspUsers_Update]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[uspUsers_Update]
+    @UserId INT,
+    @Username NVARCHAR(50),
+    @PasswordHash NVARCHAR(255),
+    @TokenHash NVARCHAR(255) = NULL,
+    @RoleId INT,
+    @IsActive BIT,
+    @LastLoginAt DATETIME2(7) = NULL,
+    @StatusCode INT OUTPUT,
+    @StatusMessage NVARCHAR(4000) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @StatusCode = 0;
+    SET @StatusMessage = N'';
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [UserId] = @UserId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'User not found.';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [Username] = @Username AND [UserId] <> @UserId)
+        BEGIN
+            SET @StatusCode = -1;
+            SET @StatusMessage = N'This username is already taken by another user.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[Roles] WHERE [RoleId] = @RoleId)
+        BEGIN
+            SET @StatusCode = -2;
+            SET @StatusMessage = N'Role not found.';
+            RETURN;
+        END
+
+        UPDATE [dbo].[Users]
+        SET [Username] = @Username,
+            [PasswordHash] = @PasswordHash,
+            [TokenHash] = @TokenHash,
+            [RoleId] = @RoleId,
+            [IsActive] = @IsActive,
+            [LastLoginAt] = @LastLoginAt
+        WHERE [UserId] = @UserId;
+
+        SET @StatusCode = 1;
+        SET @StatusMessage = N'User updated successfully.';
+    END TRY
+    BEGIN CATCH
+        SET @StatusCode = -99;
+        SET @StatusMessage = ERROR_MESSAGE();
+    END CATCH
+END
+GO
+/****** Object:  Trigger [dbo].[trg_Categories_InsteadOfDelete]    Script Date: 19/4/2026 8:26:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Categories_InsteadOfDelete]
+ON [dbo].[Categories]
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.IsActive = 0
+    FROM Categories c
+    INNER JOIN deleted d
+        ON c.CategoryId = d.CategoryId;
+END;
+GO
+ALTER TABLE [dbo].[Categories] ENABLE TRIGGER [trg_Categories_InsteadOfDelete]
+GO
+/****** Object:  Trigger [dbo].[trg_CustomerLedger_Delete_UpdateBalance]    Script Date: 19/4/2026 8:26:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_CustomerLedger_Delete_UpdateBalance]
+ON [dbo].[CustomerLedger]
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.CurrentBalance = c.CurrentBalance - agg.NetChange
+    FROM Customers c
+    INNER JOIN (
+        SELECT CustomerId, SUM(DebitAmount - CreditAmount) AS NetChange
+        FROM deleted
+        GROUP BY CustomerId
+    ) agg ON c.CustomerId = agg.CustomerId;
+END;
+GO
+ALTER TABLE [dbo].[CustomerLedger] ENABLE TRIGGER [trg_CustomerLedger_Delete_UpdateBalance]
+GO
+/****** Object:  Trigger [dbo].[trg_CustomerLedger_Delete_UpdateLastPayment]    Script Date: 19/4/2026 8:26:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_CustomerLedger_Delete_UpdateLastPayment]
+ON [dbo].[CustomerLedger]
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- نحدد العملاء المتأثرين بالحذف
+    DECLARE @AffectedCustomers TABLE(CustomerId INT);
+
+    INSERT INTO @AffectedCustomers(CustomerId)
+    SELECT DISTINCT CustomerId FROM deleted WHERE EntryType = 'Payment';
+
+    -- نعيد تحديث LastPaymentDate لكل عميل
+    UPDATE c
+    SET c.LastPaymentDate = sub.MaxEntryDate
+    FROM Customers c
+    INNER JOIN @AffectedCustomers ac ON c.CustomerId = ac.CustomerId
+    LEFT JOIN (
+        SELECT CustomerId, MAX(EntryDate) AS MaxEntryDate
+        FROM CustomerLedger
+        WHERE EntryType = 'Payment' AND CreditAmount > 0
+        GROUP BY CustomerId
+    ) sub ON c.CustomerId = sub.CustomerId;
+END;
+GO
+ALTER TABLE [dbo].[CustomerLedger] ENABLE TRIGGER [trg_CustomerLedger_Delete_UpdateLastPayment]
+GO
+/****** Object:  Trigger [dbo].[trg_CustomerLedger_Insert_UpdateBalance]    Script Date: 19/4/2026 8:26:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_CustomerLedger_Insert_UpdateBalance]
+ON [dbo].[CustomerLedger]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.CurrentBalance = c.CurrentBalance + agg.NetChange
+    FROM Customers c
+    INNER JOIN (
+        SELECT CustomerId, SUM(DebitAmount - CreditAmount) AS NetChange
+        FROM inserted
+        GROUP BY CustomerId
+    ) agg ON c.CustomerId = agg.CustomerId;
+END;
+GO
+ALTER TABLE [dbo].[CustomerLedger] ENABLE TRIGGER [trg_CustomerLedger_Insert_UpdateBalance]
+GO
+/****** Object:  Trigger [dbo].[trg_CustomerLedger_Insert_UpdateLastPayment]    Script Date: 19/4/2026 8:26:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_CustomerLedger_Insert_UpdateLastPayment]
+ON [dbo].[CustomerLedger]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.LastPaymentDate = pay.MaxEntryDate
+    FROM Customers c
+    INNER JOIN (
+        SELECT CustomerId, MAX(EntryDate) AS MaxEntryDate
+        FROM inserted
+        WHERE EntryType = 'Payment' AND CreditAmount > 0
+        GROUP BY CustomerId
+    ) pay ON c.CustomerId = pay.CustomerId
+    WHERE c.LastPaymentDate IS NULL OR c.LastPaymentDate < pay.MaxEntryDate;
+END;
+GO
+ALTER TABLE [dbo].[CustomerLedger] ENABLE TRIGGER [trg_CustomerLedger_Insert_UpdateLastPayment]
+GO
+/****** Object:  Trigger [dbo].[trg_CustomerLedger_Update_UpdateLastPayment]    Script Date: 19/4/2026 8:26:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_CustomerLedger_Update_UpdateLastPayment]
+ON [dbo].[CustomerLedger]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- نحدد العملاء المتأثرين بأي تعديل على دفعة
+    DECLARE @AffectedCustomers TABLE(CustomerId INT);
+
+    INSERT INTO @AffectedCustomers(CustomerId)
+    SELECT DISTINCT i.CustomerId 
+    FROM inserted i
+    INNER JOIN deleted d ON i.LedgerId = d.LedgerId
+    WHERE i.EntryType = 'Payment' OR d.EntryType = 'Payment';
+
+    -- نعيد تحديث LastPaymentDate لكل عميل متأثر
+    UPDATE c
+    SET c.LastPaymentDate = sub.MaxEntryDate
+    FROM Customers c
+    INNER JOIN @AffectedCustomers ac ON c.CustomerId = ac.CustomerId
+    LEFT JOIN (
+        SELECT CustomerId, MAX(EntryDate) AS MaxEntryDate
+        FROM CustomerLedger
+        WHERE EntryType = 'Payment' AND CreditAmount > 0
+        GROUP BY CustomerId
+    ) sub ON c.CustomerId = sub.CustomerId;
+END;
+GO
+ALTER TABLE [dbo].[CustomerLedger] ENABLE TRIGGER [trg_CustomerLedger_Update_UpdateLastPayment]
+GO
+/****** Object:  Trigger [dbo].[trg_Customers_InsteadOfDelete]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Customers_InsteadOfDelete]
+ON [dbo].[Customers]
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.IsActive = 0
+    FROM Customers c
+    INNER JOIN deleted d
+        ON c.CustomerId = d.CustomerId;
+END;
+GO
+ALTER TABLE [dbo].[Customers] ENABLE TRIGGER [trg_Customers_InsteadOfDelete]
+GO
+/****** Object:  Trigger [dbo].[trg_Products_Insert_CreateStock]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Products_Insert_CreateStock]
+ON [dbo].[Products]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO ProductStock (ProductId, QuantityOnHand, ReorderLevel, LastUpdated)
+    SELECT i.ProductId, 0, 0, SYSDATETIME()
+    FROM inserted i
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ProductStock ps WHERE ps.ProductId = i.ProductId
+    );
+END;
+GO
+ALTER TABLE [dbo].[Products] ENABLE TRIGGER [trg_Products_Insert_CreateStock]
+GO
+/****** Object:  Trigger [dbo].[trg_Products_InsteadOfDelete]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Products_InsteadOfDelete]
+ON [dbo].[Products]
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE p
+    SET p.IsActive = 0
+    FROM Products p
+    INNER JOIN deleted d
+        ON p.ProductId = d.ProductId;
+END;
+GO
+ALTER TABLE [dbo].[Products] ENABLE TRIGGER [trg_Products_InsteadOfDelete]
+GO
+/****** Object:  Trigger [dbo].[trg_Products_Update_SetUpdatedAt]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Products_Update_SetUpdatedAt]
+ON [dbo].[Products]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT UPDATE(UpdatedAt)
+    BEGIN
+        UPDATE p
+        SET p.UpdatedAt = SYSDATETIME()
+        FROM Products p
+        INNER JOIN inserted i ON p.ProductId = i.ProductId;
+    END;
+END;
+GO
+ALTER TABLE [dbo].[Products] ENABLE TRIGGER [trg_Products_Update_SetUpdatedAt]
+GO
+/****** Object:  Trigger [dbo].[trg_ReturnItems_Delete_DecreaseStock]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_ReturnItems_Delete_DecreaseStock]
+ON [dbo].[ReturnItems]
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE ps
+    SET ps.QuantityOnHand = ps.QuantityOnHand - agg.TotalQty,
+        ps.LastUpdated = SYSDATETIME()
+    FROM ProductStock ps
+    INNER JOIN (
+        SELECT ProductId, SUM(Quantity) AS TotalQty
+        FROM deleted
+        GROUP BY ProductId
+    ) agg ON ps.ProductId = agg.ProductId;
+END;
+GO
+ALTER TABLE [dbo].[ReturnItems] ENABLE TRIGGER [trg_ReturnItems_Delete_DecreaseStock]
+GO
+/****** Object:  Trigger [dbo].[trg_ReturnItems_Insert_IncreaseStock]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_ReturnItems_Insert_IncreaseStock]
+ON [dbo].[ReturnItems]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE ps
+    SET ps.QuantityOnHand = ps.QuantityOnHand + agg.TotalQty,
+        ps.LastUpdated = SYSDATETIME()
+    FROM ProductStock ps
+    INNER JOIN (
+        SELECT ProductId, SUM(Quantity) AS TotalQty
+        FROM inserted
+        GROUP BY ProductId
+    ) agg ON ps.ProductId = agg.ProductId;
+END;
+GO
+ALTER TABLE [dbo].[ReturnItems] ENABLE TRIGGER [trg_ReturnItems_Insert_IncreaseStock]
+GO
+/****** Object:  Trigger [dbo].[trg_ReturnItems_Update_AdjustStock]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_ReturnItems_Update_AdjustStock]
+ON [dbo].[ReturnItems]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF UPDATE(Quantity) OR UPDATE(ProductId)
+    BEGIN
+        -- Reverse old quantities
+        UPDATE ps
+        SET ps.QuantityOnHand = ps.QuantityOnHand - agg.TotalQty,
+            ps.LastUpdated = SYSDATETIME()
+        FROM ProductStock ps
+        INNER JOIN (
+            SELECT ProductId, SUM(Quantity) AS TotalQty
+            FROM deleted
+            GROUP BY ProductId
+        ) agg ON ps.ProductId = agg.ProductId;
+
+        -- Apply new quantities
+        UPDATE ps
+        SET ps.QuantityOnHand = ps.QuantityOnHand + agg.TotalQty,
+            ps.LastUpdated = SYSDATETIME()
+        FROM ProductStock ps
+        INNER JOIN (
+            SELECT ProductId, SUM(Quantity) AS TotalQty
+            FROM inserted
+            GROUP BY ProductId
+        ) agg ON ps.ProductId = agg.ProductId;
+    END;
+END;
+GO
+ALTER TABLE [dbo].[ReturnItems] ENABLE TRIGGER [trg_ReturnItems_Update_AdjustStock]
+GO
+/****** Object:  Trigger [dbo].[trg_Roles_InsteadOfDelete]    Script Date: 19/4/2026 8:26:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+--------------------------------------------------------------------------------
+-- INSTEAD OF DELETE
+--------------------------------------------------------------------------------
+-- Set 'IsActive' = 0 instead of delete Role
+CREATE TRIGGER [dbo].[trg_Roles_InsteadOfDelete]
+ON [dbo].[Roles]
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE r
+    SET r.IsActive = 0
+    FROM Roles r
+    INNER JOIN deleted d
+        ON r.RoleId = d.RoleId;
+END;
+GO
+ALTER TABLE [dbo].[Roles] ENABLE TRIGGER [trg_Roles_InsteadOfDelete]
+GO
+/****** Object:  Trigger [dbo].[trg_SaleItems_Delete_RestoreStock]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_SaleItems_Delete_RestoreStock]
+ON [dbo].[SaleItems]
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE ps
+    SET ps.QuantityOnHand = ps.QuantityOnHand + agg.TotalQty,
+        ps.LastUpdated = SYSDATETIME()
+    FROM ProductStock ps
+    INNER JOIN (
+        SELECT ProductId, SUM(Quantity) AS TotalQty
+        FROM deleted
+        GROUP BY ProductId
+    ) agg ON ps.ProductId = agg.ProductId;
+END;
+GO
+ALTER TABLE [dbo].[SaleItems] ENABLE TRIGGER [trg_SaleItems_Delete_RestoreStock]
+GO
+/****** Object:  Trigger [dbo].[trg_SaleItems_Insert_DecreaseStock]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_SaleItems_Insert_DecreaseStock]
+ON [dbo].[SaleItems]
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE ps
+    SET ps.QuantityOnHand = ps.QuantityOnHand - agg.TotalQty,
+        ps.LastUpdated = SYSDATETIME()
+    FROM ProductStock ps
+    INNER JOIN (
+        SELECT ProductId, SUM(Quantity) AS TotalQty
+        FROM inserted
+        GROUP BY ProductId
+    ) agg ON ps.ProductId = agg.ProductId;
+END;
+GO
+ALTER TABLE [dbo].[SaleItems] ENABLE TRIGGER [trg_SaleItems_Insert_DecreaseStock]
+GO
+/****** Object:  Trigger [dbo].[trg_SaleItems_Update_AdjustStock]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_SaleItems_Update_AdjustStock]
+ON [dbo].[SaleItems]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF UPDATE(Quantity) OR UPDATE(ProductId)
+    BEGIN
+        -- Restore old quantities
+        UPDATE ps
+        SET ps.QuantityOnHand = ps.QuantityOnHand + agg.TotalQty,
+            ps.LastUpdated = SYSDATETIME()
+        FROM ProductStock ps
+        INNER JOIN (
+            SELECT ProductId, SUM(Quantity) AS TotalQty
+            FROM deleted
+            GROUP BY ProductId
+        ) agg ON ps.ProductId = agg.ProductId;
+
+        -- Deduct new quantities
+        UPDATE ps
+        SET ps.QuantityOnHand = ps.QuantityOnHand - agg.TotalQty,
+            ps.LastUpdated = SYSDATETIME()
+        FROM ProductStock ps
+        INNER JOIN (
+            SELECT ProductId, SUM(Quantity) AS TotalQty
+            FROM inserted
+            GROUP BY ProductId
+        ) agg ON ps.ProductId = agg.ProductId;
+    END;
+END;
+GO
+ALTER TABLE [dbo].[SaleItems] ENABLE TRIGGER [trg_SaleItems_Update_AdjustStock]
+GO
+/****** Object:  Trigger [dbo].[trg_Sales_Update_SetUpdatedAt]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Sales_Update_SetUpdatedAt]
+ON [dbo].[Sales]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT UPDATE(UpdatedAt)
+    BEGIN
+        UPDATE s
+        SET s.UpdatedAt = SYSDATETIME()
+        FROM Sales s
+        INNER JOIN inserted i ON s.SaleId = i.SaleId;
+    END;
+END;
+GO
+ALTER TABLE [dbo].[Sales] ENABLE TRIGGER [trg_Sales_Update_SetUpdatedAt]
+GO
+/****** Object:  Trigger [dbo].[TR_Prevent_Multiple_SystemSettings]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Prevent_Multiple_SystemSettings]
+ON [dbo].[SystemSettings]
+AFTER INSERT
+AS
+BEGIN
+    IF (SELECT COUNT(*) FROM SystemSettings) > 1
+    BEGIN
+        THROW 50001,'Only one row is allowed in SystemSettings table.', 1;
+        ROLLBACK TRANSACTION;
+    END
+END;
+GO
+ALTER TABLE [dbo].[SystemSettings] ENABLE TRIGGER [TR_Prevent_Multiple_SystemSettings]
+GO
+/****** Object:  Trigger [dbo].[trg_SystemSettings_Update_SetUpdatedAt]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_SystemSettings_Update_SetUpdatedAt]
+ON [dbo].[SystemSettings]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT UPDATE(UpdatedAt)
+    BEGIN
+        UPDATE SystemSettings
+        SET UpdatedAt = SYSDATETIME();
+    END;
+END;
+GO
+ALTER TABLE [dbo].[SystemSettings] ENABLE TRIGGER [trg_SystemSettings_Update_SetUpdatedAt]
+GO
+/****** Object:  Trigger [dbo].[trg_UserActivityLogs_InsteadOfDelete]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_UserActivityLogs_InsteadOfDelete]
+ON [dbo].[UserActivityLogs]
+INSTEAD OF DELETE
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE ual
+	SET ual.IsDeleted = 1, 
+	ual.DeletedAt = SYSDATETIME()
+	FROM UserActivityLogs ual
+	INNER JOIN deleted d
+		ON d.LogId = ual.LogId
+END;
+GO
+ALTER TABLE [dbo].[UserActivityLogs] ENABLE TRIGGER [trg_UserActivityLogs_InsteadOfDelete]
+GO
+/****** Object:  Trigger [dbo].[trg_Users_InsteadOfDelete]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Users_InsteadOfDelete]
+ON [dbo].[Users]
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE u
+    SET u.IsActive = 0
+    FROM Users u
+    INNER JOIN deleted d
+        ON u.UserId = d.UserId;
+END;
+GO
+ALTER TABLE [dbo].[Users] ENABLE TRIGGER [trg_Users_InsteadOfDelete]
+GO
+/****** Object:  Trigger [dbo].[trg_Users_Update_SetUpdatedAt]    Script Date: 19/4/2026 8:26:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_Users_Update_SetUpdatedAt]
+ON [dbo].[Users]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT UPDATE(UpdatedAt)
+    BEGIN
+        UPDATE u
+        SET u.UpdatedAt = SYSDATETIME()
+        FROM Users u
+        INNER JOIN inserted i ON u.UserId = i.UserId;
+    END;
+END;
+GO
+ALTER TABLE [dbo].[Users] ENABLE TRIGGER [trg_Users_Update_SetUpdatedAt]
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Adjustment=1 (Manual Edit), Fee=2, Return=3, Payment=4, Sale=5' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomerLedger', @level2type=N'COLUMN',@level2name=N'EntryType'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Invoice=1, Receipt=2, Order=3' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomerLedger', @level2type=N'COLUMN',@level2name=N'ReferenceType'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The identifier of the related transaction in the source table, based on ReferenceType (e.g., InvoiceId, ReceiptId, or OrderId).' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'CustomerLedger', @level2type=N'COLUMN',@level2name=N'ReferenceId'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Info=1, Warning=2, Error=3 ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Logs', @level2type=N'COLUMN',@level2name=N'LogLevel'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Male=1, Female=2' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'People', @level2type=N'COLUMN',@level2name=N'Gender'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Kg, L, Pcs, ...etc' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Units', @level2type=N'COLUMN',@level2name=N'Symbol'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'If the system admin wants to delete a User activity, will not be actually deleted from the databasee.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'UserActivityLogs', @level2type=N'COLUMN',@level2name=N'IsDeleted'
+GO
+USE [master]
+GO
+ALTER DATABASE [SMS] SET  READ_WRITE 
 GO

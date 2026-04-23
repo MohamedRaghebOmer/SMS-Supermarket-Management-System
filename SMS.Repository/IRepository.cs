@@ -38,17 +38,6 @@ namespace SMS.Repository
         Task<DBResponse<DataTable>> GetAllAsync();
 
         /// <summary>
-        /// Asynchronously retrieves a page of records as a DataTable, using keyset pagination.
-        /// </summary>
-        /// <remarks>Keyset pagination is used to efficiently retrieve subsequent pages. Use the
-        /// identifier of the last record from the previous result as lastId to fetch the next page.</remarks>
-        /// <param name="pageSize">The maximum number of records to include in the returned page. Must be greater than zero.</param>
-        /// <param name="lastId">The identifier of the last record from the previous page, or null to retrieve the first page.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains a DBResponse with a DataTable
-        /// holding up to pageSize records. If no records are found, the DataTable will be empty.</returns>
-        Task<DBResponse<DataTable>> GetPagedAsync(int pageSize, int? lastId);
-
-        /// <summary>
         /// Asynchronously updates the specified entity in the data store.
         /// </summary>
         /// <param name="entity">The entity to update. Cannot be null. The entity must have a valid identifier corresponding to an existing

@@ -1,7 +1,6 @@
 ﻿using SMS.Core;
 using SMS.Core.DTOs;
 using SMS.Core.Enums;
-using SMS.Core.Helpers;
 using SMS.Repository;
 using System;
 using System.Data;
@@ -12,24 +11,26 @@ namespace SMS.Service
     public class CountryService : IService<Country>
     {
         private readonly CountryRepository _countryRepository;
-        private readonly Helper _helper;
-
-        private void ValidateCountry(Country country)
-        {
-            ValidationHelper.ValidateNotNull(country, "Country cannot be null.");
-            ValidationHelper.ValidateRequiredString(country.CountryName, "Country name cannot be empty.");
-            country.CountryName = country.CountryName.Trim();
-        }
-
+        private readonly SMS.Service.Helper _helper;
 
         public async Task<DBResponse<int>> AddAsync(Country country)
         {
-            ValidateCountry(country);
+            if (country == null)
+            {
+                throw new ArgumentNullException("Country cannot be null.", nameof(country));
+            }
 
             if (country.Mode != EntityMode.AddNew)
             {
-                throw new ArgumentException(nameof(country), "Country already exists.");
+                throw new ArgumentException("Country already exists.", nameof(country));
             }
+
+            if (string.IsNullOrWhiteSpace(country.CountryName))
+            {
+                throw new ArgumentException("Country name cannot be empty.", nameof(country.CountryName));
+            }
+
+            country.CountryName = country.CountryName.Trim();
 
             DBResponse<int> result = new DBResponse<int>();
 
@@ -48,7 +49,10 @@ namespace SMS.Service
 
         public async Task<DBResponse<Country>> FindAsync(int countryId)
         {
-            ValidationHelper.ValidateIntGreaterThanZero(countryId, "Invalid country id.");
+            if (countryId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Invalid country id.", nameof(countryId));
+            }
 
             var result = new DBResponse<Country>();
 
@@ -67,7 +71,10 @@ namespace SMS.Service
 
         public async Task<DBResponse<Country>> FindAsync(string countryName)
         {
-            ValidationHelper.ValidateRequiredString(countryName, "Country name cannot be empty.");
+            if (string.IsNullOrWhiteSpace(countryName))
+            {
+                throw new ArgumentException("Country name cannot be empty.", nameof(countryName));
+            }
 
             var result = new DBResponse<Country>();
 
@@ -103,7 +110,10 @@ namespace SMS.Service
 
         public async Task<DBResponse<DataTable>> GetPagedAsync(int pageSize, int? lastCountryId)
         {
-            ValidationHelper.ValidateIntGreaterThanZero(pageSize, "Page size must be greater than 0.");
+            if (pageSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Page size must be greater than zero.", nameof(pageSize));
+            }
 
             if (lastCountryId != null && lastCountryId <= 0)
             {
@@ -127,7 +137,10 @@ namespace SMS.Service
 
         public async Task<DBResponse<bool>> ExistsAsync(int id)
         {
-            ValidationHelper.ValidateIntGreaterThanZero(id, "Invalid country id");
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Invalid country id", nameof(id));
+            }
 
             var result = new DBResponse<bool>();
 
@@ -136,7 +149,7 @@ namespace SMS.Service
                 result = await _countryRepository.ExistsAsync(id);
                 await _helper.HandelError(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _helper.HandelError(ex, result, "Error check country exists");
             }
@@ -146,12 +159,22 @@ namespace SMS.Service
 
         public async Task<DBResponse<bool>> UpdateAsync(Country country)
         {
-            ValidateCountry(country);
+            if (country == null)
+            {
+                throw new ArgumentNullException("Country cannot be null.", nameof(country));
+            }
 
             if (country.Mode != EntityMode.Update)
             {
-                throw new ArgumentException(nameof(country), "Country does not exist.");
+                throw new ArgumentException("Country does not exist.", nameof(country));
             }
+
+            if (string.IsNullOrWhiteSpace(country.CountryName))
+            {
+                throw new ArgumentException("Country name cannot be empty.", nameof(country.CountryName));
+            }
+
+            country.CountryName = country.CountryName.Trim();
 
             var result = new DBResponse<bool>();
 
@@ -170,7 +193,10 @@ namespace SMS.Service
 
         public async Task<DBResponse<bool>> DeleteAsync(int countryId)
         {
-            ValidationHelper.ValidateIntGreaterThanZero(countryId, "Invalid Country Id.");
+            if (countryId <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Invalid Country Id.", nameof(countryId));
+            }
 
             var result = new DBResponse<bool>();
 

@@ -15,11 +15,11 @@ namespace SMS.Core.DTOs
         public Gender Gender { get; set; } = Gender.Male;
         public string Address { get; set; }
         public string Phone { get; set; }
+        public string Email { get; set; }
         public int CountryId { get; set; }
         public Country Country { get; internal set; }
         public Guid ImageGuid { get; set; }
         public DateTime CreatedAt { get; internal set; }
-        public string Email { get; set; }
         public EntityMode Mode { get; internal set; } = EntityMode.AddNew;
 
 

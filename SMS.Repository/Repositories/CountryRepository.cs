@@ -28,9 +28,6 @@ namespace SMS.Repository
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
 
-                // If the operation was successful, assign the new ID back to the country object
-                country.CountryId = (int)newIdOutParam.Value;
-
                 return Helper.CreateDBResponse<int>(newIdOutParam, code, message);
             }
         }

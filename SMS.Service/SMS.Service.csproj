@@ -41,11 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CountryService.cs" />
+    <Compile Include="Services\CountryService.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IService.cs" />
-    <Compile Include="PersonService.cs" />
+    <Compile Include="Services\PersonService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\RoleService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SMS.Core\SMS.Core.csproj">
