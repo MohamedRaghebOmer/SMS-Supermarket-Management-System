@@ -46,6 +46,7 @@
     <Compile Include="DTOs\Enums\Enums.cs" />
     <Compile Include="DTOs\Global.cs" />
     <Compile Include="DTOs\Person.cs" />
+    <Compile Include="DTOs\Role.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Loggging\Logger.cs" />
     <Compile Include="Loggging\LogToWinEvents.cs" />

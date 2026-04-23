@@ -44,16 +44,6 @@ namespace SMS.Service
         Task<DBResponse<DataTable>> GetAllAsync();
 
         /// <summary>
-        /// Asynchronously retrieves a paginated list of entities from the data store. This method is useful for scenarios where
-        /// the data set is large and needs to be fetched in smaller chunks to improve performance and reduce memory usage.
-        /// </summary>
-        /// <param name="pageSize">The number of entities to retrieve per page. Must be a positive integer.</param>
-        /// <param name="lastId">The unique identifier of the last entity retrieved in the previous page. Used to fetch the next page of entities.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="DBResponse{DataTable}"/>
-        /// with the paginated list of entities.</returns>
-        Task<DBResponse<DataTable>> GetPagedAsync(int pageSize, int? lastId);
-
-        /// <summary>
         /// Asynchronously updates the specified entity in the data store.
         /// </summary>
         /// <param name="entity">The entity to update. Cannot be null.</param>
