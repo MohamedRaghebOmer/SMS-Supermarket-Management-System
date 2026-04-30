@@ -44,12 +44,18 @@
     <Compile Include="DTOs\DBResponse.cs" />
     <Compile Include="DTOs\Country.cs" />
     <Compile Include="DTOs\Enums\Enums.cs" />
-    <Compile Include="DTOs\Global.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="DTOs\Person.cs" />
     <Compile Include="DTOs\Role.cs" />
+    <Compile Include="DTOs\User.cs" />
+    <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
-    <Compile Include="Loggging\Logger.cs" />
-    <Compile Include="Loggging\LogToWinEvents.cs" />
+    <Compile Include="Interfaces\IDatabaseLogger.cs" />
+    <Compile Include="Interfaces\ILogger.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="Interfaces\IService.cs" />
+    <Compile Include="Loggging\EventViewerLogger.cs" />
+    <Compile Include="Loggging\FileLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

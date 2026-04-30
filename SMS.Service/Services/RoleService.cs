@@ -1,5 +1,8 @@
 ﻿using SMS.Core;
 using SMS.Core.DTOs;
+using SMS.Core.DTOs.Enums;
+using SMS.Core.Interfaces;
+using SMS.Core.Logging;
 using SMS.Repository;
 using System;
 using System.Data;
@@ -9,7 +12,7 @@ namespace SMS.Service
 {
     public class RoleService : IService<Role>
     {
-        private readonly RoleRepository _roleRepository;
+        private readonly IRepository<Role> _repo;
         private readonly Helper _helper;
 
         public async Task<DBResponse<int>> AddAsync(Role role)
@@ -19,7 +22,7 @@ namespace SMS.Service
                 throw new ArgumentNullException(nameof(role), "Role can not be null.");
             }
 
-            if (role.Mode != Core.Enums.EntityMode.AddNew)
+            if (role.Mode != EntityMode.AddNew)
             {
                 throw new ArgumentException("Role already exists.", nameof(role));
             }
@@ -35,12 +38,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _roleRepository.AddAsync(role);
-                await _helper.HandelError(result);
+                result = await _repo.AddAsync(role);
+                await _helper.HandelError(result, nameof(RoleService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error occurred while adding new role.");
+                await _helper.HandelError(ex, result, nameof(RoleService), new LogRepository());
             }
 
             return result;
@@ -57,12 +60,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _roleRepository.GetAsync(id);
-                await _helper.HandelError(result);
+                result = await _repo.GetAsync(id);
+                await _helper.HandelError(result, nameof(RoleService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error while fetching role with id: " + id);
+                await _helper.HandelError(ex, result, nameof(RoleService), new LogRepository());
             }
 
             return result;
@@ -79,12 +82,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _roleRepository.ExistsAsync(id);
-                await _helper.HandelError(result);
+                result = await _repo.ExistsAsync(id);
+                await _helper.HandelError(result, nameof(RoleService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error check role exists");
+                await _helper.HandelError(ex, result, nameof(RoleService), new LogRepository());
             }
 
             return result;
@@ -96,12 +99,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _roleRepository.GetAllAsync();
-                await _helper.HandelError(result);
+                result = await _repo.GetAllAsync();
+                await _helper.HandelError(result, nameof(RoleService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while retrieving all roles.");
+                await _helper.HandelError(ex, result, nameof(RoleService), new LogRepository());
             }
 
             return result;
@@ -114,7 +117,7 @@ namespace SMS.Service
                 throw new ArgumentNullException(nameof(role), "Role can not be null.");
             }
 
-            if (role.Mode != Core.Enums.EntityMode.Update)
+            if (role.Mode != EntityMode.Update)
             {
                 throw new ArgumentException(nameof(role), "Role does not exist.");
             }
@@ -131,12 +134,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _roleRepository.UpdateAsync(role);
-                await _helper.HandelError(result);
+                result = await _repo.UpdateAsync(role);
+                await _helper.HandelError(result, nameof(RoleService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while updating a role.");
+                await _helper.HandelError(ex, result, nameof(RoleService), new LogRepository());
             }
 
             return result;
@@ -153,21 +156,21 @@ namespace SMS.Service
 
             try
             {
-                result = await _roleRepository.DeleteAsync(id);
-                await _helper.HandelError(result);
+                result = await _repo.DeleteAsync(id);
+                await _helper.HandelError(result, nameof(RoleService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while deleting a role.");
+                await _helper.HandelError(ex, result, nameof(RoleService), new LogRepository());
             }
 
             return result;
         }
 
 
-        public RoleService()
+        public RoleService(IRepository<Role> roleRepository)
         {
-            _roleRepository = new RoleRepository();
+            _repo = roleRepository;
             _helper = new Helper();
         }
     }

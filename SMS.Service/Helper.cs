@@ -1,7 +1,6 @@
 ﻿using SMS.Core;
-using SMS.Core.Enums;
-using SMS.Core.Logging;
-using SMS.Repository;
+using SMS.Core.DTOs.Enums;
+using SMS.Core.Interfaces;
 using System;
 using System.Threading.Tasks;
 
@@ -9,35 +8,20 @@ namespace SMS.Service
 {
     internal class Helper
     {
-        private readonly Logger _logger;
-
-        public static Logger.LoggerEventArgs GetLoggingArgs(string message, Exception ex = null, string source = null)
-        {
-            return new Logger.LoggerEventArgs(LogLevel.Error, message, ex, source ?? nameof(source));
-        }
-
-        public async Task HandelError<T>(DBResponse<T> result)
+        public async Task HandelError<T>(DBResponse<T> result, string source, ILogger logger)
         {
             if (result.Code == StatusCode.UnexpectedError)
             {
-                await _logger.LogAsync(GetLoggingArgs(result.Message, null));
+                await logger.LogAsync(LogLevel.Error, source, result.Message);
             }
         }
 
-        public async Task HandelError<T>(Exception ex, DBResponse<T> result, string loggingMessage)
+        public async Task HandelError<T>(Exception ex, DBResponse<T> result, string source, IDatabaseLogger logger)
         {
             result.Code = StatusCode.UnexpectedError;
             result.Message = ex.Message;
 
-            await _logger.LogAsync(GetLoggingArgs("Error while adding new country.", ex));
+            await logger.LogAsync(LogLevel.Error, $"Error while adding new country: {ex.Message}", ex, source);
         }
-
-        public Helper()
-        {
-            this._logger = new Logger();
-            _logger.Subscribe(async (sender, e) => await LogsRepository.LogAsync(e));
-            _logger.Subscribe(async (sender, e) => await LogToWinEvents.LogAsync(e));
-        }
-
     }
 }

@@ -1,10 +1,11 @@
 ﻿using SMS.Core;
 using SMS.Core.DTOs;
-using SMS.Core.Enums;
+using SMS.Core.DTOs.Enums;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using SMS.Core.Interfaces;
 
 namespace SMS.Repository
 {
@@ -37,10 +38,13 @@ namespace SMS.Repository
                 {
                     Direction = ParameterDirection.Output
                 };
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
+
+                person.PersonId = (int)newId.Value;
+                person.Mode = EntityMode.Update;
 
                 return Helper.CreateDBResponse<int>((int)newId.Value, code, message);
             }
@@ -53,7 +57,7 @@ namespace SMS.Repository
             {
                 // Input parameters
                 cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = id;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
 
@@ -90,7 +94,7 @@ namespace SMS.Repository
             {
                 // Input parameters
                 cmd.Parameters.Add("@nationalNo", SqlDbType.NVarChar, 20).Value = nationalNo;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
 
@@ -128,7 +132,7 @@ namespace SMS.Repository
             {
                 cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
                 cmd.Parameters.Add("@LastPersonId", SqlDbType.Int).Value = lastId ?? (object)DBNull.Value;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
                 await conn.OpenAsync();
                 return Helper.CreateDBResponse(await Helper.ExecuteDataTableAsync(cmd), code, message);
             }
@@ -139,7 +143,7 @@ namespace SMS.Repository
             using (var conn = Helper.CreateConnection())
             using (var cmd = Helper.CreateCommand(conn, "uspPeople_GetAll"))
             {
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
                 await conn.OpenAsync();
                 return Helper.CreateDBResponse(await Helper.ExecuteDataTableAsync(cmd), code, message);
             }
@@ -151,7 +155,7 @@ namespace SMS.Repository
             using (var cmd = Helper.CreateCommand(conn, "uspPeople_ExistsById"))
             {
                 cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = id;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
                 await conn.OpenAsync();
                 return Helper.CreateDBResponse<bool>(await cmd.ExecuteScalarAsync() != null, code, message);
             }
@@ -163,7 +167,7 @@ namespace SMS.Repository
             using (var cmd = Helper.CreateCommand(conn, "uspPeople_ExistsByNationalNo"))
             {
                 cmd.Parameters.Add("@NationalNo", SqlDbType.NVarChar, 20).Value = nationalNo;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
                 await conn.OpenAsync();
                 return Helper.CreateDBResponse<bool>(await cmd.ExecuteScalarAsync() != null, code, message);
             }
@@ -189,7 +193,7 @@ namespace SMS.Repository
                 cmd.Parameters.Add(new SqlParameter("@ImageGuid", SqlDbType.UniqueIdentifier)).Value =
                     person.ImageGuid == null ? (object)DBNull.Value : person.ImageGuid;
 
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
                 await conn.OpenAsync();
                 var result = Helper.CreateDBResponse(code, message);
 
@@ -208,7 +212,7 @@ namespace SMS.Repository
             using (var cmd = Helper.CreateCommand(conn, "uspPeople_Delete"))
             {
                 cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = id;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();

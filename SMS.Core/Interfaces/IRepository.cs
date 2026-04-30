@@ -2,9 +2,9 @@
 using System.Data;
 using System.Threading.Tasks;
 
-namespace SMS.Repository
+namespace SMS.Core.Interfaces
 {
-    internal interface IRepository<T>
+    public interface IRepository<T>
     {
         /// <summary>
         /// Adds a new entity to the data store and returns the ID of the newly created record.

@@ -1,9 +1,11 @@
 ﻿using SMS.Core;
 using SMS.Core.DTOs;
+using SMS.Core.DTOs.Enums;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using SMS.Core.Interfaces;
 
 namespace SMS.Repository
 {
@@ -25,13 +27,13 @@ namespace SMS.Repository
                 };
                 cmd.Parameters.Add(newIdOutParam);
 
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
 
                 role.RoleId = (int)newIdOutParam.Value;
-                role.Mode = Core.Enums.EntityMode.Update;
+                role.Mode = EntityMode.Update;
 
                 return Helper.CreateDBResponse<int>(newIdOutParam, code, message);
             }
@@ -43,7 +45,7 @@ namespace SMS.Repository
             using (var cmd = Helper.CreateCommand(conn, "uspRoles_GetById"))
             {
                 cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = id;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
 
@@ -59,7 +61,7 @@ namespace SMS.Repository
                             roleDescription: reader.GetString(reader.GetOrdinal("RoleDescription")),
                             isActive: reader.GetBoolean(reader.GetOrdinal("IsActive")),
                             createdAt: reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
-                            mode: Core.Enums.EntityMode.Update
+                            mode: EntityMode.Update
                         );
                     }
                 }
@@ -74,7 +76,7 @@ namespace SMS.Repository
             using (var cmd = Helper.CreateCommand(conn, "uspRoles_ExistsById"))
             {
                 cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = id;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 return Helper.CreateDBResponse(await cmd.ExecuteScalarAsync() != null, code, message);
@@ -86,7 +88,7 @@ namespace SMS.Repository
             using (var conn = Helper.CreateConnection())
             using (var cmd = Helper.CreateCommand(conn, "uspRoles_GetAll"))
             {
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 return Helper.CreateDBResponse(await Helper.ExecuteDataTableAsync(cmd), code, message);
@@ -104,7 +106,7 @@ namespace SMS.Repository
                     string.IsNullOrWhiteSpace(role.RoleDescription) ? (object)DBNull.Value : role.RoleDescription;
                 cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = role.IsActive;
 
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -119,7 +121,7 @@ namespace SMS.Repository
             using (var cmd = Helper.CreateCommand(conn, "uspRoles_Delete"))
             {
                 cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = id;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();

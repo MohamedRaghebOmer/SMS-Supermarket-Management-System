@@ -3,8 +3,8 @@ using SMS.Core.DTOs;
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using SMS.Core.Interfaces;
 
 namespace SMS.Repository
 {
@@ -13,7 +13,7 @@ namespace SMS.Repository
         public async Task<DBResponse<int>> AddAsync(Country country)
         {
             using (var conn = Helper.CreateConnection())
-            using (var cmd = Helper.CreateCommand(conn, "uspCountries_Create"))
+            using (var cmd = Helper.CreateCommand(conn, "usp_Countries_Insert"))
             {
                 cmd.Parameters.Add("@CountryName", SqlDbType.NVarChar, 50).Value = country.CountryName;
 
@@ -23,7 +23,8 @@ namespace SMS.Repository
                 };
                 cmd.Parameters.Add(newIdOutParam);
 
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                // User and IP tracking parameters is added in case of insert, update and delete operations
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message, addUserAndIp: true);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -35,11 +36,11 @@ namespace SMS.Repository
         public async Task<DBResponse<Country>> GetAsync(int countryId)
         {
             using (SqlConnection conn = Helper.CreateConnection())
-            using (SqlCommand cmd = Helper.CreateCommand(conn, "uspCountries_GetById"))
+            using (SqlCommand cmd = Helper.CreateCommand(conn, "usp_Countries_GetById"))
             {
                 // Input Parameters
                 cmd.Parameters.Add("@CountryId", SqlDbType.Int).Value = countryId;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message, false);
 
                 await conn.OpenAsync();
 
@@ -63,11 +64,11 @@ namespace SMS.Repository
         public async Task<DBResponse<Country>> GetByNameAsync(string countryName)
         {
             using (SqlConnection conn = Helper.CreateConnection())
-            using (SqlCommand cmd = Helper.CreateCommand(conn, "uspCountries_GetByName"))
+            using (SqlCommand cmd = Helper.CreateCommand(conn, "usp_Countries_GetByName"))
             {
                 // Input Parameters
                 cmd.Parameters.Add("@CountryName", SqlDbType.NVarChar, 50).Value = countryName;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
 
@@ -91,11 +92,11 @@ namespace SMS.Repository
         public async Task<DBResponse<bool>> ExistsAsync(int countryId)
         {
             using (SqlConnection conn = Helper.CreateConnection())
-            using (SqlCommand cmd = Helper.CreateCommand(conn, "uspCountries_ExistsById"))
+            using (SqlCommand cmd = Helper.CreateCommand(conn, "usp_Countries_ExistsById"))
             {
                 // Input Parameters
                 cmd.Parameters.Add("@CountryId", SqlDbType.Int).Value = countryId;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 object result = await cmd.ExecuteScalarAsync();
@@ -108,9 +109,9 @@ namespace SMS.Repository
         public async Task<DBResponse<DataTable>> GetAllAsync()
         {
             using (var conn = Helper.CreateConnection())
-            using (var cmd = Helper.CreateCommand(conn, "uspCountries_GetAll"))
+            using (var cmd = Helper.CreateCommand(conn, "usp_Countries_GetAll"))
             {
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 DataTable dtCountries = await Helper.ExecuteDataTableAsync(cmd);
@@ -122,11 +123,11 @@ namespace SMS.Repository
         public async Task<DBResponse<DataTable>> GetPagedAsync(int pageSize, int? lastCountryId)
         {
             using (var conn = Helper.CreateConnection())
-            using (var cmd = Helper.CreateCommand(conn, "uspCountries_GetPaged"))
+            using (var cmd = Helper.CreateCommand(conn, "usp_Countries_GetPaged"))
             {
                 cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
                 cmd.Parameters.Add("@LastCountryId", SqlDbType.Int).Value = (object)lastCountryId ?? DBNull.Value;
-                Helper.AddStatusParams(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
+                Helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
 
                 await conn.OpenAsync();
                 DataTable dtCountries = await Helper.ExecuteDataTableAsync(cmd);
@@ -138,12 +139,13 @@ namespace SMS.Repository
         public async Task<DBResponse<bool>> UpdateAsync(Country country)
         {
             using (var conn = Helper.CreateConnection())
-            using (var cmd = Helper.CreateCommand(conn, "uspCountries_Update"))
+            using (var cmd = Helper.CreateCommand(conn, "usp_Countries_Update"))
             {
                 cmd.Parameters.Add("@CountryId", SqlDbType.Int).Value = country.CountryId;
                 cmd.Parameters.Add("@CountryName", SqlDbType.NVarChar, 50).Value = country.CountryName;
 
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+                // User and IP tracking parameters is added in case of insert, update and delete operations
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message, addUserAndIp: true);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
@@ -155,10 +157,12 @@ namespace SMS.Repository
         public async Task<DBResponse<bool>> DeleteAsync(int countryId)
         {
             using (var conn = Helper.CreateConnection())
-            using (var cmd = Helper.CreateCommand(conn, "uspCountries_Delete"))
+            using (var cmd = Helper.CreateCommand(conn, "usp_Countries_Delete"))
             {
                 cmd.Parameters.Add("@CountryId", SqlDbType.Int).Value = countryId;
-                Helper.AddStatusParams(cmd, out SqlParameter code, out SqlParameter message);
+
+                // User and IP tracking parameters is added in case of insert, update and delete operations
+                Helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message, addUserAndIp: true);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();

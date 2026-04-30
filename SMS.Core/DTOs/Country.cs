@@ -1,4 +1,4 @@
-﻿using SMS.Core.Enums;
+﻿using SMS.Core.DTOs.Enums;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("SMS.Repository")]

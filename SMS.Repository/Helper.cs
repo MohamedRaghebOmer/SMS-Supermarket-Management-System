@@ -1,4 +1,5 @@
 ﻿using SMS.Core;
+using SMS.Core.Helpers;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -23,8 +24,17 @@ namespace SMS.Repository
             };
         }
 
-        public static void AddStatusParams(SqlCommand cmd, out SqlParameter code, out SqlParameter message)
+        public static void AddDefaultParameters(SqlCommand cmd, out SqlParameter code, out SqlParameter message,
+            bool addUserAndIp = false)
         {
+            if (addUserAndIp)
+            {
+                // Input parameters
+                cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = Global.CurrentUser.UserId;
+                cmd.Parameters.Add("@IpAddress", SqlDbType.NVarChar, 45).Value = NetworkHelper.GetLocalIpAddress();
+            }
+
+            // Output parameters
             code = new SqlParameter("@StatusCode", SqlDbType.Int)
             {
                 Direction = ParameterDirection.Output
@@ -35,6 +45,7 @@ namespace SMS.Repository
                 Direction = ParameterDirection.Output
             };
 
+            // Add output parameters to the command
             cmd.Parameters.Add(code);
             cmd.Parameters.Add(message);
         }

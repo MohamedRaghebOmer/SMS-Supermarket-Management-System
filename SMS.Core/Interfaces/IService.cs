@@ -2,7 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 
-namespace SMS.Service
+namespace SMS.Core.Interfaces
 {
     /// <summary>
     /// Defines the contract for a generic service that provides asynchronous CRUD operations for entities of type T.
@@ -11,7 +11,7 @@ namespace SMS.Service
     /// read, update, and delete operations. All methods return a DBResponse object that encapsulates the result and any
     /// relevant status information.</remarks>
     /// <typeparam name="T">The type of the entity managed by the service.</typeparam>
-    internal interface IService<T>
+    public interface IService<T>
     {
         /// <summary>
         /// Asynchronously adds the specified entity to the data store.

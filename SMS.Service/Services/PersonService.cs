@@ -1,17 +1,19 @@
 ﻿using SMS.Core;
 using SMS.Core.DTOs;
-using SMS.Core.Enums;
+using SMS.Core.DTOs.Enums;
 using SMS.Repository;
+using SMS.Core.Logging;
 using System;
 using System.Data;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using SMS.Core.Interfaces;
 
 namespace SMS.Service
 {
     public class PersonService : IService<Person>
     {
-        private readonly PersonRepository _personRepository;
+        private readonly IRepository<Person> _repo;
         private readonly Helper _helper;
 
         public async Task<DBResponse<int>> AddAsync(Person person)
@@ -75,12 +77,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.AddAsync(person);
-                await _helper.HandelError(result);
+                result = await _repo.AddAsync(person);
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error occurred while adding new person.");
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
@@ -97,12 +99,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.GetAsync(id);
-                await _helper.HandelError(result);
+                result = await _repo.GetAsync(id);
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error while fetching person with id: " + id);
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
@@ -119,12 +121,13 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.GetAsync(nationalNo);
-                await _helper.HandelError(result);
+                var personRepository = new PersonRepository();
+                result = await personRepository.GetAsync(nationalNo);
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error fetching person with NationalNo: " + nationalNo);
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
@@ -146,12 +149,13 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.GetPagedAsync(pageSize, lastId);
-                await _helper.HandelError(result);
+                var personRepository = new PersonRepository();
+                result = await personRepository.GetPagedAsync(pageSize, lastId);
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error get paging from people.");
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
@@ -163,12 +167,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.GetAllAsync();
-                await _helper.HandelError(result);
+                result = await _repo.GetAllAsync();
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while retrieving all countries.");
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
@@ -185,12 +189,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.ExistsAsync(id);
-                await _helper.HandelError(result);
+                result = await _repo.ExistsAsync(id);
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error check person exists");
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
@@ -257,12 +261,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.UpdateAsync(person);
-                await _helper.HandelError(result);
+                result = await _repo.UpdateAsync(person);
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while updating a person.");
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
@@ -279,21 +283,21 @@ namespace SMS.Service
 
             try
             {
-                result = await _personRepository.DeleteAsync(personId);
-                await _helper.HandelError(result);
+                result = await _repo.DeleteAsync(personId);
+                await _helper.HandelError(result, nameof(PersonService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while deleting a country.");
+                await _helper.HandelError(ex, result, nameof(PersonService), new LogRepository());
             }
 
             return result;
         }
 
 
-        public PersonService()
+        public PersonService(IRepository<Person> personRepository)
         {
-            this._personRepository = new PersonRepository();
+            this._repo = personRepository;
             this._helper = new Helper();
         }
     }

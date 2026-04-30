@@ -1,17 +1,19 @@
 ﻿using SMS.Core;
 using SMS.Core.DTOs;
-using SMS.Core.Enums;
-using SMS.Repository;
+using SMS.Core.DTOs.Enums;
 using System;
 using System.Data;
 using System.Threading.Tasks;
+using SMS.Core.Interfaces;
+using SMS.Repository;
+using SMS.Core.Logging;
 
 namespace SMS.Service
 {
     public class CountryService : IService<Country>
     {
-        private readonly CountryRepository _countryRepository;
-        private readonly SMS.Service.Helper _helper;
+        private readonly IRepository<Country> _repo;
+        private readonly Helper _helper = new Helper();
 
         public async Task<DBResponse<int>> AddAsync(Country country)
         {
@@ -36,12 +38,15 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.AddAsync(country);
-                await _helper.HandelError(result);
+                result = await _repo.AddAsync(country);
+
+                // Log to windows event log if there was an error during the add operation in the database level
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error while adding new country.");
+                // Log to database if there was an exception during the add operation in the program level
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
@@ -58,12 +63,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.GetAsync(countryId);
-                await _helper.HandelError(result);
+                result = await _repo.GetAsync(countryId);
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while finding a country by ID.");
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
@@ -80,12 +85,13 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.GetByNameAsync(countryName.Trim());
-                await _helper.HandelError(result);
+                CountryRepository countryRepository = new CountryRepository();
+                result = await countryRepository.GetByNameAsync(countryName.Trim());
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while finding a country by name.");
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
@@ -97,12 +103,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.GetAllAsync();
-                await _helper.HandelError(result);
+                result = await _repo.GetAllAsync();
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while retrieving all countries.");
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
@@ -124,12 +130,13 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.GetPagedAsync(pageSize, lastCountryId);
-                await _helper.HandelError(result);
+                var countryRepository = new CountryRepository();
+                result = await countryRepository.GetPagedAsync(pageSize, lastCountryId);
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while retrieving paged countries.");
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
@@ -146,12 +153,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.ExistsAsync(id);
-                await _helper.HandelError(result);
+                result = await _repo.ExistsAsync(id);
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "Error check country exists");
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
@@ -180,12 +187,12 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.UpdateAsync(country);
-                await _helper.HandelError(result);
+                result = await _repo.UpdateAsync(country);
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while updating a country.");
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
@@ -202,22 +209,21 @@ namespace SMS.Service
 
             try
             {
-                result = await _countryRepository.DeleteAsync(countryId);
-                await _helper.HandelError(result);
+                result = await _repo.DeleteAsync(countryId);
+                await _helper.HandelError(result, nameof(CountryService), new EventViewerLogger());
             }
             catch (Exception ex)
             {
-                await _helper.HandelError(ex, result, "An error occurred while deleting a country.");
+                await _helper.HandelError(ex, result, nameof(CountryService), new LogRepository());
             }
 
             return result;
         }
 
 
-        public CountryService()
+        public CountryService(IRepository<Country> countryRepository)
         {
-            _countryRepository = new CountryRepository();
-            _helper = new Helper();
+            _repo = countryRepository;
         }
     }
 }

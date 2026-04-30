@@ -1,12 +1,11 @@
-﻿using SMS.Core.DTOs;
-using SMS.Core.Enums;
-using System;
+﻿using SMS.Core.DTOs.Enums;
+using SMS.Core.Interfaces;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace SMS.Core.Logging
 {
-    public static class LogToWinEvents
+    public class EventViewerLogger : ILogger
     {
         private static readonly object _lock = new object();
         private static bool _initialized = false;
@@ -21,12 +20,15 @@ namespace SMS.Core.Logging
                 if (_initialized)
                     return;
 
-                if (!EventLog.SourceExists(Global.AppName))
+                try
                 {
-                    EventLog.CreateEventSource(Global.AppName, "Application");
+                    if (!EventLog.SourceExists(Global.AppName))
+                    {
+                        EventLog.CreateEventSource(Global.AppName, "Application");
+                        _initialized = true;
+                    }
                 }
-
-                _initialized = true;
+                catch { }
             }
         }
 
@@ -47,20 +49,17 @@ namespace SMS.Core.Logging
             return EventLogEntryType.Error;
         }
 
-        public static async Task LogAsync(Logger.LoggerEventArgs e)
+        public async Task LogAsync(LogLevel level, string source, string message)
         {
             try
             {
                 await EnsureEventSourceAsync();
-
-                EventLog.WriteEntry(
-                    Global.AppName,
-                    e.Message + (e.Exception != null ? Environment.NewLine + e.Exception.Message : string.Empty),
-                    GetEntryType(e.Level));
+                EventLog.WriteEntry(Global.AppName, $"[{source}] | {message}", GetEntryType(level));
             }
             catch
             {
-                // ignore or fallback
+                // ignore logging failures
+                // Never throw from a logger, otherwise you risk crashing the app when logging fails
             }
         }
     }
