@@ -1,3 +1,6 @@
+using SMS.API.Configurations;
+using SMS.API.Extensions;
+
 namespace SMS.API
 {
     public class Program
@@ -9,26 +12,33 @@ namespace SMS.API
             // Add services to the container.
             builder.Services.AddControllers();
 
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-
             // Enable Swagger
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSwaggerConfiguration();
+
+            builder.Services.AddCorsPolicy();
+
+            // Register application and infrastructure services
+            builder.Services.AddApplication();
+            builder.Services.AddInfrastructure();
+
+            builder.Services.AddAuthenticationConfiguration(builder.Configuration);
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                //app.MapOpenApi();
-
                 // Run Swagger UI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            app.UseGlobalExceptionHandling();
             app.UseHttpsRedirection();
+            app.UseCors("SMSApiCorsPolicy");
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.Run();

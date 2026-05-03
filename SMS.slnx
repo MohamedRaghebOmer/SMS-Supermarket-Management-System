@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="SMS.API/SMS.API.csproj" />
   <Project Path="SMS.Application/SMS.Application.csproj" />
+  <Project Path="SMS.Contracts/SMS.Contracts.csproj" Id="ef1d66a0-1cbd-4709-a11f-a5d26f478db1" />
   <Project Path="SMS.Domain/SMS.Domain.csproj" />
   <Project Path="SMS.Infrastructure/SMS.Infrastructure.csproj" />
   <Project Path="SMS.Shared/SMS.Shared.csproj" />

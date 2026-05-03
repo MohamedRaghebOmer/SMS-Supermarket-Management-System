@@ -7,16 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <Folder Include="Authorization\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SMS.Application\SMS.Application.csproj" />
+    <ProjectReference Include="..\SMS.Contracts\SMS.Contracts.csproj" />
+    <ProjectReference Include="..\SMS.Infrastructure\SMS.Infrastructure.csproj" />
     <ProjectReference Include="..\SMS.Shared\SMS.Shared.csproj" />
   </ItemGroup>
 
