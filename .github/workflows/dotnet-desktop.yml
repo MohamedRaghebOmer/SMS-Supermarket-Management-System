@@ -57,7 +57,7 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore
-      run: dotnet restore src/SMS.sln
+      run: dotnet restore SMS.slnx
 
     - name: Build Solution
-      run: dotnet build src/SMS.sln --no-restore --configuration Release
+      run: dotnet build SMS.slnx --no-restore --configuration Release
