@@ -1,6 +1,15 @@
-﻿namespace SMS.Application
+﻿using Microsoft.Extensions.DependencyInjection;
+using SMS.Application.Interfaces.Services;
+using SMS.Application.Services;
+
+namespace SMS.Application
 {
-    internal class DependencyInjection
+    public static class DependencyInjection
     {
+        public static IServiceCollection AddApplication(this IServiceCollection services)
+        {
+            services.AddScoped<ICountryService, CountryService>();
+            return services;
+        }
     }
 }

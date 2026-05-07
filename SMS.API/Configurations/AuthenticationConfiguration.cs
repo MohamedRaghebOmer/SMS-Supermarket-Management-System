@@ -11,6 +11,7 @@ namespace SMS.API.Configurations
             IConfiguration configuration)
         {
             var jwt = configuration.GetSection("Jwt").Get<JwtOptions>();
+            jwt.SecretKey = configuration["SMS_JWT_SECRET_KEY"];
 
             services.AddAuthentication(options =>
             {
