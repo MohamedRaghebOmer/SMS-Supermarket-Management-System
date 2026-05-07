@@ -17,8 +17,4 @@
     <ProjectReference Include="..\SMS.Shared\SMS.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>

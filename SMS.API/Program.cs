@@ -1,5 +1,7 @@
 using SMS.API.Configurations;
 using SMS.API.Extensions;
+using SMS.Application;
+using SMS.Infrastructure;
 
 namespace SMS.API
 {
@@ -14,14 +16,15 @@ namespace SMS.API
 
             // Enable Swagger
             builder.Services.AddEndpointsApiExplorer();
-
             builder.Services.AddSwaggerConfiguration();
 
             builder.Services.AddCorsPolicy();
 
+            builder.Configuration.AddEnvironmentVariables();
+
             // Register application and infrastructure services
+            builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
-            builder.Services.AddInfrastructure();
 
             builder.Services.AddAuthenticationConfiguration(builder.Configuration);
 

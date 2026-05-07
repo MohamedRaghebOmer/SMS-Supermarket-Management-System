@@ -11,6 +11,15 @@ namespace SMS.API.Middlewares
             _next = next;
         }
 
+        private async Task HandelBadeRequestExceptions(HttpContext context, Exception ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                Message = ex.Message
+            });
+        }
+
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -19,16 +28,16 @@ namespace SMS.API.Middlewares
             }
             catch (ValidationException ex)
             {
-                context.Response.StatusCode = 400;
-
-                await context.Response.WriteAsJsonAsync(new
-                {
-                    Message = ex.Message
-                });
+                await HandelBadeRequestExceptions(context, ex);
             }
+            catch (ArgumentException ex)
+            {
+                await HandelBadeRequestExceptions(context, ex);
+            }
+
             catch (NotFoundException ex)
             {
-                context.Response.StatusCode = 404;
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
 
                 await context.Response.WriteAsJsonAsync(new
                 {
