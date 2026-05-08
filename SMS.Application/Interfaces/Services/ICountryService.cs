@@ -1,4 +1,5 @@
-﻿using SMS.Contracts.Requests.Countries;
+﻿using SMS.Contracts.Common;
+using SMS.Contracts.Requests.Countries;
 using SMS.Contracts.Responses;
 
 namespace SMS.Application.Interfaces.Services
@@ -11,7 +12,7 @@ namespace SMS.Application.Interfaces.Services
         public Task<CountryResponseDto> FindAsync(int id);
         public Task<CountryResponseDto> FindAsync(string countryName);
         public Task<IReadOnlyList<CountryResponseDto>> GetAllAsync();
-        public Task<IReadOnlyList<CountryResponseDto>> GetPagedAsync(int pageSize, int? lastCountryId);
+        public Task<IReadOnlyList<PaginationResponse<CountryResponseDto>>> GetPagedAsync(PaginationRequest paginationRequest);
         public Task<bool> UpdateAsync(int countryId, UpdateCountryRequestDto dto);
         public Task<bool> DeleteAsync(int id);
     }

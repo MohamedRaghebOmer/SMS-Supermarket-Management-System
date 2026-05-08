@@ -30,6 +30,6 @@
             CountryName = countryName;
         }
 
-        private Country() { }
+        public Country() { }
     }
 }

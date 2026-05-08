@@ -1,4 +1,5 @@
-﻿using SMS.Application.Common.Enums;
+﻿using SMS.Application.Common.Results;
+using SMS.Application.Common.Enums;
 
 namespace SMS.Application.Common.Results
 {
@@ -8,47 +9,6 @@ namespace SMS.Application.Common.Results
         public OperationStatus Status { get; set; } = OperationStatus.Success;
         public string Message { get; set; } = string.Empty;
         public bool IsSuccess => Status == OperationStatus.Success;
-
-
-        public static OperationResult<T> Success(T data, string message = "")
-        {
-            return new OperationResult<T>
-            {
-                Data = data,
-                Status = OperationStatus.Success,
-                Message = message
-            };
-        }
-
-        public static OperationResult<T> ValidationError(string message)
-        {
-            return new OperationResult<T>
-            {
-                Data = default,
-                Status = OperationStatus.ValidationError,
-                Message = message
-            };
-        }
-
-        public static OperationResult<T> NotFound(string message)
-        {
-            return new OperationResult<T>
-            {
-                Data = default,
-                Status = OperationStatus.NotFound,
-                Message = message
-            };
-        }
-
-        public static OperationResult<T> UnexpectedError(string message)
-        {
-            return new OperationResult<T>
-            {
-                Data = default,
-                Status = OperationStatus.UnexpectedError,
-                Message = message
-            };
-        }
 
 
         public void ThrowIfNotSuccess()

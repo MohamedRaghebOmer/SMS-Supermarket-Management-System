@@ -2,6 +2,7 @@ using SMS.API.Configurations;
 using SMS.API.Extensions;
 using SMS.Application;
 using SMS.Infrastructure;
+using SMS.API.Middlewares;
 
 namespace SMS.API
 {
@@ -22,9 +23,9 @@ namespace SMS.API
 
             builder.Configuration.AddEnvironmentVariables();
 
-            // Register application and infrastructure services
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
+            builder.Services.AddApiLayerHelpers();
 
             builder.Services.AddAuthenticationConfiguration(builder.Configuration);
 
@@ -38,7 +39,8 @@ namespace SMS.API
                 app.UseSwaggerUI();
             }
 
-            app.UseGlobalExceptionHandling();
+            app.UseRouting();
+            app.AddCustomMiddlewares();
             app.UseHttpsRedirection();
             app.UseCors("SMSApiCorsPolicy");
             app.UseAuthentication();

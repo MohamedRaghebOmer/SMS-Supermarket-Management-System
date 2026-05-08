@@ -1,58 +1,97 @@
-﻿using SMS.Application.Exceptions;
+﻿using SMS.API.Interfaces;
+using SMS.Application.Exceptions;
+using SMS.Application.Interfaces.Services;
+using System.Diagnostics;
 
 namespace SMS.API.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly IAuditLogService _auditLogService;
+        private readonly IAuditLogRequestBuilder _auditLogRequestBuilder;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next)
+        public ExceptionHandlingMiddleware(RequestDelegate next,
+            IAuditLogService logService, IAuditLogRequestBuilder auditLogRequestBuilder)
         {
             _next = next;
+            _auditLogService = logService;
+            _auditLogRequestBuilder = auditLogRequestBuilder;
         }
 
-        private async Task HandelBadeRequestExceptions(HttpContext context, Exception ex)
+        private async Task WriteErrorResponseAsync(HttpContext context,
+            int statusCode, string message)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.StatusCode = statusCode;
             await context.Response.WriteAsJsonAsync(new
             {
-                Message = ex.Message
+                Message = message
             });
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             try
             {
                 await _next(context);
+                stopwatch.Stop();
             }
-            catch (ValidationException ex)
+            catch (Exception ex) when (
+            ex is ValidationException ||
+            ex is ArgumentException)
             {
-                await HandelBadeRequestExceptions(context, ex);
+                await WriteErrorResponseAsync(
+                    context,
+                    StatusCodes.Status400BadRequest,
+                    ex.Message);
             }
-            catch (ArgumentException ex)
-            {
-                await HandelBadeRequestExceptions(context, ex);
-            }
-
             catch (NotFoundException ex)
             {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-
-                await context.Response.WriteAsJsonAsync(new
-                {
-                    Message = ex.Message
-                });
+                await WriteErrorResponseAsync(context, StatusCodes.Status404NotFound, ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                context.Response.StatusCode = 500;
+                stopwatch.Stop();
 
-                await context.Response.WriteAsJsonAsync(new
+                string responseMessage = "Internal Server Error";
+
+                if (!context.Response.HasStarted)
                 {
-                    Message = "Internal Server Error"
-                });
+                    await WriteErrorResponseAsync(
+                        context,
+                        StatusCodes.Status500InternalServerError,
+                        responseMessage);
+                }
+
+                try
+                {
+                    int? auditLogId = await LogAuditLogAsync(
+                        context, responseMessage,
+                        (int)stopwatch.ElapsedMilliseconds);
+                    await LogApplicationLogAsync(ex, auditLogId);
+                }
+                catch { } // Swallow any exceptions from logging to avoid affecting the response to the client
             }
+        }
+
+        private async Task<int?> LogAuditLogAsync(HttpContext context,
+            string responseBody, int duration)
+        {
+            try
+            {
+                var auditLogRequest = await _auditLogRequestBuilder.BuildAsync(context, responseBody, duration);
+                return await _auditLogService.AddAuditLogAsync(auditLogRequest);
+            }
+            catch { }
+
+            return null;
+        }
+
+        private async Task LogApplicationLogAsync(Exception ex, int? auditLogId)
+        {
+            // Log the exception to application logs table here...
         }
     }
 }

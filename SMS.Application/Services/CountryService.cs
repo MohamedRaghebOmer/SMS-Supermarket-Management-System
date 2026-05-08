@@ -1,10 +1,11 @@
-﻿using SMS.Application.Common.Guards;
-using SMS.Application.Exceptions;
+﻿using SMS.Application.Exceptions;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
+using SMS.Contracts.Common;
 using SMS.Contracts.Requests.Countries;
 using SMS.Contracts.Responses;
+using SMS.Shared.Guards;
 
 namespace SMS.Application.Services
 {
@@ -20,7 +21,8 @@ namespace SMS.Application.Services
 
         public async Task<int> AddAsync(CreateCountryRequestDto dto)
         {
-            Guard.AgainstNullOrEmptyString(dto.CountryName, "Country name");
+            ArgumentNullException.ThrowIfNull(dto);
+            StringGuard.AgainstNullOrEmptyString(dto.CountryName, "Country name");
 
             var result = await _repo.AddAsync(dto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -30,7 +32,7 @@ namespace SMS.Application.Services
 
         public async Task<bool> ExistsAsync(int id)
         {
-            Guard.AgainstInvalidId(id);
+            NumericGuard.AgainstInvalidId(id);
 
             var result = await _repo.ExistsAsync(id);
             result.ThrowIfNotSuccess();
@@ -39,7 +41,7 @@ namespace SMS.Application.Services
 
         public async Task<bool> ExistsAsync(string countryName)
         {
-            Guard.AgainstNullOrEmptyString(countryName, "Country name");
+            StringGuard.AgainstNullOrEmptyString(countryName, "Country name");
 
             var result = await _repo.ExistsAsync(countryName);
             result.ThrowIfNotSuccess();
@@ -49,7 +51,7 @@ namespace SMS.Application.Services
 
         public async Task<CountryResponseDto> FindAsync(int id)
         {
-            Guard.AgainstInvalidId(id);
+            NumericGuard.AgainstInvalidId(id);
 
             var result = await _repo.GetAsync(id);
             result.ThrowIfNotSuccess();
@@ -64,7 +66,7 @@ namespace SMS.Application.Services
 
         public async Task<CountryResponseDto> FindAsync(string countryName)
         {
-            Guard.AgainstNullOrEmptyString(countryName, "Country name");
+            StringGuard.AgainstNullOrEmptyString(countryName, "Country name");
 
             var result = await _repo.GetByNameAsync(countryName);
 
@@ -81,25 +83,40 @@ namespace SMS.Application.Services
             return result.Data.Select(c => c.ToResponseDto()).ToList();
         }
 
-        public async Task<IReadOnlyList<CountryResponseDto>> GetPagedAsync(int pageSize, int? lastCountryId)
+        public async Task<IReadOnlyList<PaginationResponse<CountryResponseDto>>> GetPagedAsync(PaginationRequest paginationRequest)
         {
-            Guard.AgainstInvalidId(pageSize);
+            ArgumentNullException.ThrowIfNull(paginationRequest);
+            NumericGuard.AgainstInvalidId(paginationRequest.Page);
+            NumericGuard.AgainstInvalidId(paginationRequest.PageSize);
 
-            if (lastCountryId is not null)
-            {
-                Guard.AgainstInvalidId(lastCountryId.Value);
-            }
+            var result = await _repo.GetPagedAsync(
+                paginationRequest.Page,
+                paginationRequest.PageSize);
 
-            var result = await _repo.GetPagedAsync(pageSize, lastCountryId);
             result.ThrowIfNotSuccess();
 
-            return result.Data.Select(c => c.ToResponseDto()).ToList();
+            IReadOnlyList<CountryResponseDto> dtoReadOnlyList = 
+                result.Data
+                .Select(p => p.ToResponseDto())
+                .ToList();
+
+            return new List<PaginationResponse<CountryResponseDto>>
+            {
+                new PaginationResponse<CountryResponseDto>
+                {
+                    Items = dtoReadOnlyList,
+                    TotalCount = result.Data.Count,
+                    Page = paginationRequest.Page,
+                    PageSize = paginationRequest.PageSize
+                }
+            };
         }
 
         public async Task<bool> UpdateAsync(int countryId, UpdateCountryRequestDto dto)
         {
-            Guard.AgainstInvalidId(countryId);
-            Guard.AgainstNullOrEmptyString(dto.CountryName, "Country name");
+            ArgumentNullException.ThrowIfNull(dto);
+            NumericGuard.AgainstInvalidId(countryId);
+            StringGuard.AgainstNullOrEmptyString(dto.CountryName, "Country name");
 
             var result = await _repo.UpdateAsync(dto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -109,7 +126,7 @@ namespace SMS.Application.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            Guard.AgainstInvalidId(id);
+            NumericGuard.AgainstInvalidId(id);
             var result = await _repo.DeleteAsync(id);
             result.ThrowIfNotSuccess();
             return result.Data;

@@ -9,6 +9,7 @@ namespace SMS.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<IAuditLogService, AuditLogService>();
             return services;
         }
     }
