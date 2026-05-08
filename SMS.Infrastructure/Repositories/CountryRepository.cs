@@ -49,18 +49,7 @@ namespace SMS.Infrastructure.Repositories
 
                 await conn.OpenAsync();
 
-                Country country = null;
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow))
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        country = new Country
-                        (
-                            countryId: reader.GetInt32(reader.GetOrdinal("CountryId")),
-                            countryName: reader.GetString(reader.GetOrdinal("CountryName"))
-                        );
-                    }
-                }
+                Country country = MapToCountry(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
 
                 return _helper.CreateOperationResult<Country>(country, code, message);
             }
@@ -77,18 +66,7 @@ namespace SMS.Infrastructure.Repositories
 
                 await conn.OpenAsync();
 
-                Country country = null;
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow))
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        country = new Country
-                        (
-                            reader.GetInt32(reader.GetOrdinal("CountryId")),
-                            reader.GetString(reader.GetOrdinal("CountryName"))
-                        );
-                    }
-                }
+                Country country = MapToCountry(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
 
                 return _helper.CreateOperationResult<Country>(country, code, message);
             }
@@ -128,20 +106,7 @@ namespace SMS.Infrastructure.Repositories
                 _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
-
-                List<Country> countries = new List<Country>();
-
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        countries.Add(new Country
-                        (
-                            countryId: reader.GetInt32(reader.GetOrdinal("CountryId")),
-                            countryName: reader.GetString(reader.GetOrdinal("CountryName"))
-                        ));
-                    }
-                }
+                var countries = await ReadCountriesAsync(cmd);
 
                 return _helper.CreateOperationResult<IReadOnlyList<Country>>(countries, code, message);
             }
@@ -157,19 +122,7 @@ namespace SMS.Infrastructure.Repositories
                 _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
 
                 await conn.OpenAsync();
-                var countries = new List<Country>();
-
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        countries.Add(new Country
-                        (
-                            countryId: reader.GetInt32(reader.GetOrdinal("CountryId")),
-                            countryName: reader.GetString(reader.GetOrdinal("CountryName"))
-                        ));
-                    }
-                }
+                var countries = await ReadCountriesAsync(cmd);
 
                 return _helper.CreateOperationResult<IReadOnlyList<Country>>(countries, statusCodeOutParam, statusMessageOutParam);
             }
@@ -205,6 +158,31 @@ namespace SMS.Infrastructure.Repositories
 
                 return _helper.CreateOperationResult(code, message);
             }
+        }
+
+
+        private Country MapToCountry(SqlDataReader reader)
+        {
+            return new Country
+            (
+                countryId: reader.GetInt32(reader.GetOrdinal("CountryId")),
+                countryName: reader.GetString(reader.GetOrdinal("CountryName"))
+            );
+        }
+
+        private async Task<IReadOnlyList<Country>> ReadCountriesAsync(SqlCommand cmd)
+        {
+            var countries = new List<Country>();
+
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    countries.Add(MapToCountry(reader));
+                }
+            }
+
+            return countries;
         }
     }
 }

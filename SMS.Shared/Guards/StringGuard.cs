@@ -1,15 +1,11 @@
-﻿namespace SMS.Application.Common.Guards
-{
-    internal class Guard
-    {
-        public static void AgainstInvalidId(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than zero.");
-            }
-        }
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
+namespace SMS.Shared.Guards
+{
+    public class StringGuard
+    {
         public static void AgainstNullOrEmptyString(string value, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -17,5 +13,6 @@
                 throw new ArgumentException($"{parameterName} cannot be null or empty.", parameterName);
             }
         }
+
     }
 }

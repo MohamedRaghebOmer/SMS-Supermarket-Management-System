@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Infrastructure.Data;
+using SMS.Infrastructure.Helpers;
 using SMS.Infrastructure.Repositories;
 
 namespace SMS.Infrastructure
@@ -13,7 +14,8 @@ namespace SMS.Infrastructure
         {
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
-            services.AddScoped<IDbHelper, DbHelper>();
+            services.AddScoped<IDbHelper, DataAccessHelper>();
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
             return services;
         }

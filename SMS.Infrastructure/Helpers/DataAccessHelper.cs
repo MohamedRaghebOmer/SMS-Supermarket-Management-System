@@ -1,16 +1,16 @@
 ﻿using Microsoft.Data.SqlClient;
-using SMS.Application.Common.Enums;
+using SMS.Infrastructure.Enums;
 using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using System.Data;
 
-namespace SMS.Infrastructure
+namespace SMS.Infrastructure.Helpers
 {
-    internal class DbHelper : IDbHelper
+    internal class DataAccessHelper : IDbHelper
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public DbHelper(IDbConnectionFactory connectionFactory)
+        public DataAccessHelper(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
