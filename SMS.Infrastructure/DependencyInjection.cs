@@ -16,6 +16,7 @@ namespace SMS.Infrastructure
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
             services.AddScoped<IDataAccessHelper, DataAccessHelper>();
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+            services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
 
             return services;
         }

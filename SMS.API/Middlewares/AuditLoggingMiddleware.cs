@@ -1,5 +1,6 @@
 ﻿using SMS.API.Interfaces;
 using SMS.Application.Interfaces.Services;
+using SMS.Contracts.Requests.ApplicationLogs;
 using SMS.Shared.Enums;
 using System.Diagnostics;
 
@@ -10,12 +11,17 @@ namespace SMS.API.Middlewares
         private readonly RequestDelegate _next;
         private readonly IAuditLogService _auditLogService;
         private readonly IAuditLogRequestBuilder _auditLogRequestBuilder;
+        private readonly IApplicationLogService _applicationLogService;
 
-        public AuditLoggingMiddleware(RequestDelegate next, IAuditLogService auditLogService, IAuditLogRequestBuilder auditLogRequestBuilder)
+        public AuditLoggingMiddleware(RequestDelegate next, 
+            IAuditLogService auditLogService,
+            IAuditLogRequestBuilder auditLogRequestBuilder, 
+            IApplicationLogService applicationLogService)
         {
             _next = next;
             _auditLogService = auditLogService;
             _auditLogRequestBuilder = auditLogRequestBuilder;
+            _applicationLogService = applicationLogService;
         }
 
         public async Task Invoke(HttpContext context, IAuditActionTypeResolver resolver, IAttemptedUsernameResolver attemptedUsernameResolver)
@@ -29,6 +35,7 @@ namespace SMS.API.Middlewares
             }
 
             var originalBodyStream = context.Response.Body;
+            int auditLogId = 0;
 
             try
             {
@@ -50,13 +57,21 @@ namespace SMS.API.Middlewares
 
                 context.Response.Body = originalBodyStream;
 
-                await _auditLogService.AddAuditLogAsync(
+                auditLogId =  await _auditLogService.AddAuditLogAsync(
                     await _auditLogRequestBuilder.BuildAsync(
                         context, responseBody, (int)stopwatch.ElapsedMilliseconds));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Use application level logging here
+                ApplicationLogRequestDto logRequest = new ApplicationLogRequestDto
+                {
+                     AuditLogId = auditLogId,
+                     Message = "An error occurred while creating audit log.",
+                     Exception = ex,
+                     StackTrace = ex.StackTrace
+                };
+
+                await _applicationLogService.AddAsync(logRequest);
             }
             finally
             {

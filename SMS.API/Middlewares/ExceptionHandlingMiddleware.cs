@@ -10,13 +10,17 @@ namespace SMS.API.Middlewares
         private readonly RequestDelegate _next;
         private readonly IAuditLogService _auditLogService;
         private readonly IAuditLogRequestBuilder _auditLogRequestBuilder;
+        private readonly IApplicationLogService _applicationLogService;
 
         public ExceptionHandlingMiddleware(RequestDelegate next,
-            IAuditLogService logService, IAuditLogRequestBuilder auditLogRequestBuilder)
+            IAuditLogService logService,
+            IAuditLogRequestBuilder auditLogRequestBuilder,
+            IApplicationLogService applicationLogService)
         {
             _next = next;
             _auditLogService = logService;
             _auditLogRequestBuilder = auditLogRequestBuilder;
+            _applicationLogService = applicationLogService;
         }
 
         private async Task WriteErrorResponseAsync(HttpContext context,
@@ -71,6 +75,14 @@ namespace SMS.API.Middlewares
                         context, responseMessage,
                         (int)stopwatch.ElapsedMilliseconds);
                     await LogApplicationLogAsync(ex, auditLogId);
+
+                    await _applicationLogService.AddAsync(new Contracts.Requests.ApplicationLogs.ApplicationLogRequestDto
+                    {
+                        Exception = ex,
+                        AuditLogId = auditLogId,
+                        Message = ex.Message,
+                        StackTrace = ex.StackTrace
+                    });
                 }
                 catch { } // Swallow any exceptions from logging to avoid affecting the response to the client
             }
