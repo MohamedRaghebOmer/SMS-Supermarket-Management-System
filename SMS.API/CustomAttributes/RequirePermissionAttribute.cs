@@ -1,0 +1,19 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using SMS.Shared.Enums;
+
+namespace SMS.API.CustomAttributes
+{
+    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+    public sealed class RequirePermissionAttribute : AuthorizeAttribute
+    {
+        public PermissionAction Action { get; }
+        public SystemEntity Entity { get; }
+
+        public RequirePermissionAttribute(PermissionAction action, SystemEntity entity)
+        {
+            Policy = $"Permission:{nameof(action)}:{nameof(entity)}";
+            Action = action;
+            Entity = entity;
+        }
+    }
+}

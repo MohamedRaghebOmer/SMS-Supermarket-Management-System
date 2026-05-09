@@ -81,7 +81,7 @@ namespace SMS.API.Middlewares
 
         private bool ShouldCreateAuditLog(HttpContext context, AuditActionType actionType)
         {
-            return context.User.IsInRole(nameof(Roles.Admin)) || IsCritical(actionType);
+            return context.User.IsInRole("Admin") || IsCritical(actionType);
         }
 
         private static bool IsCritical(AuditActionType actionType)
