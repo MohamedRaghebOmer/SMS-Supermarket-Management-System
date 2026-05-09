@@ -1,6 +1,5 @@
 ﻿using SMS.API.Interfaces;
 using SMS.Application.Interfaces.Services;
-using SMS.Contracts.Requests.AuditLogs;
 using SMS.Shared.Enums;
 using System.Diagnostics;
 

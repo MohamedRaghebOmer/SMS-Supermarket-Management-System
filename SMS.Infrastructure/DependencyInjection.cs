@@ -14,7 +14,7 @@ namespace SMS.Infrastructure
         {
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
-            services.AddScoped<IDbHelper, DataAccessHelper>();
+            services.AddScoped<IDataAccessHelper, DataAccessHelper>();
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
             return services;

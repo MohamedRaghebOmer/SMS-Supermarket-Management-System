@@ -46,12 +46,9 @@ namespace SMS.Application.Services
             NumericGuard.AgainstInvalidId(auditLogId);
 
             var result = await _repo.GetAsync((int)auditLogId);
+            
             result.ThrowIfNotSuccess();
-
-            if (result.Data is null)
-            {
-                throw new NotFoundException($"Audit log with Id {auditLogId} was not found.");
-            }
+            result.ThrowNotFoundIfDataNull();
 
             return result.Data.ToDto();
         }

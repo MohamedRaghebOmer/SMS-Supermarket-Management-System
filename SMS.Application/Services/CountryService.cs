@@ -1,5 +1,4 @@
-﻿using SMS.Application.Exceptions;
-using SMS.Application.Interfaces.Repositories;
+﻿using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
 using SMS.Contracts.Common;
@@ -54,12 +53,9 @@ namespace SMS.Application.Services
             NumericGuard.AgainstInvalidId(id);
 
             var result = await _repo.GetAsync(id);
-            result.ThrowIfNotSuccess();
 
-            if (result.Data is null)
-            {
-                throw new NotFoundException($"Country with Id {id} was not found.");
-            }
+            result.ThrowIfNotSuccess();
+            result.ThrowNotFoundIfDataNull();
 
             return result.Data.ToResponseDto();
         }
@@ -95,7 +91,7 @@ namespace SMS.Application.Services
 
             result.ThrowIfNotSuccess();
 
-            IReadOnlyList<CountryResponseDto> dtoReadOnlyList = 
+            IReadOnlyList<CountryResponseDto> dtoReadOnlyList =
                 result.Data
                 .Select(p => p.ToResponseDto())
                 .ToList();

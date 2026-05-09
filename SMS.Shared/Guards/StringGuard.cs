@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SMS.Shared.Guards
+﻿namespace SMS.Shared.Guards
 {
     public class StringGuard
     {

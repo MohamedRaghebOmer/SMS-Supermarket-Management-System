@@ -9,9 +9,9 @@ namespace SMS.Infrastructure.Repositories
 {
     public class CountryRepository : ICountryRepository
     {
-        private readonly IDbHelper _helper;
+        private readonly IDataAccessHelper _helper;
 
-        public CountryRepository(IDbHelper helper)
+        public CountryRepository(IDataAccessHelper helper)
         {
             _helper = helper;
         }
@@ -39,7 +39,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<Country>> GetAsync(int countryId)
+        public async Task<OperationResult<Country?>> GetAsync(int countryId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_Countries_GetById"))
@@ -49,13 +49,13 @@ namespace SMS.Infrastructure.Repositories
 
                 await conn.OpenAsync();
 
-                Country country = MapToCountry(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
+                Country? country = MapToCountry(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
 
                 return _helper.CreateOperationResult<Country>(country, code, message);
             }
         }
 
-        public async Task<OperationResult<Country>> GetByNameAsync(string countryName)
+        public async Task<OperationResult<Country?>> GetByNameAsync(string countryName)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_Countries_GetByName"))

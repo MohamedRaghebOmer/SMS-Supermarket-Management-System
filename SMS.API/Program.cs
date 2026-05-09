@@ -1,8 +1,7 @@
 using SMS.API.Configurations;
-using SMS.API.Extensions;
+using SMS.API.Middlewares;
 using SMS.Application;
 using SMS.Infrastructure;
-using SMS.API.Middlewares;
 
 namespace SMS.API
 {
