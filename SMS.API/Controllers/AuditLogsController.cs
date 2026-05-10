@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SMS.API.CustomAttributes;
 using SMS.Application.Interfaces.Services;
 using SMS.Contracts.Common;
@@ -25,10 +24,10 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("{auditLogId}", Name = "GetAuditLogById")]
-        public async Task<IActionResult> GetById([FromRoute] int auditLogId)
+        [HttpGet("id/{id:int}", Name = "GetAuditLogById")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var auditLog = await _service.GetAsync(auditLogId);
+            var auditLog = await _service.GetAsync(id);
             return Ok(auditLog);
         }
 
@@ -38,7 +37,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("correlation/{correlationId}", Name = "GetAuditLogByCorrelationId")]
+        [HttpGet("correlation/{correlationId:guid}", Name = "GetAuditLogByCorrelationId")]
         public async Task<IActionResult> GetByCorrelationId([FromRoute] Guid correlationId)
         {
             var auditLog = await _service.GetByCorrelationIdAsync(correlationId);
@@ -48,7 +47,7 @@ namespace SMS.API.Controllers
 
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("all", Name = "GetAllAuditLogs")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAll([FromQuery] PaginationRequest paginationRequest)
         {
@@ -61,7 +60,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("user/{userId}", Name = "GetAuditLogByUserId")]
+        [HttpGet("user/{userId}", Name = "GetAuditLogsByUserId")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetByUserId([FromRoute] int userId,
             [FromQuery] PaginationRequest paginationRequest)

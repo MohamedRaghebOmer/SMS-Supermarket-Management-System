@@ -23,7 +23,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("{id}", Name = "GetApplicationLogById")]
+        [HttpGet("id/{id:int}", Name = "GetApplicationLogById")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
@@ -36,7 +36,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("audit-log/{auditLogId}", Name = "GetApplicationLogsByAuditLogId")]
+        [HttpGet("audit-log/{auditLogId:int}", Name = "GetApplicationLogsByAuditLogId")]
         public async Task<IActionResult> GetByAuditLogId([FromRoute] int auditLogId)
         {
             var applicationLogs = await _service.GetByAuditLogIdAsync(auditLogId);
@@ -47,7 +47,7 @@ namespace SMS.API.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("all", Name = "GetAllApplicationLogs")]
+        [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationRequest paginationRequest)
         {
             var applicationLogs = await _service.GetPagedAsync(paginationRequest);
@@ -80,7 +80,5 @@ namespace SMS.API.Controllers
             var applicationLogs = await _service.GetPagedByDateRangeAsync(startDate, endDate, paginationRequest);
             return Ok(applicationLogs);
         }
-
-
     }
 }

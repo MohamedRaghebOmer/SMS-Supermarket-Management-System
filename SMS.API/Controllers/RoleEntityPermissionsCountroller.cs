@@ -19,11 +19,11 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Create, SystemEntity.RoleEntityPermissions)]
-        [HttpPut("add", Name = "AddNewRoleEntityPermissions")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult> Add([FromBody] RoleEntityPermissionsRequestDto dto)
+        public async Task<ActionResult> Create([FromBody] RoleEntityPermissionsRequestDto dto)
         {
             var result = await _service.AddAsync(dto);
             return result ? Ok(result) : BadRequest(result);
@@ -32,7 +32,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.RoleEntityPermissions)]
-        [HttpGet("role/{roleId}", Name = "GetByRoleId")]
+        [HttpGet("role/{roleId:int}", Name = "GetByRoleId")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,7 +61,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.RoleEntityPermissions)]
-        [HttpGet("mask/role/{roleId}/entity/{entity}", Name = "GetPermissionsMask")]
+        [HttpGet("mask/role/{roleId:int}/entity/{entity}", Name = "GetPermissionsMask")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,7 +76,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Update, SystemEntity.RoleEntityPermissions)]
-        [HttpPatch("update-mask/role/{roleId}/entity/{entity}", Name = "UpdatePermissionsMask")]
+        [HttpPatch("update-mask/role/{roleId:int}/entity/{entity}", Name = "UpdatePermissionsMask")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
