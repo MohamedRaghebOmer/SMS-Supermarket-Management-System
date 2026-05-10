@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SMS.Contracts.Requests.RoleEntityPermissions
 {
-    public class RoleEntityPermissionRequestDto
+    public class RoleEntityPermissionsRequestDto
     {
         [Range(1, int.MaxValue, ErrorMessage = "RoleId must be a positive integer.")]
         public int RoleId { get; set; }
@@ -11,6 +11,6 @@ namespace SMS.Contracts.Requests.RoleEntityPermissions
         public SystemEntity Entity { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "PermissionsMask must be a non-negative integer.")]
-        public int PermissionMask { get; set; }
+        public int PermissionsMask { get; set; }
     }
 }

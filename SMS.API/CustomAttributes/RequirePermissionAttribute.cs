@@ -3,7 +3,7 @@ using SMS.Shared.Enums;
 
 namespace SMS.API.CustomAttributes
 {
-    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public sealed class RequirePermissionAttribute : AuthorizeAttribute
     {
         public PermissionAction Action { get; }

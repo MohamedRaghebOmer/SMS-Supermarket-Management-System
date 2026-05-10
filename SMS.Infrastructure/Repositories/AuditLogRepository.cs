@@ -55,7 +55,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<AuditLog?>> GetAsync(int auditLogId)
+        public async Task<OperationResult<AuditLog?>> FindAsync(int auditLogId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetById"))
@@ -70,7 +70,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<AuditLog?>> GetByCorrelationIdAsync(Guid correlationId)
+        public async Task<OperationResult<AuditLog?>> FindByCorrelationIdAsync(Guid correlationId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetByCorrelationId"))

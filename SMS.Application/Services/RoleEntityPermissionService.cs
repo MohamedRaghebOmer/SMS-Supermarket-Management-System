@@ -18,11 +18,11 @@ namespace SMS.Application.Services
         }
 
 
-        public async Task<bool> AddAsync(RoleEntityPermissionRequestDto dto)
+        public async Task<bool> AddAsync(RoleEntityPermissionsRequestDto dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
             NumericGuard.AgainstInvalidId(dto.RoleId);
-            NumericGuard.AgainstNegativeNumber(dto.PermissionMask, nameof(dto.PermissionMask));
+            NumericGuard.AgainstNegativeNumber(dto.PermissionsMask, nameof(dto.PermissionsMask));
 
             var result = await _repo.AddAsync(dto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -30,7 +30,7 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<IReadOnlyList<RoleEntityPermissionResponseDto>> GetByRoleIdAsync(int roleId)
+        public async Task<IReadOnlyList<RoleEntityPermissionsResponseDto>> GetByRoleIdAsync(int roleId)
         {
             NumericGuard.AgainstInvalidId(roleId);
 
@@ -40,7 +40,7 @@ namespace SMS.Application.Services
             return result.Data.Select(permission => permission.ToDto()).ToList();
         }
 
-        public async Task<IReadOnlyList<RoleEntityPermissionResponseDto>> GetByEntityAsync(SystemEntity entity)
+        public async Task<IReadOnlyList<RoleEntityPermissionsResponseDto>> GetByEntityAsync(SystemEntity entity)
         {
             var result = await _repo.GetByEntityAsync(entity);
             result.ThrowIfNotSuccess();
@@ -48,22 +48,22 @@ namespace SMS.Application.Services
             return result.Data.Select(permission => permission.ToDto()).ToList();
         }
 
-        public async Task<int> GetPermissionMaskAsync(int roleId, SystemEntity entity)
+        public async Task<int> GetPermissionsMaskAsync(int roleId, SystemEntity entity)
         {
             NumericGuard.AgainstInvalidId(roleId);
 
-            var result = await _repo.GetPermissionMaskAsync(roleId, entity);
+            var result = await _repo.GetPermissionsMaskAsync(roleId, entity);
             result.ThrowIfNotSuccess();
 
             return result.Data;
         }
 
-        public async Task<bool> UpdatePermissionMaskAsync(int roleId, SystemEntity entity, int permissionMask)
+        public async Task<bool> UpdatePermissionsMaskAsync(int roleId, SystemEntity entity, int permissionMask)
         {
             NumericGuard.AgainstInvalidId(roleId);
             NumericGuard.AgainstNegativeNumber(permissionMask, nameof(permissionMask));
 
-            var result = await _repo.UpdatePermissionMaskAsync(roleId, entity, permissionMask);
+            var result = await _repo.UpdatePermissionsMaskAsync(roleId, entity, permissionMask);
             result.ThrowIfNotSuccess();
 
             return result.Data;
@@ -93,7 +93,7 @@ namespace SMS.Application.Services
         {
             NumericGuard.AgainstInvalidId(roleId);
 
-            var result = await _repo.GetPermissionMaskAsync(roleId, entity);
+            var result = await _repo.GetPermissionsMaskAsync(roleId, entity);
             result.ThrowIfNotSuccess();
             return (result.Data & (int)action) == (int)action;
         }

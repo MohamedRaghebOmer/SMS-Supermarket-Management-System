@@ -11,8 +11,8 @@ namespace SMS.Application.Interfaces.Repositories
             GetByRoleIdAsync(int roleId);
         public Task<OperationResult<IReadOnlyList<RoleEntityPermission>>>
             GetByEntityAsync(SystemEntity entity);
-        public Task<OperationResult<int>> GetPermissionMaskAsync(int roleId, SystemEntity entity);
-        public Task<OperationResult<bool>> UpdatePermissionMaskAsync(int roleId, SystemEntity entity, int permissionMask);
+        public Task<OperationResult<int>> GetPermissionsMaskAsync(int roleId, SystemEntity entity);
+        public Task<OperationResult<bool>> UpdatePermissionsMaskAsync(int roleId, SystemEntity entity, int permissionsMask);
         public Task<OperationResult<bool>> DeleteByRoleIdAsync(int roleId);
         public Task<OperationResult<bool>> DeleteByRoleAndEntityAsync(int roleId, SystemEntity entity);
     }

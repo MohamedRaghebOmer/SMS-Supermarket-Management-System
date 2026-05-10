@@ -25,7 +25,7 @@ namespace SMS.Infrastructure.Repositories
             {
                 cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = entity.RoleId;
                 cmd.Parameters.Add("@Entity", SqlDbType.Int).Value = (int)entity.Entity;
-                cmd.Parameters.Add("@PermissionMask", SqlDbType.Int).Value = entity.PermissionMask;
+                cmd.Parameters.Add("@PermissionMask", SqlDbType.Int).Value = entity.PermissionsMask;
 
                 _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
@@ -66,7 +66,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<int>> GetPermissionMaskAsync(int roleId, SystemEntity entity)
+        public async Task<OperationResult<int>> GetPermissionsMaskAsync(int roleId, SystemEntity entity)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_RoleEntityPermissions_GetPermissionMask"))
@@ -80,7 +80,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<bool>> UpdatePermissionMaskAsync(int roleId, SystemEntity entity, int permissionMask)
+        public async Task<OperationResult<bool>> UpdatePermissionsMaskAsync(int roleId, SystemEntity entity, int permissionMask)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_RoleEntityPermissions_UpdatePermissionMask"))
@@ -134,7 +134,7 @@ namespace SMS.Infrastructure.Repositories
             return new RoleEntityPermission(
                 roleId: reader.GetInt32(reader.GetOrdinal("RoleId")),
                 systemEntity: (SystemEntity)reader.GetInt32(reader.GetOrdinal("Entity")),
-                permissionMask: reader.GetInt32(reader.GetOrdinal("PermissionMask")));
+                permissionsMask: reader.GetInt32(reader.GetOrdinal("PermissionMask")));
         }
 
         private static async Task<IReadOnlyList<RoleEntityPermission>> ReadRoleEntityPermissionsAsync(SqlCommand cmd)

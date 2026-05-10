@@ -57,7 +57,7 @@ namespace SMS.API.Middlewares
 
                 context.Response.Body = originalBodyStream;
 
-                auditLogId =  await _auditLogService.AddAuditLogAsync(
+                auditLogId =  await _auditLogService.AddAsync(
                     await _auditLogRequestBuilder.BuildAsync(
                         context, responseBody, (int)stopwatch.ElapsedMilliseconds));
             }

@@ -34,7 +34,7 @@ namespace SMS.Application.Services
         {
             NumericGuard.AgainstInvalidId(id);
 
-            var result = await _repo.GetAsync(id);
+            var result = await _repo.FindAsync(id);
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
@@ -45,7 +45,7 @@ namespace SMS.Application.Services
         {
             NumericGuard.AgainstInvalidId(auditLogId);
 
-            var result = await _repo.GetByAuditLogIdAsync(auditLogId);
+            var result = await _repo.FindByAuditLogIdAsync(auditLogId);
             result.ThrowIfNotSuccess();
 
             return result.Data;

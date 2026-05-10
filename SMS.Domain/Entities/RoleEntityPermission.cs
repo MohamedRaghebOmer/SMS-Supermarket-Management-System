@@ -11,7 +11,7 @@ namespace SMS.Domain.Entities
     public class RoleEntityPermission
     {
         private int _roleId;
-        private int _permissionMask;
+        private int _permissionsMask;
 
         public int RoleId
         {
@@ -26,24 +26,24 @@ namespace SMS.Domain.Entities
 
         public SystemEntity Entity { get; set; }
 
-        public int PermissionMask
+        public int PermissionsMask
         {
-            get => _permissionMask;
+            get => _permissionsMask;
             set
             {
-                NumericGuard.AgainstNonPositiveNumber(value, nameof(PermissionMask));
-                _permissionMask = value;
+                NumericGuard.AgainstNonPositiveNumber(value, nameof(PermissionsMask));
+                _permissionsMask = value;
             }
         }
 
 
         public RoleEntityPermission() { }
 
-        public RoleEntityPermission(int roleId, SystemEntity systemEntity, int permissionMask)
+        public RoleEntityPermission(int roleId, SystemEntity systemEntity, int permissionsMask)
         {
             RoleId = roleId;
             Entity = systemEntity;
-            PermissionMask = permissionMask;
+            PermissionsMask = permissionsMask;
         }
     }
 }

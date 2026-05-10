@@ -94,7 +94,7 @@ namespace SMS.API.Middlewares
             try
             {
                 var auditLogRequest = await _auditLogRequestBuilder.BuildAsync(context, responseBody, duration);
-                return await _auditLogService.AddAuditLogAsync(auditLogRequest);
+                return await _auditLogService.AddAsync(auditLogRequest);
             }
             catch { }
 

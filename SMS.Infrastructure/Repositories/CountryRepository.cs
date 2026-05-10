@@ -39,7 +39,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<Country?>> GetAsync(int countryId)
+        public async Task<OperationResult<Country?>> FindAsync(int countryId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_Countries_GetById"))
@@ -55,7 +55,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<Country?>> GetByNameAsync(string countryName)
+        public async Task<OperationResult<Country?>> FindByNameAsync(string countryName)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_Countries_GetByName"))

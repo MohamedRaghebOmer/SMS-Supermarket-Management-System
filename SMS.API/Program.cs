@@ -18,14 +18,16 @@ namespace SMS.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerConfiguration();
 
+            // Add CORS policy and environment variables configuration
             builder.Services.AddCorsPolicy();
-
             builder.Configuration.AddEnvironmentVariables();
 
-            builder.Services.AddInfrastructure(builder.Configuration);
+            // Add custom services
+            builder.Services.AddInfrastructure();
             builder.Services.AddApplication();
             builder.Services.AddApiLayerHelpers();
 
+            // Add authentication configuration
             builder.Services.AddAuthenticationConfiguration(builder.Configuration);
 
             var app = builder.Build();
@@ -38,6 +40,7 @@ namespace SMS.API
                 app.UseSwaggerUI();
             }
 
+            // Add custom middlewares and other configurations
             app.UseRouting();
             app.AddCustomMiddlewares();
             app.UseHttpsRedirection();

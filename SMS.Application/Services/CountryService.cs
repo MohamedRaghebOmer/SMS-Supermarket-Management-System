@@ -52,7 +52,7 @@ namespace SMS.Application.Services
         {
             NumericGuard.AgainstInvalidId(id);
 
-            var result = await _repo.GetAsync(id);
+            var result = await _repo.FindAsync(id);
 
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
@@ -64,7 +64,7 @@ namespace SMS.Application.Services
         {
             StringGuard.AgainstNullOrEmptyString(countryName, "Country name");
 
-            var result = await _repo.GetByNameAsync(countryName);
+            var result = await _repo.FindByNameAsync(countryName);
 
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();

@@ -43,7 +43,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<ApplicationLog?>> GetAsync(int id)
+        public async Task<OperationResult<ApplicationLog?>> FindAsync(int id)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetById"))
@@ -60,7 +60,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<ApplicationLogResponseDto>>> GetByAuditLogIdAsync(int auditLogId)
+        public async Task<OperationResult<IReadOnlyList<ApplicationLogResponseDto>>> FindByAuditLogIdAsync(int auditLogId)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetByAuditLogId"))
