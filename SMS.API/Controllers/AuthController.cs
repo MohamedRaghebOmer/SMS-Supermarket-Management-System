@@ -2,7 +2,7 @@
 
 namespace SMS.API.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
 
     }

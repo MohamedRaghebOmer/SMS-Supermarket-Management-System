@@ -48,7 +48,7 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<CountryResponseDto> FindAsync(int id)
+        public async Task<CountryResponseDto> GetAsync(int id)
         {
             NumericGuard.AgainstInvalidId(id);
 
@@ -60,7 +60,7 @@ namespace SMS.Application.Services
             return result.Data.ToResponseDto();
         }
 
-        public async Task<CountryResponseDto> FindAsync(string countryName)
+        public async Task<CountryResponseDto> GetAsync(string countryName)
         {
             StringGuard.AgainstNullOrEmptyString(countryName, "Country name");
 
@@ -70,13 +70,6 @@ namespace SMS.Application.Services
             result.ThrowNotFoundIfDataNull();
 
             return result.Data.ToResponseDto();
-        }
-
-        public async Task<IReadOnlyList<CountryResponseDto>> GetAllAsync()
-        {
-            var result = await _repo.GetAllAsync();
-            result.ThrowIfNotSuccess();
-            return result.Data.Select(c => c.ToResponseDto()).ToList();
         }
 
         public async Task<IReadOnlyList<PaginationResponse<CountryResponseDto>>> GetPagedAsync(PaginationRequest paginationRequest)

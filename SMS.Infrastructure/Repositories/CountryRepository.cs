@@ -98,20 +98,6 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<Country>>> GetAllAsync()
-        {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_Countries_GetAll"))
-            {
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
-
-                await conn.OpenAsync();
-                var countries = await ReadCountriesAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<Country>>(countries, code, message);
-            }
-        }
-
         public async Task<OperationResult<IReadOnlyList<Country>>> GetPagedAsync(int pageSize, int? lastCountryId)
         {
             using (var conn = _helper.CreateConnection())

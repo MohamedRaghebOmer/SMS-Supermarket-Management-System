@@ -10,7 +10,7 @@ namespace SMS.API.Controllers
     [ApiController]
     [Route("api/application-logs")]
     [RequirePermission(PermissionAction.Read, SystemEntity.ApplicationLogs)]
-    public class ApplicationLogsController : Controller
+    public class ApplicationLogsController : ControllerBase
     {
         private readonly IApplicationLogService _service;
 
