@@ -9,9 +9,9 @@ namespace SMS.Infrastructure.Repositories
 {
     public class CountryRepository : ICountryRepository
     {
-        private readonly IDbHelper _helper;
+        private readonly IDataAccessHelper _helper;
 
-        public CountryRepository(IDbHelper helper)
+        public CountryRepository(IDataAccessHelper helper)
         {
             _helper = helper;
         }
@@ -39,7 +39,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<Country>> GetAsync(int countryId)
+        public async Task<OperationResult<Country?>> FindAsync(int countryId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_Countries_GetById"))
@@ -49,13 +49,13 @@ namespace SMS.Infrastructure.Repositories
 
                 await conn.OpenAsync();
 
-                Country country = MapToCountry(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
+                Country? country = MapToCountry(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
 
                 return _helper.CreateOperationResult<Country>(country, code, message);
             }
         }
 
-        public async Task<OperationResult<Country>> GetByNameAsync(string countryName)
+        public async Task<OperationResult<Country?>> FindByNameAsync(string countryName)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_Countries_GetByName"))
@@ -95,20 +95,6 @@ namespace SMS.Infrastructure.Repositories
 
                 await conn.OpenAsync();
                 return _helper.CreateOperationResult(await cmd.ExecuteScalarAsync() != null, code, message);
-            }
-        }
-
-        public async Task<OperationResult<IReadOnlyList<Country>>> GetAllAsync()
-        {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_Countries_GetAll"))
-            {
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
-
-                await conn.OpenAsync();
-                var countries = await ReadCountriesAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<Country>>(countries, code, message);
             }
         }
 

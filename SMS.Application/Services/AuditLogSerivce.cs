@@ -21,7 +21,7 @@ namespace SMS.Application.Services
         }
 
 
-        public async Task<int> AddAuditLogAsync(AuditLogRequestDto requestDto)
+        public async Task<int> AddAsync(AuditLogRequestDto requestDto)
         {
             ArgumentNullException.ThrowIfNull(requestDto);
             NumericGuard.AgainstInvalidId(requestDto.UserId);
@@ -45,13 +45,10 @@ namespace SMS.Application.Services
         {
             NumericGuard.AgainstInvalidId(auditLogId);
 
-            var result = await _repo.GetAsync((int)auditLogId);
+            var result = await _repo.FindAsync((int)auditLogId);
+            
             result.ThrowIfNotSuccess();
-
-            if (result.Data is null)
-            {
-                throw new NotFoundException($"Audit log with Id {auditLogId} was not found.");
-            }
+            result.ThrowNotFoundIfDataNull();
 
             return result.Data.ToDto();
         }
@@ -63,7 +60,7 @@ namespace SMS.Application.Services
                 throw new ArgumentException("CorrelationId cannot be empty.", nameof(correlationId));
             }
 
-            var result = await _repo.GetByCorrelationIdAsync(correlationId);
+            var result = await _repo.FindByCorrelationIdAsync(correlationId);
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 

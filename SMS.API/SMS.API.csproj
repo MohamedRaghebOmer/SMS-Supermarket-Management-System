@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Authorization\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SMS.Application\SMS.Application.csproj" />
     <ProjectReference Include="..\SMS.Contracts\SMS.Contracts.csproj" />
     <ProjectReference Include="..\SMS.Infrastructure\SMS.Infrastructure.csproj" />

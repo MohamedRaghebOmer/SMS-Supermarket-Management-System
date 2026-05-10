@@ -11,9 +11,9 @@ namespace SMS.Infrastructure.Repositories
 {
     public class AuditLogRepository : IAuditLogRepository
     {
-        private readonly IDbHelper _helper;
+        private readonly IDataAccessHelper _helper;
 
-        public AuditLogRepository(IDbHelper helper)
+        public AuditLogRepository(IDataAccessHelper helper)
         {
             _helper = helper;
         }
@@ -55,7 +55,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<AuditLog>> GetAsync(int auditLogId)
+        public async Task<OperationResult<AuditLog?>> FindAsync(int auditLogId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetById"))
@@ -64,21 +64,13 @@ namespace SMS.Infrastructure.Repositories
                 _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
-
-                AuditLog auditLog = new AuditLog();
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow))
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        auditLog = MapAuditLog(reader);
-                    }
-                }
+                AuditLog? auditLog = MapAuditLog(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
 
                 return _helper.CreateOperationResult(auditLog, code, message);
             }
         }
 
-        public async Task<OperationResult<AuditLog>> GetByCorrelationIdAsync(Guid correlationId)
+        public async Task<OperationResult<AuditLog?>> FindByCorrelationIdAsync(Guid correlationId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetByCorrelationId"))
@@ -87,15 +79,7 @@ namespace SMS.Infrastructure.Repositories
                 _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
-
-                AuditLog auditLog = new AuditLog();
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow))
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        auditLog = MapAuditLog(reader);
-                    }
-                }
+                AuditLog? auditLog = MapAuditLog(await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow));
 
                 return _helper.CreateOperationResult(auditLog, code, message);
             }
@@ -113,7 +97,7 @@ namespace SMS.Infrastructure.Repositories
                 await conn.OpenAsync();
                 var auditLogs = await ReadAuditLogsAsync(cmd);
 
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return _helper.CreateOperationResult(auditLogs, statusCodeOutParam, statusMessageOutParam);
             }
         }
 
@@ -237,8 +221,13 @@ namespace SMS.Infrastructure.Repositories
         }
 
 
-        private static AuditLog MapAuditLog(SqlDataReader reader)
+        private static AuditLog? MapAuditLog(SqlDataReader reader)
         {
+            if (!reader.HasRows)
+            {
+                return null;
+            }
+
             var detailsOrdinal = reader.GetOrdinal("Details");
             string? details = reader.IsDBNull(detailsOrdinal) ? null : reader.GetString(detailsOrdinal);
 

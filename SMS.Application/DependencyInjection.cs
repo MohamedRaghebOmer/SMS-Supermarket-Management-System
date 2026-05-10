@@ -10,6 +10,8 @@ namespace SMS.Application
         {
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<IAuditLogService, AuditLogService>();
+            services.AddScoped<IApplicationLogService, ApplicationLogService>();
+            services.AddScoped<IRoleEntityPermissionService, RoleEntityPermissionService>();
             return services;
         }
     }

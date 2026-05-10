@@ -1,6 +1,6 @@
 ﻿using SMS.API.Interfaces;
 using SMS.Application.Interfaces.Services;
-using SMS.Contracts.Requests.AuditLogs;
+using SMS.Contracts.Requests.ApplicationLogs;
 using SMS.Shared.Enums;
 using System.Diagnostics;
 
@@ -9,17 +9,15 @@ namespace SMS.API.Middlewares
     public class AuditLoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IAuditLogService _auditLogService;
-        private readonly IAuditLogRequestBuilder _auditLogRequestBuilder;
-
-        public AuditLoggingMiddleware(RequestDelegate next, IAuditLogService auditLogService, IAuditLogRequestBuilder auditLogRequestBuilder)
+        public AuditLoggingMiddleware(RequestDelegate next)
         {
             _next = next;
-            _auditLogService = auditLogService;
-            _auditLogRequestBuilder = auditLogRequestBuilder;
         }
 
-        public async Task Invoke(HttpContext context, IAuditActionTypeResolver resolver, IAttemptedUsernameResolver attemptedUsernameResolver)
+        public async Task Invoke(HttpContext context, IAuditActionTypeResolver resolver, IAttemptedUsernameResolver attemptedUsernameResolver,
+            IAuditLogService auditLogService,
+            IAuditLogRequestBuilder auditLogRequestBuilder,
+            IApplicationLogService applicationLogService)
         {
             var actionType = resolver.Resolve(context);
 
@@ -30,6 +28,7 @@ namespace SMS.API.Middlewares
             }
 
             var originalBodyStream = context.Response.Body;
+            int auditLogId = 0;
 
             try
             {
@@ -51,13 +50,21 @@ namespace SMS.API.Middlewares
 
                 context.Response.Body = originalBodyStream;
 
-                await _auditLogService.AddAuditLogAsync(
-                    await _auditLogRequestBuilder.BuildAsync(
+                auditLogId = await auditLogService.AddAsync(
+                    await auditLogRequestBuilder.BuildAsync(
                         context, responseBody, (int)stopwatch.ElapsedMilliseconds));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Use application level logging here
+                ApplicationLogRequestDto logRequest = new ApplicationLogRequestDto
+                {
+                    AuditLogId = auditLogId,
+                    Message = "An error occurred while creating audit log.",
+                    Exception = ex,
+                    StackTrace = ex.StackTrace
+                };
+
+                await applicationLogService.AddAsync(logRequest);
             }
             finally
             {
@@ -67,7 +74,7 @@ namespace SMS.API.Middlewares
 
         private bool ShouldCreateAuditLog(HttpContext context, AuditActionType actionType)
         {
-            return context.User.IsInRole(nameof(Roles.Admin)) || IsCritical(actionType);
+            return context.User.IsInRole("Admin") || IsCritical(actionType);
         }
 
         private static bool IsCritical(AuditActionType actionType)

@@ -8,8 +8,8 @@ namespace SMS.Application.Interfaces.Repositories
     public interface IAuditLogRepository // Create and read only, no update or delete operations for audit logs
     {
         public Task<OperationResult<int>> AddAuditLogAsync(AuditLog auditLog);
-        public Task<OperationResult<AuditLog>> GetAsync(int auditLogId);
-        public Task<OperationResult<AuditLog>> GetByCorrelationIdAsync(Guid correlationId);
+        public Task<OperationResult<AuditLog?>> FindAsync(int auditLogId);
+        public Task<OperationResult<AuditLog?>> FindByCorrelationIdAsync(Guid correlationId);
         public Task<OperationResult<IReadOnlyList<AuditLog>>> GetPagedAsync(int pageNumber, int pageSize);
         public Task<OperationResult<IReadOnlyList<AuditLog>>> GetByUserIdPagedAsync(int userId, int pageNumber, int pageSize);
         public Task<OperationResult<IReadOnlyList<AuditLog>>> GetByActionTypePagedAsync(AuditActionType actionType, int pageNumber, int pageSize);

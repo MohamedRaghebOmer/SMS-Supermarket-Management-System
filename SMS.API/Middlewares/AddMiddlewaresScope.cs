@@ -1,6 +1,6 @@
 ﻿namespace SMS.API.Middlewares
 {
-    public static class AddMiddlewares
+    public static class AddMiddlewaresScope
     {
         public static void AddCustomMiddlewares(this WebApplication app)
         {

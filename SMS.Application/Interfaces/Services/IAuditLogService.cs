@@ -8,7 +8,7 @@ namespace SMS.Application.Interfaces.Services
 {
     public interface IAuditLogService
     {
-        public Task<int> AddAuditLogAsync(AuditLogRequestDto requestDto);
+        public Task<int> AddAsync(AuditLogRequestDto requestDto);
         public Task<AuditLogResponseDto> GetAsync(long auditLogId);
         public Task<AuditLogResponseDto> GetByCorrelationIdAsync(Guid correlationId);
         public Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedAsync(PaginationRequest paginationRequest);

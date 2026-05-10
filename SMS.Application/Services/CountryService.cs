@@ -1,5 +1,4 @@
-﻿using SMS.Application.Exceptions;
-using SMS.Application.Interfaces.Repositories;
+﻿using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
 using SMS.Contracts.Common;
@@ -49,26 +48,11 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<CountryResponseDto> FindAsync(int id)
+        public async Task<CountryResponseDto> GetAsync(int id)
         {
             NumericGuard.AgainstInvalidId(id);
 
-            var result = await _repo.GetAsync(id);
-            result.ThrowIfNotSuccess();
-
-            if (result.Data is null)
-            {
-                throw new NotFoundException($"Country with Id {id} was not found.");
-            }
-
-            return result.Data.ToResponseDto();
-        }
-
-        public async Task<CountryResponseDto> FindAsync(string countryName)
-        {
-            StringGuard.AgainstNullOrEmptyString(countryName, "Country name");
-
-            var result = await _repo.GetByNameAsync(countryName);
+            var result = await _repo.FindAsync(id);
 
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
@@ -76,11 +60,16 @@ namespace SMS.Application.Services
             return result.Data.ToResponseDto();
         }
 
-        public async Task<IReadOnlyList<CountryResponseDto>> GetAllAsync()
+        public async Task<CountryResponseDto> GetAsync(string countryName)
         {
-            var result = await _repo.GetAllAsync();
+            StringGuard.AgainstNullOrEmptyString(countryName, "Country name");
+
+            var result = await _repo.FindByNameAsync(countryName);
+
             result.ThrowIfNotSuccess();
-            return result.Data.Select(c => c.ToResponseDto()).ToList();
+            result.ThrowNotFoundIfDataNull();
+
+            return result.Data.ToResponseDto();
         }
 
         public async Task<IReadOnlyList<PaginationResponse<CountryResponseDto>>> GetPagedAsync(PaginationRequest paginationRequest)
@@ -95,7 +84,7 @@ namespace SMS.Application.Services
 
             result.ThrowIfNotSuccess();
 
-            IReadOnlyList<CountryResponseDto> dtoReadOnlyList = 
+            IReadOnlyList<CountryResponseDto> dtoReadOnlyList =
                 result.Data
                 .Select(p => p.ToResponseDto())
                 .ToList();

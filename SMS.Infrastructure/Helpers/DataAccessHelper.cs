@@ -1,12 +1,12 @@
 ﻿using Microsoft.Data.SqlClient;
-using SMS.Infrastructure.Enums;
+using SMS.Application.Common.Enums;
 using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using System.Data;
 
 namespace SMS.Infrastructure.Helpers
 {
-    internal class DataAccessHelper : IDbHelper
+    internal class DataAccessHelper : IDataAccessHelper
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
@@ -47,9 +47,9 @@ namespace SMS.Infrastructure.Helpers
             cmd.Parameters.Add(message);
         }
 
-        public OperationResult<T> CreateOperationResult<T>(T data, SqlParameter code, SqlParameter message)
+        public OperationResult<T?> CreateOperationResult<T>(T? data, SqlParameter code, SqlParameter message)
         {
-            return new OperationResult<T>(
+            return new OperationResult<T?>(
                 data,
                 (OperationStatus)(int)code.Value,
                 message?.Value.ToString() ?? string.Empty);

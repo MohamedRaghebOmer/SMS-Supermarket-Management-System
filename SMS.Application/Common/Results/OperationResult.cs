@@ -1,5 +1,4 @@
-﻿using SMS.Application.Common.Results;
-using SMS.Application.Common.Enums;
+﻿using SMS.Application.Common.Enums;
 
 namespace SMS.Application.Common.Results
 {

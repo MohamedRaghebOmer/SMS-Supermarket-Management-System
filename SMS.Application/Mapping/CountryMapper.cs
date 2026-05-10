@@ -1,9 +1,6 @@
 ﻿using SMS.Contracts.Requests.Countries;
 using SMS.Contracts.Responses;
 using SMS.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMS.Application.Mapping
 {
