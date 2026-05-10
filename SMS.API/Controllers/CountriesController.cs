@@ -24,7 +24,8 @@ namespace SMS.API.Controllers
         [HttpPost("add", Name = "AddNewCountry")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> AddNewCountry(CreateCountryRequestDto dto)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> AddNewCountry([FromBody] CreateCountryRequestDto dto)
         {
             var result = await _service.AddAsync(dto);
             return Ok(result);
@@ -36,7 +37,8 @@ namespace SMS.API.Controllers
         [HttpGet("exists/{id}", Name = "DoesCountryExistById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Exists(int id)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> Exists([FromRoute] int id)
         {
             var result = await _service.ExistsAsync(id);
             return Ok(result);
@@ -48,7 +50,8 @@ namespace SMS.API.Controllers
         [HttpGet("exists/{countryName}", Name = "DoesCountryExistByCountryName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Exists(string countryName)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> Exists([FromRoute] string countryName)
         {
             var result = await _service.ExistsAsync(countryName);
             return Ok(result);
@@ -61,7 +64,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> GetById(int id)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> GetById([FromRoute] int id)
         {
             var result = await _service.GetAsync(id);
             return Ok(result);
@@ -74,7 +78,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> GetByName(string countryName)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> GetByName([FromRoute] string countryName)
         {
             var result = await _service.GetAsync(countryName);
             return Ok(result);
@@ -85,6 +90,7 @@ namespace SMS.API.Controllers
         [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
         [HttpGet("all", Name = "GetAllCountries")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> GetAll([FromQuery] PaginationRequest paginationRequest)
         {
             var result = await _service.GetPagedAsync(paginationRequest);
@@ -98,7 +104,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> UpdateCountry(int countryId, UpdateCountryRequestDto updateCountryRequestDto)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> UpdateCountry([FromRoute] int countryId, UpdateCountryRequestDto updateCountryRequestDto)
         {
             var result = await _service.UpdateAsync(countryId, updateCountryRequestDto);
             return Ok(result);
@@ -111,7 +118,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeleteCountryById(int countryId)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> DeleteCountryById([FromRoute] int countryId)
         {
             var result = await _service.DeleteAsync(countryId);
             return Ok(result);

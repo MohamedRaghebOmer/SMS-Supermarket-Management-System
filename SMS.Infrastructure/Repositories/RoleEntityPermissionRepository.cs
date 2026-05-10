@@ -97,21 +97,6 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<bool>> DeleteByRoleIdAsync(int roleId)
-        {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_RoleEntityPermissions_DeleteByRoleId"))
-            {
-                cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = roleId;
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
-
-                await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
-
-                return _helper.CreateOperationResult(code, message);
-            }
-        }
-
         public async Task<OperationResult<bool>> DeleteByRoleAndEntityAsync(int roleId, SystemEntity entity)
         {
             using (var conn = _helper.CreateConnection())

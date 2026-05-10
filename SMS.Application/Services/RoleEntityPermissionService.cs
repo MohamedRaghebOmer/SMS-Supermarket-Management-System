@@ -69,16 +69,6 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<bool> DeleteByRoleIdAsync(int roleId)
-        {
-            NumericGuard.AgainstInvalidId(roleId);
-
-            var result = await _repo.DeleteByRoleIdAsync(roleId);
-            result.ThrowIfNotSuccess();
-
-            return result.Data;
-        }
-
         public async Task<bool> DeleteByRoleAndEntityAsync(int roleId, SystemEntity entity)
         {
             NumericGuard.AgainstInvalidId(roleId);

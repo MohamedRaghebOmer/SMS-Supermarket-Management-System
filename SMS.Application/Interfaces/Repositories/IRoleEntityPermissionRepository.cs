@@ -13,7 +13,6 @@ namespace SMS.Application.Interfaces.Repositories
             GetByEntityAsync(SystemEntity entity);
         public Task<OperationResult<int>> GetPermissionsMaskAsync(int roleId, SystemEntity entity);
         public Task<OperationResult<bool>> UpdatePermissionsMaskAsync(int roleId, SystemEntity entity, int permissionsMask);
-        public Task<OperationResult<bool>> DeleteByRoleIdAsync(int roleId);
         public Task<OperationResult<bool>> DeleteByRoleAndEntityAsync(int roleId, SystemEntity entity);
     }
 }
