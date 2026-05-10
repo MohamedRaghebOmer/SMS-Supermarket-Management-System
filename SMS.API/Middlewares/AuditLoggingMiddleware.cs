@@ -9,22 +9,15 @@ namespace SMS.API.Middlewares
     public class AuditLoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IAuditLogService _auditLogService;
-        private readonly IAuditLogRequestBuilder _auditLogRequestBuilder;
-        private readonly IApplicationLogService _applicationLogService;
-
-        public AuditLoggingMiddleware(RequestDelegate next, 
-            IAuditLogService auditLogService,
-            IAuditLogRequestBuilder auditLogRequestBuilder, 
-            IApplicationLogService applicationLogService)
+        public AuditLoggingMiddleware(RequestDelegate next)
         {
             _next = next;
-            _auditLogService = auditLogService;
-            _auditLogRequestBuilder = auditLogRequestBuilder;
-            _applicationLogService = applicationLogService;
         }
 
-        public async Task Invoke(HttpContext context, IAuditActionTypeResolver resolver, IAttemptedUsernameResolver attemptedUsernameResolver)
+        public async Task Invoke(HttpContext context, IAuditActionTypeResolver resolver, IAttemptedUsernameResolver attemptedUsernameResolver,
+            IAuditLogService auditLogService,
+            IAuditLogRequestBuilder auditLogRequestBuilder,
+            IApplicationLogService applicationLogService)
         {
             var actionType = resolver.Resolve(context);
 
@@ -57,21 +50,21 @@ namespace SMS.API.Middlewares
 
                 context.Response.Body = originalBodyStream;
 
-                auditLogId =  await _auditLogService.AddAsync(
-                    await _auditLogRequestBuilder.BuildAsync(
+                auditLogId = await auditLogService.AddAsync(
+                    await auditLogRequestBuilder.BuildAsync(
                         context, responseBody, (int)stopwatch.ElapsedMilliseconds));
             }
             catch (Exception ex)
             {
                 ApplicationLogRequestDto logRequest = new ApplicationLogRequestDto
                 {
-                     AuditLogId = auditLogId,
-                     Message = "An error occurred while creating audit log.",
-                     Exception = ex,
-                     StackTrace = ex.StackTrace
+                    AuditLogId = auditLogId,
+                    Message = "An error occurred while creating audit log.",
+                    Exception = ex,
+                    StackTrace = ex.StackTrace
                 };
 
-                await _applicationLogService.AddAsync(logRequest);
+                await applicationLogService.AddAsync(logRequest);
             }
             finally
             {

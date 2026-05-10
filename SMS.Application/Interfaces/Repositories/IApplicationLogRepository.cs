@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using LogLevel = SMS.Shared.Enums.LogLevel;
 using SMS.Application.Common.Results;
 using SMS.Contracts.Responses;
 using SMS.Domain.Entities;

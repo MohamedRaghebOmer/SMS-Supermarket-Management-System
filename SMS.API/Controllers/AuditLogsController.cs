@@ -9,7 +9,6 @@ using System.Net;
 namespace SMS.API.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("api/audit-logs")]
     [RequirePermission(PermissionAction.Read, SystemEntity.AuditLogs)]
     public class AuditLogsController : ControllerBase

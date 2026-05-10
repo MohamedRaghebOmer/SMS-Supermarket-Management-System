@@ -5,6 +5,7 @@ using SMS.Application.Interfaces.Repositories;
 using SMS.Contracts.Responses;
 using SMS.Domain.Entities;
 using System.Data;
+using LogLevel = SMS.Shared.Enums.LogLevel;
 
 namespace SMS.Infrastructure.Repositories
 {
@@ -93,7 +94,7 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedByLogLevelAsync(Microsoft.Extensions.Logging.LogLevel logLevel, int page, int pageSize)
+        public async Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedByLogLevelAsync(LogLevel logLevel, int page, int pageSize)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetPagedByLogLevel"))
