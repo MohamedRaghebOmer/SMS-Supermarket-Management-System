@@ -19,7 +19,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Create, SystemEntity.RoleEntityPermissions)]
-        [HttpPut]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -46,7 +46,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.RoleEntityPermissions)]
-        [HttpGet("entity/{entity}", Name = "GetByEntityId")]
+        [HttpGet("entity/{entity:alpha}", Name = "GetByEntityId")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,7 +61,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.RoleEntityPermissions)]
-        [HttpGet("mask/role/{roleId:int}/entity/{entity}", Name = "GetPermissionsMask")]
+        [HttpGet("mask/role/{roleId:int}/entity/{entity:alpha}", Name = "GetPermissionsMask")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,7 +76,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Update, SystemEntity.RoleEntityPermissions)]
-        [HttpPatch("update-mask/role/{roleId:int}/entity/{entity}", Name = "UpdatePermissionsMask")]
+        [HttpPatch("role/{roleId:int}/entity/{entity:alpha}", Name = "UpdatePermissionsMask")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,7 +91,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Delete, SystemEntity.RoleEntityPermissions)]
-        [HttpDelete("delete-mask/role/{roleId}/entity/{entity}", Name = "UpdatePermissionsMask")]
+        [HttpDelete("role/{roleId}/entity/{entity:alpha}", Name = "DeletePermissionsMask")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -106,7 +106,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.RoleEntityPermissions)]
-        [HttpGet("delete-mask/role/{roleId}/entity/{entity}/action/{permissionAction}", Name = "HasPermission")]
+        [HttpGet("has-permission/role/{roleId}/entity/{entity:alpha}/action/{permissionAction}", Name = "HasPermission")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -117,6 +117,5 @@ namespace SMS.API.Controllers
             var result = await _service.HasPermissionAsync(roleId, entity, permissionAction);
             return Ok(result);
         }
-
     }
 }

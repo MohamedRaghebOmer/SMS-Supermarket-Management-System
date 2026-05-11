@@ -3,6 +3,7 @@ using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Domain.Entities;
+using SMS.Shared.Common;
 using System.Data;
 
 namespace SMS.Infrastructure.Repositories
@@ -98,19 +99,19 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<Country>>> GetPagedAsync(int pageSize, int? lastCountryId)
+        public async Task<OperationResult<PaginationResponse<Country>>> GetPagedAsync(PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_Countries_GetPaged"))
             {
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                cmd.Parameters.Add("@LastCountryId", SqlDbType.Int).Value = lastCountryId ?? (object)DBNull.Value;
+                cmd.Parameters.Add("@Page", SqlDbType.Int).Value = request.Page;
+                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = request.PageSize;
                 _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
 
                 await conn.OpenAsync();
-                var countries = await ReadCountriesAsync(cmd);
 
-                return _helper.CreateOperationResult<IReadOnlyList<Country>>(countries, statusCodeOutParam, statusMessageOutParam);
+                var pagination = _helper.ReadPaginationAsync(cmd, request, MapToCountry);
+                return _helper.CreateOperationResult(await pagination, statusCodeOutParam, statusMessageOutParam);
             }
         }
 
@@ -136,7 +137,6 @@ namespace SMS.Infrastructure.Repositories
             using (var cmd = _helper.CreateCommand(conn, "usp_Countries_Delete"))
             {
                 cmd.Parameters.Add("@CountryId", SqlDbType.Int).Value = countryId;
-
                 _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
@@ -154,21 +154,6 @@ namespace SMS.Infrastructure.Repositories
                 countryId: reader.GetInt32(reader.GetOrdinal("CountryId")),
                 countryName: reader.GetString(reader.GetOrdinal("CountryName"))
             );
-        }
-
-        private async Task<IReadOnlyList<Country>> ReadCountriesAsync(SqlCommand cmd)
-        {
-            var countries = new List<Country>();
-
-            using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                while (await reader.ReadAsync())
-                {
-                    countries.Add(MapToCountry(reader));
-                }
-            }
-
-            return countries;
         }
     }
 }

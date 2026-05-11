@@ -1,9 +1,9 @@
 ﻿using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
-using SMS.Contracts.Common;
 using SMS.Contracts.Requests.Countries;
 using SMS.Contracts.Responses;
+using SMS.Shared.Common;
 using SMS.Shared.Guards;
 
 namespace SMS.Application.Services
@@ -21,7 +21,7 @@ namespace SMS.Application.Services
         public async Task<int> AddAsync(CreateCountryRequestDto dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
-            StringGuard.AgainstNullOrEmptyString(dto.CountryName, "Country name");
+            StringGuard.AgainstNullOrEmptyString(dto.CountryName, dto.CountryName);
 
             var result = await _repo.AddAsync(dto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -57,7 +57,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToResponseDto();
+            return result.Data.ToDto();
         }
 
         public async Task<CountryResponseDto> GetAsync(string countryName)
@@ -69,35 +69,24 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToResponseDto();
+            return result.Data.ToDto();
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<CountryResponseDto>>> GetPagedAsync(PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<CountryResponseDto>> GetPagedAsync(PaginationRequest paginationRequest)
         {
             ArgumentNullException.ThrowIfNull(paginationRequest);
             NumericGuard.AgainstInvalidId(paginationRequest.Page);
             NumericGuard.AgainstInvalidId(paginationRequest.PageSize);
 
-            var result = await _repo.GetPagedAsync(
-                paginationRequest.Page,
-                paginationRequest.PageSize);
-
+            var result = await _repo.GetPagedAsync(paginationRequest);
             result.ThrowIfNotSuccess();
 
-            IReadOnlyList<CountryResponseDto> dtoReadOnlyList =
-                result.Data
-                .Select(p => p.ToResponseDto())
-                .ToList();
-
-            return new List<PaginationResponse<CountryResponseDto>>
+            return new PaginationResponse<CountryResponseDto>
             {
-                new PaginationResponse<CountryResponseDto>
-                {
-                    Items = dtoReadOnlyList,
-                    TotalCount = result.Data.Count,
-                    Page = paginationRequest.Page,
-                    PageSize = paginationRequest.PageSize
-                }
+                Items = result.Data.Items.Select(c => c.ToDto()).ToList(),
+                TotalCount = result.Data.TotalCount,
+                Page = paginationRequest.Page,
+                PageSize = paginationRequest.PageSize
             };
         }
 
