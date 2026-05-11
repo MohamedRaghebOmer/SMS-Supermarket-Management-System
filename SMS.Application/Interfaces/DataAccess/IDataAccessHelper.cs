@@ -12,5 +12,8 @@ namespace SMS.Application.Interfaces.DataAccess
         OperationResult<T?> CreateOperationResult<T>(T? data, SqlParameter codeParam, SqlParameter messageParam);
         OperationResult<bool> CreateOperationResult(SqlParameter codeParam, SqlParameter messageParam);
         Task<PaginationResponse<T>> ReadPaginationAsync<T>(SqlCommand cmd, PaginationRequest paginationRequest, Func<SqlDataReader, T> mapFunc);
+        Task<OperationResult<PaginationResponse<T>>> ExecutePaginationAsync<T>(
+            SqlCommand cmd, SqlConnection conn, PaginationRequest paginationRequest,
+            Func<SqlDataReader, T> mapFunc);
     }
 }

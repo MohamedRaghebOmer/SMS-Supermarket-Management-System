@@ -65,7 +65,7 @@ namespace SMS.API.Middlewares
 
                 try
                 {
-                    int? auditLogId = await LogAuditLogAsync(
+                    long? auditLogId = await LogAuditLogAsync(
                         context, 
                         auditLogRequestBuilder,
                         auditLogService, 
@@ -89,7 +89,7 @@ namespace SMS.API.Middlewares
         }
 
 
-        private async Task<int?> LogAuditLogAsync(HttpContext context,
+        private async Task<long?> LogAuditLogAsync(HttpContext context,
             IAuditLogRequestBuilder auditLogRequestBuilder,
         IAuditLogService auditLogService,
             string responseBody, int duration)

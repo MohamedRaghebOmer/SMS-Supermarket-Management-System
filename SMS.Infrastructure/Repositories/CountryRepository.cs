@@ -104,14 +104,7 @@ namespace SMS.Infrastructure.Repositories
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_Countries_GetPaged"))
             {
-                cmd.Parameters.Add("@Page", SqlDbType.Int).Value = request.Page;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = request.PageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-
-                var pagination = _helper.ReadPaginationAsync(cmd, request, MapToCountry);
-                return _helper.CreateOperationResult(await pagination, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapToCountry);
             }
         }
 

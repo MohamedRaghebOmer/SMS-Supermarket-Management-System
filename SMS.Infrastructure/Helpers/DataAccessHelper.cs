@@ -96,5 +96,19 @@ namespace SMS.Infrastructure.Helpers
                 PageSize = paginationRequest.PageSize
             };
         }
+
+        public async Task<OperationResult<PaginationResponse<T>>> ExecutePaginationAsync<T>(
+            SqlCommand cmd, SqlConnection conn, PaginationRequest paginationRequest,
+            Func<SqlDataReader, T> mapFunc)
+        {
+            cmd.Parameters.Add("@Page", SqlDbType.Int).Value = paginationRequest.Page;
+            cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = paginationRequest.PageSize;
+            AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
+
+            await conn.OpenAsync();
+            var pagination = await ReadPaginationAsync(cmd, paginationRequest, mapFunc);
+
+            return CreateOperationResult(pagination, statusCodeOutParam, statusMessageOutParam);
+        }
     }
 }

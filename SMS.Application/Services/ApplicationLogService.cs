@@ -1,7 +1,7 @@
 ﻿using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
-using SMS.Contracts.Common;
+using SMS.Shared.Common;
 using SMS.Contracts.Requests.ApplicationLogs;
 using SMS.Contracts.Responses;
 using SMS.Shared.Guards;

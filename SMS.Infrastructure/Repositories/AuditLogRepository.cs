@@ -3,6 +3,7 @@ using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Domain.Entities;
+using SMS.Shared.Common;
 using SMS.Shared.Enums;
 using System.Data;
 using System.Net;
@@ -18,7 +19,7 @@ namespace SMS.Infrastructure.Repositories
             _helper = helper;
         }
 
-        public async Task<OperationResult<int>> AddAuditLogAsync(AuditLog auditLog)
+        public async Task<OperationResult<long>> AddAuditLogAsync(AuditLog auditLog)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_Insert"))
@@ -36,26 +37,23 @@ namespace SMS.Infrastructure.Repositories
                 cmd.Parameters.Add("@IsSuccess", SqlDbType.Bit).Value = auditLog.IsSuccess;
                 cmd.Parameters.Add("@Duration", SqlDbType.Int).Value = auditLog.Duration;
                 cmd.Parameters.Add("@IpAddress", SqlDbType.NVarChar, 50).Value = auditLog.IpAddress;
+                cmd.Parameters.Add("@Details", SqlDbType.NVarChar, -1).Value = auditLog.Details ?? (object)DBNull.Value;
 
-                var detailsParam = cmd.Parameters.Add("@Details", SqlDbType.NVarChar, -1);
-                detailsParam.Value = auditLog.Details is null ? DBNull.Value : auditLog.Details;
-
-                SqlParameter insertedIdParam = new SqlParameter("@InsertedId", SqlDbType.Int)
+                SqlParameter insertedIdParam = new SqlParameter("@InsertedId", SqlDbType.BigInt)
                 {
                     Direction = ParameterDirection.Output
                 };
                 cmd.Parameters.Add(insertedIdParam);
-
                 _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
 
                 await conn.OpenAsync();
                 await cmd.ExecuteNonQueryAsync();
 
-                return _helper.CreateOperationResult((int)insertedIdParam.Value, code, message);
+                return _helper.CreateOperationResult((long)insertedIdParam.Value, code, message);
             }
         }
 
-        public async Task<OperationResult<AuditLog?>> FindAsync(int auditLogId)
+        public async Task<OperationResult<AuditLog?>> FindAsync(long auditLogId)
         {
             using (SqlConnection conn = _helper.CreateConnection())
             using (SqlCommand cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetById"))
@@ -85,138 +83,89 @@ namespace SMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetPagedAsync(int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedAsync(PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetPaged"))
             {
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetByUserIdPagedAsync(int userId, int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByUserIdAsync(int userId,
+            PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetByUserIdPaged"))
             {
                 cmd.Parameters.Add("@UserId", SqlDbType.TinyInt).Value = userId;
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetByActionTypePagedAsync(AuditActionType actionType, int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByActionTypeAsync(
+            AuditActionType actionType, PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetByActionTypePaged"))
             {
                 cmd.Parameters.Add("@ActionType", SqlDbType.TinyInt).Value = (int)actionType;
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetByEndpointUrlPagedAsync(string endpointUrl, int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByEndpointUrlAsync(
+            string endpointUrl, PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetByEndpointUrlPaged"))
             {
                 cmd.Parameters.Add("@EndpointUrl", SqlDbType.NVarChar, 200).Value = endpointUrl;
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetByHttpStatusCodePagedAsync(HttpStatusCode httpStatusCode, int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByHttpStatusCodeAsync(
+            HttpStatusCode httpStatusCode, PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetByHttpStatusCodePaged"))
             {
                 cmd.Parameters.Add("@HttpStatusCode", SqlDbType.Int).Value = (int)httpStatusCode;
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetByIpAddressPagedAsync(string ipAddress, int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByIpAddressAsync(
+            string ipAddress, PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetByIpAddressPaged"))
             {
                 cmd.Parameters.Add("@IpAddress", SqlDbType.NVarChar, 50).Value = ipAddress;
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetCreatedBeforePagedAsync(DateTime dateTime, int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByCreatedBeforeAsync(
+            DateTime dateTime, PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetCreatedBeforePaged"))
             {
                 cmd.Parameters.Add("@CreatedBefore", SqlDbType.DateTime2).Value = dateTime;
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
-        public async Task<OperationResult<IReadOnlyList<AuditLog>>> GetCreatedAfterPagedAsync(DateTime dateTime, int pageNumber, int pageSize)
+        public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByCreatedAfterAsync(
+            DateTime dateTime, PaginationRequest request)
         {
             using (var conn = _helper.CreateConnection())
             using (var cmd = _helper.CreateCommand(conn, "usp_AuditLogs_GetCreatedAfterPaged"))
             {
                 cmd.Parameters.Add("@CreatedAfter", SqlDbType.DateTime2).Value = dateTime;
-                cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = pageNumber;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-                _helper.AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
-
-                await conn.OpenAsync();
-                var auditLogs = await ReadAuditLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<AuditLog>>(auditLogs, statusCodeOutParam, statusMessageOutParam);
+                return await _helper.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
             }
         }
 
@@ -264,21 +213,6 @@ namespace SMS.Infrastructure.Repositories
                 createdAt: reader.GetDateTime(reader.GetOrdinal("CreatedAt")));
 
             return auditLog;
-        }
-
-        private static async Task<IReadOnlyList<AuditLog>> ReadAuditLogsAsync(SqlCommand cmd)
-        {
-            var auditLogs = new List<AuditLog>();
-
-            using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                while (await reader.ReadAsync())
-                {
-                    auditLogs.Add(MapAuditLog(reader));
-                }
-            }
-
-            return auditLogs;
         }
     }
 }

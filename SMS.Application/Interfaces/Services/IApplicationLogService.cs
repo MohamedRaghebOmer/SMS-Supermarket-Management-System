@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using SMS.Contracts.Common;
+using SMS.Shared.Common;
 using SMS.Contracts.Requests.ApplicationLogs;
 using SMS.Contracts.Responses;
 

@@ -13,6 +13,38 @@ namespace SMS.Infrastructure.Repositories
     {
         private readonly IDataAccessHelper _helper;
 
+
+
+
+
+        /*
+         * 
+         * 
+         * 
+         * 
+         * The next step is to implement the AuditLog stored procedures in the database.
+         * After that, do the same edit on the 'ApplicationLog' and 'RoleEntityPermissions' which is update all 'GetPaged'
+         * methods to use the new 'ExecutePaginationAsync' method in the 'DataAccessHelper' and also update the stored procedures,
+         * and when you implement the service to the repository use create a helper method to return the 'PaginationResult'
+         * to avoid code duplication.
+         * 
+         * 
+         * 
+         * 
+         */
+
+
+
+
+
+
+
+
+
+
+
+
+
         public ApplicationLogRepository(IDataAccessHelper helper)
         {
             _helper = helper;

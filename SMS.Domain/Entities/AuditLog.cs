@@ -9,9 +9,9 @@ namespace SMS.Domain.Entities
         private long _auditLogId;
         private int? _userId;
         private Guid _correlationId;
-        private string _endpoint;
+        private string _endpoint = string.Empty;
         private int _duration;
-        private string _ipAddress;
+        private string _ipAddress = string.Empty;
         private DateTime _createdAt;
 
 
