@@ -66,15 +66,16 @@ namespace SMS.API.Middlewares
                 try
                 {
                     long? auditLogId = await LogAuditLogAsync(
-                        context, 
+                        context,
                         auditLogRequestBuilder,
-                        auditLogService, 
+                        auditLogService,
                         responseMessage,
                         (int)stopwatch.ElapsedMilliseconds);
 
                     await applicationLogService.AddAsync(new Contracts.Requests.ApplicationLogs.ApplicationLogRequestDto
                     {
                         Exception = ex,
+                        LogLevel = Shared.Enums.LogLevel.Error,
                         AuditLogId = auditLogId,
                         Message = ex.Message,
                         StackTrace = ex.StackTrace

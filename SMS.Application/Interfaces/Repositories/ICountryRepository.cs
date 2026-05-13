@@ -11,6 +11,7 @@ namespace SMS.Application.Interfaces.Repositories
         public Task<OperationResult<bool>> ExistsAsync(string countryName);
         public Task<OperationResult<Country?>> FindAsync(int countryId);
         public Task<OperationResult<Country?>> FindByNameAsync(string name);
+        public Task<OperationResult<IReadOnlyList<Country>>> GetAllAsync();
         public Task<OperationResult<PaginationResponse<Country>>> GetPagedAsync(PaginationRequest request);
         public Task<OperationResult<bool>> UpdateAsync(Country country);
         public Task<OperationResult<bool>> DeleteAsync(int countryId);

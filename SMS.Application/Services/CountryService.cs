@@ -72,6 +72,13 @@ namespace SMS.Application.Services
             return result.Data.ToDto();
         }
 
+        public async Task<List<CountryResponseDto>> GetAllAsync()
+        {
+            var result = await _repo.GetAllAsync();
+            result.ThrowIfNotSuccess();
+            return result.Data.Select(c => c.ToDto()).ToList();
+        }
+
         public async Task<PaginationResponse<CountryResponseDto>> GetPagedAsync(PaginationRequest paginationRequest)
         {
             ArgumentNullException.ThrowIfNull(paginationRequest);

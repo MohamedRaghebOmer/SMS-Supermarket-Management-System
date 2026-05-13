@@ -8,11 +8,11 @@ using System.Data;
 
 namespace SMS.Infrastructure.Helpers
 {
-    internal class DataAccessHelper : IDataAccessHelper
+    internal sealed class StoredProcedureExecutor : IStoredProcedureExecutor
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public DataAccessHelper(IDbConnectionFactory connectionFactory)
+        public StoredProcedureExecutor(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -31,7 +31,7 @@ namespace SMS.Infrastructure.Helpers
             };
         }
 
-        public void AddDefaultParameters(SqlCommand cmd, out SqlParameter code, out SqlParameter message)
+        public void AttachStatusParameters(SqlCommand cmd, out SqlParameter code, out SqlParameter message)
         {
             // Output parameters
             code = new SqlParameter("@StatusCode", SqlDbType.Int)
@@ -49,12 +49,19 @@ namespace SMS.Infrastructure.Helpers
             cmd.Parameters.Add(message);
         }
 
+        public async Task<(SqlParameter code, SqlParameter message)> PrepareCommandAsync(SqlCommand cmd, SqlConnection conn)
+        {
+            AttachStatusParameters(cmd, out SqlParameter code, out SqlParameter message);
+            await conn.OpenAsync();
+            return (code, message);
+        }
+
         public OperationResult<T?> CreateOperationResult<T>(T? data, SqlParameter code, SqlParameter message)
         {
             return new OperationResult<T?>(
                 data,
                 (OperationStatus)(int)code.Value,
-                message?.Value.ToString() ?? string.Empty);
+                message.Value?.ToString() ?? string.Empty);
         }
 
         public OperationResult<bool> CreateOperationResult(SqlParameter code, SqlParameter message)
@@ -64,7 +71,7 @@ namespace SMS.Infrastructure.Helpers
             return new OperationResult<bool>(
                 status == OperationStatus.Success,
                 status,
-                message?.Value.ToString() ?? string.Empty);
+                message.Value?.ToString() ?? string.Empty);
         }
 
         public async Task<PaginationResponse<T>> ReadPaginationAsync<T>(SqlCommand cmd, PaginationRequest paginationRequest, Func<SqlDataReader, T> mapFunc)
@@ -103,12 +110,76 @@ namespace SMS.Infrastructure.Helpers
         {
             cmd.Parameters.Add("@Page", SqlDbType.Int).Value = paginationRequest.Page;
             cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = paginationRequest.PageSize;
-            AddDefaultParameters(cmd, out SqlParameter statusCodeOutParam, out SqlParameter statusMessageOutParam);
+            var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 
-            await conn.OpenAsync();
             var pagination = await ReadPaginationAsync(cmd, paginationRequest, mapFunc);
 
             return CreateOperationResult(pagination, statusCodeOutParam, statusMessageOutParam);
+        }
+
+        public async Task<OperationResult<T?>> ExecuteSingleAsync<T>(SqlCommand cmd, SqlConnection conn, Func<SqlDataReader, T> mapFunc)
+        {
+            var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
+
+            T? result = default;
+            using (SqlDataReader reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow))
+            {
+                if (await reader.ReadAsync())
+                {
+                    result = mapFunc(reader);
+                }
+            }
+
+            return CreateOperationResult(result, statusCodeOutParam, statusMessageOutParam);
+        }
+
+        public async Task<OperationResult<IReadOnlyList<T>>> ExecuteListAsync<T>(SqlCommand cmd, SqlConnection conn, Func<SqlDataReader, T> mapFunc)
+        {
+            var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
+
+            var results = new List<T>();
+            using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    results.Add(mapFunc(reader));
+                }
+            }
+
+            return CreateOperationResult((IReadOnlyList<T>)results, statusCodeOutParam, statusMessageOutParam);
+        }
+
+        public async Task<OperationResult<bool>> ExecuteNonQueryAsync(SqlCommand cmd, SqlConnection conn)
+        {
+            var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
+
+            await cmd.ExecuteNonQueryAsync();
+
+            return CreateOperationResult(statusCodeOutParam, statusMessageOutParam);
+        }
+
+        public async Task<OperationResult<T?>> ExecuteNonQueryAsync<T>(SqlCommand cmd, SqlConnection conn, T? operationResultData)
+        {
+            var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
+
+            await cmd.ExecuteNonQueryAsync();
+
+            return CreateOperationResult(operationResultData, statusCodeOutParam, statusMessageOutParam);
+        }
+
+        public async Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd, SqlConnection conn)
+        {
+            var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
+
+            object? scalarResult = await cmd.ExecuteScalarAsync();
+
+            T result = default!;
+            if (scalarResult != null && scalarResult != DBNull.Value)
+            {
+                result = (T)Convert.ChangeType(scalarResult, typeof(T));
+            }
+
+            return CreateOperationResult(result, statusCodeOutParam, statusMessageOutParam);
         }
     }
 }

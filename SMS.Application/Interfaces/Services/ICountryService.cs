@@ -11,6 +11,7 @@ namespace SMS.Application.Interfaces.Services
         public Task<bool> ExistsAsync(string countryName);
         public Task<CountryResponseDto> GetAsync(int id);
         public Task<CountryResponseDto> GetAsync(string countryName);
+        public Task<List<CountryResponseDto>> GetAllAsync();
         public Task<PaginationResponse<CountryResponseDto>> GetPagedAsync(PaginationRequest paginationRequest);
         public Task<bool> UpdateAsync(int countryId, UpdateCountryRequestDto dto);
         public Task<bool> DeleteAsync(int id);

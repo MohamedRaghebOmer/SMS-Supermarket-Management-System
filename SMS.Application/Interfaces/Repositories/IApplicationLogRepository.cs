@@ -1,7 +1,7 @@
-﻿using LogLevel = SMS.Shared.Enums.LogLevel;
-using SMS.Application.Common.Results;
-using SMS.Contracts.Responses;
+﻿using SMS.Application.Common.Results;
 using SMS.Domain.Entities;
+using SMS.Shared.Common;
+using LogLevel = SMS.Shared.Enums.LogLevel;
 
 namespace SMS.Application.Interfaces.Repositories
 {
@@ -9,9 +9,9 @@ namespace SMS.Application.Interfaces.Repositories
     {
         public Task<OperationResult<int>> AddAsync(ApplicationLog log);
         public Task<OperationResult<ApplicationLog?>> FindAsync(int id);
-        public Task<OperationResult<IReadOnlyList<ApplicationLogResponseDto>>> FindByAuditLogIdAsync(int auditLogId);
-        public Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedAsync(int page, int pageSize);
-        public Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedByLogLevelAsync(LogLevel logLevel, int page, int pageSize);
-        public Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, int page, int pageSize);
+        public Task<OperationResult<ApplicationLog?>> FindByAuditLogIdAsync(long auditLogId);
+        public Task<OperationResult<PaginationResponse<ApplicationLog>>> GetPagedAsync(PaginationRequest paginationRequest);
+        public Task<OperationResult<PaginationResponse<ApplicationLog>>> GetPagedByLogLevelAsync(LogLevel logLevel, PaginationRequest paginationRequest);
+        public Task<OperationResult<PaginationResponse<ApplicationLog>>> GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, PaginationRequest paginationRequest);
     }
 }

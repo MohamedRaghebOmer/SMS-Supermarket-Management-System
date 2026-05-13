@@ -14,8 +14,8 @@ namespace SMS.Contracts.Responses
         public string? RequestBody { get; set; }
         public string? ResponseBody { get; set; }
         public string? UserAgent { get; set; }
-        public HttpStatusCode StatusCode { get; set; }
-        public bool IsSuccess { get; set; }
+        public HttpStatusCode HttpStatusCode { get; set; }
+        public bool IsSuccess => ((int)HttpStatusCode >= 200 && (int)HttpStatusCode < 300);
         public int Duration { get; set; }
         public required string IpAddress { get; set; }
         public string? Details { get; set; }

@@ -1,9 +1,9 @@
 ﻿using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
-using SMS.Shared.Common;
 using SMS.Contracts.Requests.ApplicationLogs;
 using SMS.Contracts.Responses;
+using SMS.Shared.Common;
 using SMS.Shared.Guards;
 using LogLevel = SMS.Shared.Enums.LogLevel;
 

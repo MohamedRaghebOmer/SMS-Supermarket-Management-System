@@ -1,4 +1,5 @@
-﻿using SMS.Shared.Guards;
+﻿using SMS.Shared.Enums;
+using SMS.Shared.Guards;
 
 namespace SMS.Domain.Entities
 {
@@ -30,6 +31,8 @@ namespace SMS.Domain.Entities
                 _auditLogId = value;
             }
         }
+
+        public LogLevel LogLevel { get; set; } = LogLevel.Information;
 
         public string Message
         {

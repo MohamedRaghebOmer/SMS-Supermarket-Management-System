@@ -2,8 +2,8 @@
 using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Application.Interfaces.Repositories;
-using SMS.Contracts.Responses;
 using SMS.Domain.Entities;
+using SMS.Shared.Common;
 using System.Data;
 using LogLevel = SMS.Shared.Enums.LogLevel;
 
@@ -11,174 +11,78 @@ namespace SMS.Infrastructure.Repositories
 {
     public class ApplicationLogRepository : IApplicationLogRepository
     {
-        private readonly IDataAccessHelper _helper;
+        private readonly IStoredProcedureExecutor _executor;
 
-
-
-
-
-        /*
-         * 
-         * 
-         * 
-         * 
-         * The next step is to implement the AuditLog stored procedures in the database.
-         * After that, do the same edit on the 'ApplicationLog' and 'RoleEntityPermissions' which is update all 'GetPaged'
-         * methods to use the new 'ExecutePaginationAsync' method in the 'DataAccessHelper' and also update the stored procedures,
-         * and when you implement the service to the repository use create a helper method to return the 'PaginationResult'
-         * to avoid code duplication.
-         * 
-         * 
-         * 
-         * 
-         */
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public ApplicationLogRepository(IDataAccessHelper helper)
+        public ApplicationLogRepository(IStoredProcedureExecutor helper)
         {
-            _helper = helper;
+            _executor = helper;
         }
+
 
         public async Task<OperationResult<int>> AddAsync(ApplicationLog log)
         {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_Insert"))
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_ApplicationLogs_Insert");
+
+            AddApplicationLogParameters(cmd, log);
+            var insertedIdParam = new SqlParameter("@InsertedId", SqlDbType.Int)
             {
-                cmd.Parameters.Add("@AuditLogId", SqlDbType.Int).Value = log.AuditLogId ?? (object)DBNull.Value;
-                cmd.Parameters.Add("@Message", SqlDbType.NVarChar, -1).Value = log.Message;
-                cmd.Parameters.Add("@Exception", SqlDbType.NVarChar, -1).Value = log.Exception?.ToString() ?? (object)DBNull.Value;
-                cmd.Parameters.Add("@StackTrace", SqlDbType.NVarChar, -1).Value = log.StackTrace ?? (object)DBNull.Value;
+                Direction = ParameterDirection.Output
+            };
+            cmd.Parameters.Add(insertedIdParam);
 
-                var insertedIdParam = new SqlParameter("@InsertedId", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-
-                cmd.Parameters.Add(insertedIdParam);
-
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
-
-                await conn.OpenAsync();
-                await cmd.ExecuteNonQueryAsync();
-
-                return _helper.CreateOperationResult((int)insertedIdParam.Value, code, message);
-            }
+            return await _executor.ExecuteNonQueryAsync(cmd, conn, (int)insertedIdParam.Value);
         }
 
         public async Task<OperationResult<ApplicationLog?>> FindAsync(int id)
         {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetById"))
-            {
-                cmd.Parameters.Add("@ApplicationLogId", SqlDbType.Int).Value = id;
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_ApplicationLogs_GetById");
 
-                await conn.OpenAsync();
-                using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
-
-                var log = await MapApplicationLogAsync(reader);
-
-                return _helper.CreateOperationResult(log, code, message);
-            }
+            cmd.Parameters.Add("@ApplicationLogId", SqlDbType.Int).Value = id;
+            return await _executor.ExecuteSingleAsync(cmd, conn, MapApplicationLog);
         }
 
-        public async Task<OperationResult<IReadOnlyList<ApplicationLogResponseDto>>> FindByAuditLogIdAsync(int auditLogId)
+        public async Task<OperationResult<ApplicationLog?>> FindByAuditLogIdAsync(long auditLogId)
         {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetByAuditLogId"))
-            {
-                cmd.Parameters.Add("@AuditLogId", SqlDbType.Int).Value = auditLogId;
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_ApplicationLogs_GetByAuditLogId");
 
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
+            cmd.Parameters.Add("@AuditLogId", SqlDbType.BigInt).Value = auditLogId;
 
-                await conn.OpenAsync();
-                var logs = await ReadApplicationLogResponsesAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<ApplicationLogResponseDto>>(logs, code, message);
-            }
+            return await _executor.ExecuteSingleAsync(cmd, conn, MapApplicationLog);
         }
 
-        public async Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedAsync(int page, int pageSize)
+        public async Task<OperationResult<PaginationResponse<ApplicationLog>>> GetPagedAsync(PaginationRequest paginationRequest)
         {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetPaged"))
-            {
-                cmd.Parameters.Add("@Page", SqlDbType.Int).Value = page;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_ApplicationLogs_GetPaged");
 
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
-
-                await conn.OpenAsync();
-                var logs = await ReadApplicationLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<ApplicationLog>>(logs, code, message);
-            }
+            return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapApplicationLog);
         }
 
-        public async Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedByLogLevelAsync(LogLevel logLevel, int page, int pageSize)
+        public async Task<OperationResult<PaginationResponse<ApplicationLog>>>
+            GetPagedByLogLevelAsync(LogLevel logLevel, PaginationRequest paginationRequest)
         {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetPagedByLogLevel"))
-            {
-                cmd.Parameters.Add("@LogLevel", SqlDbType.Int).Value = (int)logLevel;
-                cmd.Parameters.Add("@Page", SqlDbType.Int).Value = page;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_ApplicationLogs_GetPagedByLogLevel");
 
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
-
-                await conn.OpenAsync();
-                var logs = await ReadApplicationLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<ApplicationLog>>(logs, code, message);
-            }
+            cmd.Parameters.Add("@LogLevel", SqlDbType.TinyInt).Value = (byte)logLevel;
+            return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapApplicationLog);
         }
 
-        public async Task<OperationResult<IReadOnlyList<ApplicationLog>>> GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, int page, int pageSize)
+        public async Task<OperationResult<PaginationResponse<ApplicationLog>>>
+            GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, PaginationRequest paginationRequest)
         {
-            using (var conn = _helper.CreateConnection())
-            using (var cmd = _helper.CreateCommand(conn, "usp_ApplicationLogs_GetPagedByDateRange"))
-            {
-                cmd.Parameters.Add("@StartDate", SqlDbType.DateTime2).Value = startDate;
-                cmd.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
-                cmd.Parameters.Add("@Page", SqlDbType.Int).Value = page;
-                cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_ApplicationLogs_GetPagedByDateRange");
 
-                _helper.AddDefaultParameters(cmd, out SqlParameter code, out SqlParameter message);
-
-                await conn.OpenAsync();
-                var logs = await ReadApplicationLogsAsync(cmd);
-
-                return _helper.CreateOperationResult<IReadOnlyList<ApplicationLog>>(logs, code, message);
-            }
+            cmd.Parameters.Add("@StartDate", SqlDbType.DateTime2).Value = startDate;
+            cmd.Parameters.Add("@EndDate", SqlDbType.DateTime2).Value = endDate;
+            return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapApplicationLog);
         }
 
 
-
-        private static async Task<ApplicationLog?> MapApplicationLogAsync(SqlDataReader reader)
-        {
-            if (!reader.HasRows)
-            {
-                return null;
-            }
-
-            if (!await reader.ReadAsync())
-            {
-                return null;
-            }
-
-            return MapApplicationLog(reader);
-        }
 
         private static ApplicationLog MapApplicationLog(SqlDataReader reader)
         {
@@ -200,55 +104,18 @@ namespace SMS.Infrastructure.Repositories
                 stackTrace: stackTrace);
         }
 
-        private static async Task<IReadOnlyList<ApplicationLog>> ReadApplicationLogsAsync(SqlCommand cmd)
+        private static void AddApplicationLogParameters(SqlCommand cmd, ApplicationLog log, bool includeId = false)
         {
-            var logs = new List<ApplicationLog>();
-
-            using (var reader = await cmd.ExecuteReaderAsync())
+            if (includeId)
             {
-                while (await reader.ReadAsync())
-                {
-                    logs.Add(MapApplicationLog(reader));
-                }
+                cmd.Parameters.Add("@ApplicationLogId", SqlDbType.Int).Value = log.ApplicationLogId;
             }
 
-            return logs;
-        }
-
-        private static async Task<IReadOnlyList<ApplicationLogResponseDto>> ReadApplicationLogResponsesAsync(SqlCommand cmd)
-        {
-            var logs = new List<ApplicationLogResponseDto>();
-
-            using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                while (await reader.ReadAsync())
-                {
-                    logs.Add(MapApplicationLogResponse(reader));
-                }
-            }
-
-            return logs;
-        }
-
-        private static ApplicationLogResponseDto MapApplicationLogResponse(SqlDataReader reader)
-        {
-            var auditLogIdOrdinal = reader.GetOrdinal("AuditLogId");
-            int? auditLogId = reader.IsDBNull(auditLogIdOrdinal) ? null : reader.GetInt32(auditLogIdOrdinal);
-
-            var exceptionOrdinal = reader.GetOrdinal("Exception");
-            Exception? exception = reader.IsDBNull(exceptionOrdinal) ? null : new Exception(reader.GetString(exceptionOrdinal));
-
-            var stackTraceOrdinal = reader.GetOrdinal("StackTrace");
-            string? stackTrace = reader.IsDBNull(stackTraceOrdinal) ? null : reader.GetString(stackTraceOrdinal);
-
-            return new ApplicationLogResponseDto
-            {
-                ApplicationLogId = reader.GetInt32(reader.GetOrdinal("ApplicationLogId")),
-                AuditLogId = auditLogId,
-                Message = reader.GetString(reader.GetOrdinal("Message")),
-                Exception = exception,
-                StackTrace = stackTrace
-            };
+            cmd.Parameters.Add("@AuditLogId", SqlDbType.BigInt).Value = log.AuditLogId ?? (object)DBNull.Value;
+            cmd.Parameters.Add("@LogLevel", SqlDbType.TinyInt).Value = (byte)log.LogLevel;
+            cmd.Parameters.Add("@Message", SqlDbType.NVarChar, -1).Value = log.Message;
+            cmd.Parameters.Add("@Exception", SqlDbType.NVarChar, -1).Value = log.Exception?.ToString() ?? (object)DBNull.Value;
+            cmd.Parameters.Add("@StackTrace", SqlDbType.NVarChar, -1).Value = log.StackTrace ?? (object)DBNull.Value;
         }
     }
 }

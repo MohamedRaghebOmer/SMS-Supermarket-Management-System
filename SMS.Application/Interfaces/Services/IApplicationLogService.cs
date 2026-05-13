@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using SMS.Shared.Common;
-using SMS.Contracts.Requests.ApplicationLogs;
+﻿using SMS.Contracts.Requests.ApplicationLogs;
 using SMS.Contracts.Responses;
+using SMS.Shared.Common;
 
 namespace SMS.Application.Interfaces.Services
 {
