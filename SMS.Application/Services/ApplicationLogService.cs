@@ -7,7 +7,6 @@ using SMS.Shared.Common;
 using SMS.Shared.Guards;
 using LogLevel = SMS.Shared.Enums.LogLevel;
 
-
 namespace SMS.Application.Services
 {
     public class ApplicationLogService : IApplicationLogService
@@ -18,6 +17,7 @@ namespace SMS.Application.Services
         {
             _repo = repo;
         }
+
 
         public async Task<int> AddAsync(ApplicationLogRequestDto dto)
         {
@@ -42,37 +42,53 @@ namespace SMS.Application.Services
             return result.Data.ToDto();
         }
 
-        public async Task<IReadOnlyList<ApplicationLogResponseDto>> GetByAuditLogIdAsync(int auditLogId)
+        public async Task<ApplicationLogResponseDto> GetByAuditLogIdAsync(int auditLogId)
         {
             NumericGuard.AgainstInvalidId(auditLogId);
 
             var result = await _repo.FindByAuditLogIdAsync(auditLogId);
+            
             result.ThrowIfNotSuccess();
+            result.ThrowNotFoundIfDataNull();
 
-            return result.Data;
+            return result.Data.ToDto();
         }
 
-        public async Task<IReadOnlyList<ApplicationLogResponseDto>> GetPagedAsync(PaginationRequest pagination)
+        public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedAsync(
+            PaginationRequest pagination)
         {
             ValidatePagination(pagination);
 
-            var result = await _repo.GetPagedAsync(pagination.Page, pagination.PageSize);
+            var result = await _repo.GetPagedAsync(pagination);
             result.ThrowIfNotSuccess();
 
-            return result.Data.Select(log => log.ToDto()).ToList();
+            return new PaginationResponse<ApplicationLogResponseDto>
+            {
+                Items = result.Data.Items.Select(log => log.ToDto()).ToList(),
+                TotalCount = result.Data.TotalCount,
+                Page = result.Data.Page,
+                PageSize = result.Data.PageSize
+            };
         }
 
-        public async Task<IReadOnlyList<ApplicationLogResponseDto>> GetPagedByLogLevelAsync(LogLevel logLevel, PaginationRequest pagination)
+        public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedByLogLevelAsync(
+            LogLevel logLevel, PaginationRequest pagination)
         {
             ValidatePagination(pagination);
 
-            var result = await _repo.GetPagedByLogLevelAsync(logLevel, pagination.Page, pagination.PageSize);
+            var result = await _repo.GetPagedByLogLevelAsync(logLevel, pagination);
             result.ThrowIfNotSuccess();
 
-            return result.Data.Select(log => log.ToDto()).ToList();
+            return new PaginationResponse<ApplicationLogResponseDto>
+            {
+                Items = result.Data.Items.Select(log => log.ToDto()).ToList(),
+                TotalCount = result.Data.TotalCount,
+                Page = result.Data.Page,
+                PageSize = result.Data.PageSize
+            };
         }
 
-        public async Task<IReadOnlyList<ApplicationLogResponseDto>> GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, PaginationRequest pagination)
+        public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, PaginationRequest pagination)
         {
             ValidatePagination(pagination);
             DateGuard.AgainstFutureDate(startDate, nameof(startDate));
@@ -83,10 +99,16 @@ namespace SMS.Application.Services
                 throw new ArgumentException("End date must be greater than or equal to start date.", nameof(endDate));
             }
 
-            var result = await _repo.GetPagedByDateRangeAsync(startDate, endDate, pagination.Page, pagination.PageSize);
+            var result = await _repo.GetPagedByDateRangeAsync(startDate, endDate, pagination);
             result.ThrowIfNotSuccess();
 
-            return result.Data.Select(log => log.ToDto()).ToList();
+            return new PaginationResponse<ApplicationLogResponseDto>
+            {
+                Items = result.Data.Items.Select(log => log.ToDto()).ToList(),
+                TotalCount = result.Data.TotalCount,
+                Page = result.Data.Page,
+                PageSize = result.Data.PageSize
+            };
         }
 
 

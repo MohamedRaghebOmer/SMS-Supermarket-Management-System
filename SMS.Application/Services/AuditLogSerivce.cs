@@ -114,7 +114,8 @@ namespace SMS.Application.Services
             return BuildPagedResponse(result);
         }
 
-        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByHttpStatusCodeAsync(HttpStatusCode httpStatusCode, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByHttpStatusCodeAsync(
+            HttpStatusCode httpStatusCode, PaginationRequest paginationRequest)
         {
             ValidatePagination(paginationRequest);
 
@@ -124,7 +125,8 @@ namespace SMS.Application.Services
             return BuildPagedResponse(result);
         }
 
-        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByIpAddressAsync(string ipAddress, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByIpAddressAsync(
+            string ipAddress, PaginationRequest paginationRequest)
         {
             StringGuard.AgainstNullOrEmptyString(ipAddress, nameof(ipAddress));
             ValidatePagination(paginationRequest);
@@ -135,7 +137,8 @@ namespace SMS.Application.Services
             return BuildPagedResponse(result);
         }
 
-        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedBeforeAsync(DateTime dateTime, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedBeforeAsync(
+            DateTime dateTime, PaginationRequest paginationRequest)
         {
             ValidatePagination(paginationRequest);
             DateGuard.AgainstFutureDate(dateTime, nameof(dateTime));
@@ -146,7 +149,8 @@ namespace SMS.Application.Services
             return BuildPagedResponse(result);
         }
 
-        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedAfterAsync(DateTime dateTime, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedAfterAsync(
+            DateTime dateTime, PaginationRequest paginationRequest)
         {
             ValidatePagination(paginationRequest);
             DateGuard.AgainstFutureDate(dateTime, nameof(dateTime));
@@ -159,7 +163,8 @@ namespace SMS.Application.Services
 
 
 
-        private static PaginationResponse<AuditLogResponseDto> BuildPagedResponse(OperationResult<PaginationResponse<AuditLog>> result)
+        private static PaginationResponse<AuditLogResponseDto> BuildPagedResponse(
+            OperationResult<PaginationResponse<AuditLog>> result)
         {
             return new PaginationResponse<AuditLogResponseDto>
             {
