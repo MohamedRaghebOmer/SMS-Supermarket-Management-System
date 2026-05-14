@@ -62,7 +62,7 @@ namespace SMS.Domain.Entities
 
             set
             {
-                StringGuard.AgainstNullOrEmptyString(value, nameof(Endpoint));
+                StringGuard.AgainstNullOrEmpty(value, nameof(Endpoint));
                 _endpoint = value;
             }
         }
@@ -93,7 +93,7 @@ namespace SMS.Domain.Entities
             get => _ipAddress;
             set
             {
-                StringGuard.AgainstNullOrEmptyString(value, nameof(IpAddress));
+                StringGuard.AgainstNullOrEmpty(value, nameof(IpAddress));
                 _ipAddress = value;
             }
         }

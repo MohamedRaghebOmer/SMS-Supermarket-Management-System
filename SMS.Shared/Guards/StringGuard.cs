@@ -2,7 +2,7 @@
 {
     public class StringGuard
     {
-        public static void AgainstNullOrEmptyString(string value, string parameterName)
+        public static void AgainstNullOrEmpty(string value, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
