@@ -28,30 +28,6 @@ namespace SMS.Application.Common.Results
             }
         }
 
-        public void ThrowIfValidationError()
-        {
-            if (Status == OperationStatus.ValidationError)
-            {
-                throw new Exceptions.ValidationException(Message);
-            }
-        }
-
-        public void ThrowIfNotFound()
-        {
-            if (Status == OperationStatus.NotFound)
-            {
-                throw new Exceptions.NotFoundException(Message);
-            }
-        }
-
-        public void ThrowIfUnexpectedError()
-        {
-            if (Status == OperationStatus.UnexpectedError)
-            {
-                throw new Exception(Message);
-            }
-        }
-
         public void ThrowNotFoundIfDataNull()
         {
             if (Data is null)
@@ -60,6 +36,16 @@ namespace SMS.Application.Common.Results
             }
         }
 
+        public static OperationStatus FromCode(int code)
+        {
+            return code switch
+            {
+                0 => OperationStatus.Success,
+                1 => OperationStatus.ValidationError,
+                2 => OperationStatus.NotFound,
+                _ => throw new ArgumentOutOfRangeException(nameof(code), $"Invalid operation status code: {code}")
+            };
+        }
 
         public OperationResult(T data, OperationStatus status, string message)
         {

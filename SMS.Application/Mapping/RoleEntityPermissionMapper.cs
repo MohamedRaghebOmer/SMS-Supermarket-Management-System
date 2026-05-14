@@ -6,12 +6,12 @@ namespace SMS.Application.Mapping
 {
     public static class RoleEntityPermissionMapper
     {
-        public static RoleEntityPermission ToEntity(this RoleEntityPermissionsRequestDto dto)
+        public static RoleEntityPermissions ToEntity(this RoleEntityPermissionsRequestDto dto)
         {
-            return new RoleEntityPermission(dto.RoleId, dto.Entity, dto.PermissionsMask);
+            return new RoleEntityPermissions(dto.RoleId, dto.Entity, dto.PermissionsMask);
         }
 
-        public static RoleEntityPermissionsResponseDto ToDto(this RoleEntityPermission entity)
+        public static RoleEntityPermissionsResponseDto ToDto(this RoleEntityPermissions entity)
         {
             return new RoleEntityPermissionsResponseDto
             {

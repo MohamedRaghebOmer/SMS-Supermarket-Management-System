@@ -16,7 +16,7 @@ namespace SMS.Application.Mapping
             return new Country(dto.CountryName);
         }
 
-        public static CountryResponseDto ToResponseDto(this Country entity)
+        public static CountryResponseDto ToDto(this Country entity)
         {
             return new CountryResponseDto
             {

@@ -28,7 +28,7 @@ namespace SMS.API.Middlewares
             }
 
             var originalBodyStream = context.Response.Body;
-            int auditLogId = 0;
+            long auditLogId = 0;
 
             try
             {

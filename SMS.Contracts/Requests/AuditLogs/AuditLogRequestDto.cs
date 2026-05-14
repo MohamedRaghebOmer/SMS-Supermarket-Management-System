@@ -17,8 +17,8 @@ namespace SMS.Contracts.Requests.AuditLogs
         public string? RequestBody { get; set; } = null;
         public string? ResponseBody { get; set; } = null;
         public string? UserAgent { get; set; } = null;
-        public HttpStatusCode StatusCode { get; set; }
-        public bool IsSuccess => ((int)StatusCode >= 200 && (int)StatusCode < 300);
+        public HttpStatusCode HttpStatusCode { get; set; }
+        public bool IsSuccess => ((int)HttpStatusCode >= 200 && (int)HttpStatusCode < 300);
         public int Duration { get; set; }
         public required string IpAddress { get; set; }
         public string? Details { get; set; } = null;

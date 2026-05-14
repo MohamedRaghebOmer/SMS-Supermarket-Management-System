@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SMS.Shared.Enums;
 
-namespace SMS.API.Authorization
+namespace SMS.API.Authorization.Requirements
 {
     public sealed class PermissionRequirement : IAuthorizationRequirement
     {

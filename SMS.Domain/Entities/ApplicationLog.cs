@@ -1,12 +1,13 @@
-﻿using SMS.Shared.Guards;
+﻿using SMS.Shared.Enums;
+using SMS.Shared.Guards;
 
 namespace SMS.Domain.Entities
 {
     public class ApplicationLog
     {
         private int _applicationLogId;
-        private int? _auditLogId;
-        private string _message;
+        private long? _auditLogId;
+        private string _message = string.Empty;
 
 
         public int ApplicationLogId
@@ -20,7 +21,7 @@ namespace SMS.Domain.Entities
             }
         }
 
-        public int? AuditLogId
+        public long? AuditLogId
         {
             get => _auditLogId;
 
@@ -31,12 +32,14 @@ namespace SMS.Domain.Entities
             }
         }
 
+        public LogLevel LogLevel { get; set; } = LogLevel.Information;
+
         public string Message
         {
             get => _message;
             set
             {
-                StringGuard.AgainstNullOrEmptyString(value, "Message");
+                StringGuard.AgainstNullOrEmpty(value, "Message");
                 _message = value;
             }
         }
@@ -47,7 +50,7 @@ namespace SMS.Domain.Entities
 
         public ApplicationLog() { }
 
-        public ApplicationLog(int? auditLogId, string message, Exception? exception = null, string? stackTrace = null)
+        public ApplicationLog(long? auditLogId, string message, Exception? exception = null, string? stackTrace = null)
         {
             AuditLogId = auditLogId;
             Message = message;
@@ -55,7 +58,7 @@ namespace SMS.Domain.Entities
             StackTrace = stackTrace;
         }
 
-        public ApplicationLog(int applicationLogId, int? auditLogId, string message, Exception? exception = null, string? stackTrace = null) : this(auditLogId, message, exception, stackTrace)
+        public ApplicationLog(int applicationLogId, long? auditLogId, string message, Exception? exception = null, string? stackTrace = null) : this(auditLogId, message, exception, stackTrace)
         {
             ApplicationLogId = applicationLogId;
         }

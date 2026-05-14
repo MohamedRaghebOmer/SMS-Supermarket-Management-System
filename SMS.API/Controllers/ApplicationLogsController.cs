@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SMS.API.CustomAttributes;
 using SMS.Application.Interfaces.Services;
-using SMS.Contracts.Common;
+using SMS.Shared.Common;
 using SMS.Shared.Enums;
 using LogLevel = SMS.Shared.Enums.LogLevel;
 

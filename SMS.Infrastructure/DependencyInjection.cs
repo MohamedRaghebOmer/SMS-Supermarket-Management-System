@@ -13,10 +13,11 @@ namespace SMS.Infrastructure
         {
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
-            services.AddScoped<IDataAccessHelper, DataAccessHelper>();
+            services.AddScoped<IStoredProcedureExecutor, StoredProcedureExecutor>();
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
-            services.AddScoped<IRoleEntityPermissionRepository, RoleEntityPermissionRepository>();
+            services.AddScoped<IRoleEntityPermissionRepository, RoleEntityPermissionsRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }

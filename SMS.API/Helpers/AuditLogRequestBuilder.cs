@@ -48,7 +48,7 @@ namespace SMS.API.Helpers
                 UserAgent =
                     Helpers.AuditLogHelper.GetUserAgent(context),
 
-                StatusCode =
+                HttpStatusCode =
                     Helpers.AuditLogHelper.GetStatusCode(context),
 
                 Duration = duration,

@@ -9,9 +9,9 @@ namespace SMS.Domain.Entities
         private long _auditLogId;
         private int? _userId;
         private Guid _correlationId;
-        private string _endpoint;
+        private string _endpoint = string.Empty;
         private int _duration;
-        private string _ipAddress;
+        private string _ipAddress = string.Empty;
         private DateTime _createdAt;
 
 
@@ -62,7 +62,7 @@ namespace SMS.Domain.Entities
 
             set
             {
-                StringGuard.AgainstNullOrEmptyString(value, nameof(Endpoint));
+                StringGuard.AgainstNullOrEmpty(value, nameof(Endpoint));
                 _endpoint = value;
             }
         }
@@ -73,9 +73,9 @@ namespace SMS.Domain.Entities
 
         public string? UserAgent { get; set; }
 
-        public HttpStatusCode StatusCode { get; set; }
+        public HttpStatusCode HttpStatusCode { get; set; }
 
-        public bool IsSuccess { get; set; }
+        public bool IsSuccess => ((int)HttpStatusCode >= 200 && (int)HttpStatusCode < 300);
 
         public int Duration
         {
@@ -93,7 +93,7 @@ namespace SMS.Domain.Entities
             get => _ipAddress;
             set
             {
-                StringGuard.AgainstNullOrEmptyString(value, nameof(IpAddress));
+                StringGuard.AgainstNullOrEmpty(value, nameof(IpAddress));
                 _ipAddress = value;
             }
         }
@@ -114,7 +114,7 @@ namespace SMS.Domain.Entities
 
         public AuditLog() { }
 
-        public AuditLog(int? userId, string? attemptedLoginIdentifier, Guid correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, HttpStatusCode statusCode, bool isSuccess, int duration, string ipAddress, string? details)
+        public AuditLog(int? userId, string? attemptedLoginIdentifier, Guid correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, HttpStatusCode httpStatusCode, int duration, string ipAddress, string? details, DateTime createdAt)
         {
             UserId = userId;
             AttemptedLoginIdentifier = attemptedLoginIdentifier;
@@ -124,16 +124,17 @@ namespace SMS.Domain.Entities
             RequestBody = requestBody;
             ResponseBody = responseBody;
             UserAgent = userAgent;
-            StatusCode = statusCode;
-            IsSuccess = isSuccess;
+            HttpStatusCode = httpStatusCode;
             Duration = duration;
             IpAddress = ipAddress;
             Details = details;
+            CreatedAt = createdAt;
         }
 
-        public AuditLog(long auditLogId, int? userId, string? attemptedLoginIdentifier, Guid correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, HttpStatusCode statusCode, bool isSuccess, int duration, string ipAddress, string? details, DateTime createdAt) : this(userId, attemptedLoginIdentifier, correlationId, actionType, endpoint, requestBody, responseBody, userAgent, statusCode, isSuccess, duration, ipAddress, details)
+        public AuditLog(long auditLogId, int? userId, string? attemptedLoginIdentifier, Guid correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, HttpStatusCode httpStatusCode, int duration, string ipAddress, string? details, DateTime createdAt) : this(userId, attemptedLoginIdentifier, correlationId, actionType, endpoint, requestBody, responseBody, userAgent, httpStatusCode, duration, ipAddress, details, createdAt)
         {
             AuditLogId = auditLogId;
         }
     }
 }
+

@@ -1,10 +1,11 @@
-﻿using SMS.Application.Exceptions;
+﻿using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
-using SMS.Contracts.Common;
 using SMS.Contracts.Requests.AuditLogs;
 using SMS.Contracts.Responses;
+using SMS.Domain.Entities;
+using SMS.Shared.Common;
 using SMS.Shared.Enums;
 using SMS.Shared.Guards;
 using System.Net;
@@ -21,7 +22,7 @@ namespace SMS.Application.Services
         }
 
 
-        public async Task<int> AddAsync(AuditLogRequestDto requestDto)
+        public async Task<long> AddAsync(AuditLogRequestDto requestDto)
         {
             ArgumentNullException.ThrowIfNull(requestDto);
             NumericGuard.AgainstInvalidId(requestDto.UserId);
@@ -31,9 +32,9 @@ namespace SMS.Application.Services
                 throw new ArgumentException("CorrelationId cannot be empty.", nameof(requestDto.CorrelationId));
             }
 
-            StringGuard.AgainstNullOrEmptyString(requestDto.Endpoint, nameof(requestDto.Endpoint));
+            StringGuard.AgainstNullOrEmpty(requestDto.Endpoint, nameof(requestDto.Endpoint));
             NumericGuard.AgainstNegativeNumber(requestDto.Duration, nameof(requestDto.Duration));
-            StringGuard.AgainstNullOrEmptyString(requestDto.IpAddress, nameof(requestDto.IpAddress));
+            StringGuard.AgainstNullOrEmpty(requestDto.IpAddress, nameof(requestDto.IpAddress));
 
             var result = await _repo.AddAuditLogAsync(requestDto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -46,7 +47,7 @@ namespace SMS.Application.Services
             NumericGuard.AgainstInvalidId(auditLogId);
 
             var result = await _repo.FindAsync((int)auditLogId);
-            
+
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
@@ -67,108 +68,110 @@ namespace SMS.Application.Services
             return result.Data.ToDto();
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedAsync(PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedAsync(
+            PaginationRequest paginationRequest)
         {
             ValidatePagination(paginationRequest);
 
-            var result = await _repo.GetPagedAsync(paginationRequest.Page, paginationRequest.PageSize);
+            OperationResult<PaginationResponse<AuditLog>> result = await _repo.GetPagedAsync(paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(paginationRequest, result.Data);
+            return BuildPagedResponse(result);
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedByUserIdAsync(int userId, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByUserIdAsync(
+            int userId, PaginationRequest paginationRequest)
         {
             NumericGuard.AgainstInvalidId(userId);
             ValidatePagination(paginationRequest);
 
-            var result = await _repo.GetByUserIdPagedAsync(userId, paginationRequest.Page, paginationRequest.PageSize);
+            var result = await _repo.GetPagedByUserIdAsync(userId, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(paginationRequest, result.Data);
+            return BuildPagedResponse(result);
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedByActionTypeAsync(AuditActionType actionType, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByActionTypeAsync(
+            AuditActionType actionType, PaginationRequest paginationRequest)
         {
             ValidatePagination(paginationRequest);
 
-            var result = await _repo.GetByActionTypePagedAsync(actionType, paginationRequest.Page, paginationRequest.PageSize);
+            var result = await _repo.GetPagedByActionTypeAsync(actionType, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(paginationRequest, result.Data);
+            return BuildPagedResponse(result);
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedByEndpointAsync(string endpointUrl, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByEndpointAsync(
+            string endpointUrl, PaginationRequest paginationRequest)
         {
-            StringGuard.AgainstNullOrEmptyString(endpointUrl, nameof(endpointUrl));
+            StringGuard.AgainstNullOrEmpty(endpointUrl, nameof(endpointUrl));
             ValidatePagination(paginationRequest);
 
-            var result = await _repo.GetByEndpointUrlPagedAsync(endpointUrl, paginationRequest.Page, paginationRequest.PageSize);
+            var result = await _repo.GetPagedByEndpointUrlAsync(endpointUrl, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(paginationRequest, result.Data);
+            return BuildPagedResponse(result);
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedByHttpStatusCodeAsync(HttpStatusCode httpStatusCode, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByHttpStatusCodeAsync(
+            HttpStatusCode httpStatusCode, PaginationRequest paginationRequest)
         {
             ValidatePagination(paginationRequest);
 
-            var result = await _repo.GetByHttpStatusCodePagedAsync(httpStatusCode, paginationRequest.Page, paginationRequest.PageSize);
+            var result = await _repo.GetPagedByHttpStatusCodeAsync(httpStatusCode, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(paginationRequest, result.Data);
+            return BuildPagedResponse(result);
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedByIpAddressAsync(string ipAddress, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByIpAddressAsync(
+            string ipAddress, PaginationRequest paginationRequest)
         {
-            StringGuard.AgainstNullOrEmptyString(ipAddress, nameof(ipAddress));
+            StringGuard.AgainstNullOrEmpty(ipAddress, nameof(ipAddress));
             ValidatePagination(paginationRequest);
 
-            var result = await _repo.GetByIpAddressPagedAsync(ipAddress, paginationRequest.Page, paginationRequest.PageSize);
+            var result = await _repo.GetPagedByIpAddressAsync(ipAddress, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(paginationRequest, result.Data);
+            return BuildPagedResponse(result);
         }
 
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedCreatedBeforeAsync(DateTime dateTime, PaginationRequest paginationRequest)
-        {
-            ValidatePagination(paginationRequest);
-            DateGuard.AgainstFutureDate(dateTime, nameof(dateTime));
-
-            var result = await _repo.GetCreatedBeforePagedAsync(dateTime, paginationRequest.Page, paginationRequest.PageSize);
-            result.ThrowIfNotSuccess();
-
-            return BuildPagedResponse(paginationRequest, result.Data);
-        }
-
-        public async Task<IReadOnlyList<PaginationResponse<AuditLogResponseDto>>> GetPagedCreatedAfterAsync(DateTime dateTime, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedBeforeAsync(
+            DateTime dateTime, PaginationRequest paginationRequest)
         {
             ValidatePagination(paginationRequest);
             DateGuard.AgainstFutureDate(dateTime, nameof(dateTime));
 
-            var result = await _repo.GetCreatedAfterPagedAsync(dateTime, paginationRequest.Page, paginationRequest.PageSize);
+            var result = await _repo.GetPagedByCreatedBeforeAsync(dateTime, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(paginationRequest, result.Data);
+            return BuildPagedResponse(result);
+        }
+
+        public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedAfterAsync(
+            DateTime dateTime, PaginationRequest paginationRequest)
+        {
+            ValidatePagination(paginationRequest);
+            DateGuard.AgainstFutureDate(dateTime, nameof(dateTime));
+
+            var result = await _repo.GetPagedByCreatedAfterAsync(dateTime, paginationRequest);
+            result.ThrowIfNotSuccess();
+
+            return BuildPagedResponse(result);
         }
 
 
 
-        private static IReadOnlyList<PaginationResponse<AuditLogResponseDto>> BuildPagedResponse(PaginationRequest paginationRequest, IReadOnlyList<SMS.Domain.Entities.AuditLog> auditLogs)
+        private static PaginationResponse<AuditLogResponseDto> BuildPagedResponse(
+            OperationResult<PaginationResponse<AuditLog>> result)
         {
-            IReadOnlyList<AuditLogResponseDto> dtoReadOnlyList = auditLogs
-                .Select(p => p.ToDto())
-                .ToList();
-
-            return new List<PaginationResponse<AuditLogResponseDto>>
+            return new PaginationResponse<AuditLogResponseDto>
             {
-                new PaginationResponse<AuditLogResponseDto>
-                {
-                    Items = dtoReadOnlyList,
-                    TotalCount = auditLogs.Count,
-                    Page = paginationRequest.Page,
-                    PageSize = paginationRequest.PageSize
-                }
+                Items = result.Data.Items.Select(p => p.ToDto()).ToList(),
+                TotalCount = result.Data.TotalCount,
+                Page = result.Data.Page,
+                PageSize = result.Data.PageSize
             };
         }
 

@@ -1,14 +1,9 @@
 ﻿using SMS.Shared.Enums;
 using SMS.Shared.Guards;
-using System;
-using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Security.Principal;
-using System.Text;
 
 namespace SMS.Domain.Entities
 {
-    public class RoleEntityPermission
+    public class RoleEntityPermissions
     {
         private int _roleId;
         private int _permissionsMask;
@@ -37,9 +32,9 @@ namespace SMS.Domain.Entities
         }
 
 
-        public RoleEntityPermission() { }
+        public RoleEntityPermissions() { }
 
-        public RoleEntityPermission(int roleId, SystemEntity systemEntity, int permissionsMask)
+        public RoleEntityPermissions(int roleId, SystemEntity systemEntity, int permissionsMask)
         {
             RoleId = roleId;
             Entity = systemEntity;

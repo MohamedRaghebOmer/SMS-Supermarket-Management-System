@@ -1,10 +1,13 @@
-﻿namespace SMS.Contracts.Responses
+﻿using SMS.Shared.Enums;
+
+namespace SMS.Contracts.Responses
 {
     public class ApplicationLogResponseDto
     {
         public int ApplicationLogId { get; set; }
-        public int? AuditLogId { get; set; }
-        public string Message { get; set; }
+        public LogLevel LogLevel { get; set; }
+        public long? AuditLogId { get; set; }
+        public string Message { get; set; } = string.Empty;
         public Exception? Exception { get; set; }
         public string? StackTrace { get; set; }
     }

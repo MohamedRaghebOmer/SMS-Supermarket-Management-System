@@ -1,4 +1,4 @@
-﻿namespace SMS.Contracts.Common
+﻿namespace SMS.Shared.Common
 {
     public class PaginationRequest
     {
