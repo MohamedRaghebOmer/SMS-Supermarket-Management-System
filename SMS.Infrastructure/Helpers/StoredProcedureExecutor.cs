@@ -181,5 +181,27 @@ namespace SMS.Infrastructure.Helpers
 
             return CreateOperationResult(result, statusCodeOutParam, statusMessageOutParam);
         }
+
+        public async Task<OperationResult<bool>> ExecuteExistsAsync(SqlConnection conn, SqlCommand cmd)
+        {
+            var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
+
+            var result = await cmd.ExecuteScalarAsync() != null;
+
+            return CreateOperationResult(result, statusCodeOutParam, statusMessageOutParam);
+        }
+
+        public async Task<OperationResult<bool>> ExecuteBooleanOperationAsync(
+            SqlCommand cmd, SqlConnection conn)
+        {
+            AttachStatusParameters(cmd, out SqlParameter code, out SqlParameter message);
+
+            await conn.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+
+            OperationStatus codeValue = code.Value != null ? (OperationStatus)(int)code.Value : OperationStatus.UnexpectedError;
+
+            return CreateOperationResult<bool>(codeValue == OperationStatus.Success, code, message);
+        }
     }
 }

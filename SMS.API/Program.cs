@@ -2,6 +2,7 @@ using SMS.API.Configurations;
 using SMS.API.Middlewares;
 using SMS.Application;
 using SMS.Infrastructure;
+using SMS.Shared.Constants;
 
 namespace SMS.API
 {
@@ -29,6 +30,10 @@ namespace SMS.API
 
             // Add authentication configuration
             builder.Services.AddAuthenticationConfiguration(builder.Configuration);
+            builder.Services.AddUserOwnerOrAdminPolicy();
+
+            // Add rate limiting configuration
+            builder.Services.AddSlidingRateLimiting();
 
             var app = builder.Build();
 
@@ -45,9 +50,10 @@ namespace SMS.API
             app.AddCustomMiddlewares();
             app.UseHttpsRedirection();
             app.UseCors("SMSApiCorsPolicy");
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.MapControllers();
+            app.MapControllers().RequireRateLimiting(Constants.SlidingIp);
             app.Run();
         }
     }

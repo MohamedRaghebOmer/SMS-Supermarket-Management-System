@@ -17,6 +17,7 @@ namespace SMS.Infrastructure
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
             services.AddScoped<IRoleEntityPermissionRepository, RoleEntityPermissionsRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }

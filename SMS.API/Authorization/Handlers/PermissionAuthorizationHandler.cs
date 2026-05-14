@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using SMS.API.Authorization.Requirements;
 using SMS.Application.Interfaces.Services;
 
-namespace SMS.API.Authorization
+namespace SMS.API.Authorization.Handlers
 {
     public sealed class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {

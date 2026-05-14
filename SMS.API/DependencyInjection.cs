@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SMS.API.Authorization;
+using SMS.API.Authorization.Handlers;
 using SMS.API.Helpers;
 using SMS.API.Interfaces;
 
