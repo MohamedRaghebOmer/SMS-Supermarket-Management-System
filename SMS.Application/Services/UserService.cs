@@ -206,15 +206,19 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<bool> UpdateAsync(UpdateUserDto updateDto)
+        public async Task<bool> UpdateAsync(int userId, UpdateUserDto updateDto)
         {
+            NumericGuard.AgainstInvalidId(userId);
             ArgumentNullException.ThrowIfNull(updateDto);
             NumericGuard.AgainstInvalidId(updateDto.PersonId);
             StringGuard.AgainstNullOrEmpty(updateDto.Username, nameof(updateDto.Username));
             StringGuard.AgainstNullOrEmpty(updateDto.Password, nameof(updateDto.Password));
             NumericGuard.AgainstInvalidId(updateDto.RoleId);
 
-            var result = await _repo.UpdateAsync(updateDto.ToEntity());
+            var entity = updateDto.ToEntity();
+            entity.UserId = userId;
+
+            var result = await _repo.UpdateAsync(entity);
             result.ThrowIfNotSuccess();
 
             return result.Data;

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SMS.Application.Helpers;
 using SMS.Application.Interfaces.DataAccess;
+using SMS.Application.Interfaces.Helpers;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Infrastructure.Data;
 using SMS.Infrastructure.Helpers;
@@ -18,6 +20,9 @@ namespace SMS.Infrastructure
             services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
             services.AddScoped<IRoleEntityPermissionRepository, RoleEntityPermissionsRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IStringHelper, StringHelper>();
+            services.AddScoped<IRolesRepository, RolesRepository>();
 
             return services;
         }

@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SMS.API.Helpers;
 using SMS.API.Helpers.Constants;
 using SMS.Application.Interfaces.Services;
 using SMS.Contracts.Requests.Users;
 using SMS.Shared.Common;
-using SMS.Shared.Constants;
+using System.Security.Claims;
 
 namespace SMS.API.Controllers
 {
@@ -72,13 +71,12 @@ namespace SMS.API.Controllers
                 return BadRequest("Username cannot be empty.");
             }
 
-            var user = await _userService.GetByUsernameAsync(username);
-
-            if (!await IsAuthorizedAsync(user.UserId))
+            if (!await IsAuthorizedAsync(username))
             {
                 return Forbid();
             }
 
+            var user = await _userService.GetByUsernameAsync(username);
             return Ok(user);
         }
 
@@ -344,6 +342,21 @@ namespace SMS.API.Controllers
                 User, userId, PoliciesNames.UserOwnerOrAdmin);
 
             return result.Succeeded;
+        }
+
+        private async Task<bool> IsAuthorizedAsync(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
+
+            if (User.FindFirst(ClaimTypes.Name)?.Value != username && !User.IsInRole("Admin"))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

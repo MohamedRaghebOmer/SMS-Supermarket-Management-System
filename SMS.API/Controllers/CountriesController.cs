@@ -47,7 +47,7 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
-        [HttpGet("exists/name/{countryName}", Name = "GetCountryByName")]
+        [HttpGet("exists/name/{countryName}", Name = "DoesCountryExistByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

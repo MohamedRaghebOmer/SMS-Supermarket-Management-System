@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using SMS.API.Authorization.Requirements;
 using SMS.Shared.Enums;
 
 namespace SMS.API.Authorization

@@ -17,7 +17,7 @@ namespace SMS.Domain.Entities
         public int UserId
         {
             get => _userId;
-            private set
+            set
             {
                 NumericGuard.AgainstInvalidId(value);
                 _userId = value;
