@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SMS.API.CustomAttributes;
 using SMS.Application.Interfaces.Services;
 using SMS.Contracts.Requests.Countries;
@@ -46,8 +47,8 @@ namespace SMS.API.Controllers
 
 
 
-        [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
-        [HttpGet("exists/name/{countryName}", Name = "GetCountryByName")]
+        [AllowAnonymous]
+        [HttpGet("exists/name/{countryName}", Name = "DoesCountryExistByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -87,7 +88,7 @@ namespace SMS.API.Controllers
 
 
 
-        [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

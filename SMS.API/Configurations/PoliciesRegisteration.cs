@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SMS.API.Authorization.Requirements;
 using SMS.API.Helpers.Constants;
-using SMS.Shared.Constants;
 
 namespace SMS.API.Configurations
 {
-    public static class UserOwnerOrAdminPolicyRegisteration
+    public static class PoliciesRegisteration
     {
         public static void AddUserOwnerOrAdminPolicy(this IServiceCollection services)
         {

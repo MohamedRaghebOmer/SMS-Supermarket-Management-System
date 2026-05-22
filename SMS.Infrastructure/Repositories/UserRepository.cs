@@ -22,9 +22,8 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> RegisterAsync(User user)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Register");
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_Insert");
 
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.UserId;
             AddCommonUserParameters(cmd, user);
 
             var insertedIdParam = new SqlParameter("@InsertedId", SqlDbType.Int)
