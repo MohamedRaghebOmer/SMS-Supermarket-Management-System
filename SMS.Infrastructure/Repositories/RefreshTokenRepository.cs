@@ -3,8 +3,6 @@ using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Domain.Entities;
-using SMS.Shared.Guards;
-using System.Reflection.Emit;
 
 namespace SMS.Infrastructure.Repositories
 {

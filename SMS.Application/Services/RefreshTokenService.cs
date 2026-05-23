@@ -66,7 +66,7 @@ namespace SMS.Application.Services
 
         public async Task RevokeRefreshTokenAsync(string refreshToken)
         {
-            if(string.IsNullOrEmpty(refreshToken))
+            if (string.IsNullOrEmpty(refreshToken))
             {
                 return;
             }

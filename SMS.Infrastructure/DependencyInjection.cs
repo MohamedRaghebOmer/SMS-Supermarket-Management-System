@@ -14,6 +14,7 @@ namespace SMS.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddScoped<ICountryRepository, CountryRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
             services.AddScoped<IStoredProcedureExecutor, StoredProcedureExecutor>();
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();

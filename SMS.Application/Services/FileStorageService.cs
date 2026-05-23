@@ -5,7 +5,7 @@ namespace SMS.Application.Services
 {
     public class FileStorageService : IFileStorageService
     {
-        public async Task<string> SaveFileAsync(IFormFile file, string directory)
+        public async Task<Guid> SaveFileAsync(IFormFile file, string directory)
         {
             ArgumentNullException.ThrowIfNull(file);
 
@@ -15,7 +15,8 @@ namespace SMS.Application.Services
             Directory.CreateDirectory(directory);
 
             var extension = Path.GetExtension(file.FileName);
-            var fileName = $"{Guid.NewGuid()}{extension}";
+            var fileNameGuid = Guid.NewGuid();
+            var fileName = $"{fileNameGuid}{extension}";
             var filePath = Path.Combine(directory, fileName);
 
             await using var stream = new FileStream(
@@ -27,7 +28,7 @@ namespace SMS.Application.Services
 
             await file.CopyToAsync(stream);
 
-            return filePath;
+            return fileNameGuid;
         }
 
         public Stream LoadFile(string filePath)
@@ -43,10 +44,11 @@ namespace SMS.Application.Services
             );
         }
 
-        public async Task ReplaceFileAsync(Guid OldFileNameGuid, IFormFile newFile, string directory)
+        public async Task<Guid> ReplaceFileAsync(Guid oldFileNameGuid, IFormFile newFile,
+            string directory)
         {
-            if (OldFileNameGuid == Guid.Empty)
-                throw new ArgumentException("Invalid file name GUID", nameof(OldFileNameGuid));
+            if (oldFileNameGuid == Guid.Empty)
+                throw new ArgumentException("Invalid file name GUID", nameof(oldFileNameGuid));
 
             ArgumentNullException.ThrowIfNull(newFile);
 
@@ -55,20 +57,40 @@ namespace SMS.Application.Services
 
             Directory.CreateDirectory(directory);
 
+            // Find the old file whatever the extension is
+            var oldFilePath = Directory
+                .GetFiles(directory, $"{oldFileNameGuid}.*")
+                .FirstOrDefault();
+
+            if (oldFilePath is null)
+                throw new FileNotFoundException(
+                    "File not found",
+                    $"{oldFileNameGuid}.*"
+                );
+
+            // Delete old file first
+            File.Delete(oldFilePath);
+
+            // Generate new file name
+            var newFileNameGuid = Guid.NewGuid();
             var extension = Path.GetExtension(newFile.FileName);
-            var filePath = Path.Combine(directory, $"{OldFileNameGuid}{extension}");
 
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("File not found", filePath);
+            var newFilePath = Path.Combine(
+                directory,
+                $"{newFileNameGuid}{extension}"
+            );
 
+            // Save new file
             await using var stream = new FileStream(
-                filePath,
-                FileMode.Create,
+                newFilePath,
+                FileMode.CreateNew,
                 FileAccess.Write,
                 FileShare.None
             );
 
             await newFile.CopyToAsync(stream);
+
+            return newFileNameGuid;
         }
 
         public Task DeleteFileAsync(string filePath)

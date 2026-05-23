@@ -1,10 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using SMS.Application.Common.Results;
+﻿using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Application.Interfaces.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMS.Infrastructure.Repositories
 {
@@ -15,7 +11,7 @@ namespace SMS.Infrastructure.Repositories
         public RolesRepository(IStoredProcedureExecutor executor)
         {
             _executor = executor;
-        } 
+        }
 
         public async Task<OperationResult<string?>> FindRoleNameByIdAsync(int roleId)
         {

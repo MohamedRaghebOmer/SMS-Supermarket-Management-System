@@ -15,7 +15,7 @@ namespace SMS.Application.Interfaces.Services
         Task<bool> ExistsByUsernameAsync(string username);
         Task<bool> ExistsByEmailAsync(string email);
         Task<bool> IsEmailOwnedByUserAsync(string email, int userId);
-        Task<PaginationResponse<UserResponseDto>> GetByRoleIdAsync(int roleId, 
+        Task<PaginationResponse<UserResponseDto>> GetByRoleIdAsync(int roleId,
             PaginationRequest paginationRequest);
         Task<PaginationResponse<UserResponseDto>> GetPagedAsync(
             PaginationRequest paginationRequest);
