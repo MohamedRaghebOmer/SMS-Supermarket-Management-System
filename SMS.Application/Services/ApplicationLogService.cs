@@ -1,4 +1,5 @@
-﻿using SMS.Application.Interfaces.Repositories;
+﻿using SMS.Application.Interfaces.Helpers;
+using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
 using SMS.Contracts.Requests.ApplicationLogs;
@@ -12,10 +13,12 @@ namespace SMS.Application.Services
     public class ApplicationLogService : IApplicationLogService
     {
         private readonly IApplicationLogRepository _repo;
+        private readonly IValidationHelper _validationHelper;
 
-        public ApplicationLogService(IApplicationLogRepository repo)
+        public ApplicationLogService(IApplicationLogRepository repo, IValidationHelper validationHelper)
         {
             _repo = repo;
+            _validationHelper = validationHelper;
         }
 
 
@@ -47,7 +50,7 @@ namespace SMS.Application.Services
             NumericGuard.AgainstInvalidId(auditLogId);
 
             var result = await _repo.FindByAuditLogIdAsync(auditLogId);
-            
+
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
@@ -57,7 +60,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedAsync(
             PaginationRequest pagination)
         {
-            ValidatePagination(pagination);
+            _validationHelper.ValidatePagination(pagination);
 
             var result = await _repo.GetPagedAsync(pagination);
             result.ThrowIfNotSuccess();
@@ -74,7 +77,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedByLogLevelAsync(
             LogLevel logLevel, PaginationRequest pagination)
         {
-            ValidatePagination(pagination);
+            _validationHelper.ValidatePagination(pagination);
 
             var result = await _repo.GetPagedByLogLevelAsync(logLevel, pagination);
             result.ThrowIfNotSuccess();
@@ -90,7 +93,7 @@ namespace SMS.Application.Services
 
         public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, PaginationRequest pagination)
         {
-            ValidatePagination(pagination);
+            _validationHelper.ValidatePagination(pagination);
             DateGuard.AgainstFutureDate(startDate, nameof(startDate));
             DateGuard.AgainstFutureDate(endDate, nameof(endDate));
 
@@ -111,13 +114,5 @@ namespace SMS.Application.Services
             };
         }
 
-
-
-        private static void ValidatePagination(PaginationRequest pagination)
-        {
-            ArgumentNullException.ThrowIfNull(pagination);
-            NumericGuard.AgainstInvalidId(pagination.Page);
-            NumericGuard.AgainstInvalidId(pagination.PageSize);
-        }
     }
 }

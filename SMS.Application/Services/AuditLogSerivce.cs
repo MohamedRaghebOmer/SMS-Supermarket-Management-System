@@ -1,4 +1,5 @@
 ﻿using SMS.Application.Common.Results;
+using SMS.Application.Interfaces.Helpers;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
@@ -15,10 +16,12 @@ namespace SMS.Application.Services
     public class AuditLogService : IAuditLogService
     {
         private readonly IAuditLogRepository _repo;
+        private readonly IValidationHelper _validationHelper;
 
-        public AuditLogService(IAuditLogRepository repo)
+        public AuditLogService(IAuditLogRepository repo, IValidationHelper validationHelper)
         {
             _repo = repo;
+            _validationHelper = validationHelper;
         }
 
 
@@ -71,7 +74,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedAsync(
             PaginationRequest paginationRequest)
         {
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             OperationResult<PaginationResponse<AuditLog>> result = await _repo.GetPagedAsync(paginationRequest);
             result.ThrowIfNotSuccess();
@@ -83,7 +86,7 @@ namespace SMS.Application.Services
             int userId, PaginationRequest paginationRequest)
         {
             NumericGuard.AgainstInvalidId(userId);
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedByUserIdAsync(userId, paginationRequest);
             result.ThrowIfNotSuccess();
@@ -94,7 +97,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByActionTypeAsync(
             AuditActionType actionType, PaginationRequest paginationRequest)
         {
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedByActionTypeAsync(actionType, paginationRequest);
             result.ThrowIfNotSuccess();
@@ -106,7 +109,7 @@ namespace SMS.Application.Services
             string endpointUrl, PaginationRequest paginationRequest)
         {
             StringGuard.AgainstNullOrEmpty(endpointUrl, nameof(endpointUrl));
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedByEndpointUrlAsync(endpointUrl, paginationRequest);
             result.ThrowIfNotSuccess();
@@ -117,7 +120,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByHttpStatusCodeAsync(
             HttpStatusCode httpStatusCode, PaginationRequest paginationRequest)
         {
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedByHttpStatusCodeAsync(httpStatusCode, paginationRequest);
             result.ThrowIfNotSuccess();
@@ -129,7 +132,7 @@ namespace SMS.Application.Services
             string ipAddress, PaginationRequest paginationRequest)
         {
             StringGuard.AgainstNullOrEmpty(ipAddress, nameof(ipAddress));
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedByIpAddressAsync(ipAddress, paginationRequest);
             result.ThrowIfNotSuccess();
@@ -140,7 +143,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedBeforeAsync(
             DateTime dateTime, PaginationRequest paginationRequest)
         {
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
             DateGuard.AgainstFutureDate(dateTime, nameof(dateTime));
 
             var result = await _repo.GetPagedByCreatedBeforeAsync(dateTime, paginationRequest);
@@ -152,7 +155,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedCreatedAfterAsync(
             DateTime dateTime, PaginationRequest paginationRequest)
         {
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
             DateGuard.AgainstFutureDate(dateTime, nameof(dateTime));
 
             var result = await _repo.GetPagedByCreatedAfterAsync(dateTime, paginationRequest);
@@ -173,13 +176,6 @@ namespace SMS.Application.Services
                 Page = result.Data.Page,
                 PageSize = result.Data.PageSize
             };
-        }
-
-        private static void ValidatePagination(PaginationRequest paginationRequest)
-        {
-            ArgumentNullException.ThrowIfNull(paginationRequest);
-            NumericGuard.AgainstInvalidId(paginationRequest.Page);
-            NumericGuard.AgainstInvalidId(paginationRequest.PageSize);
         }
     }
 }

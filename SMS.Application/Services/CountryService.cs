@@ -1,4 +1,5 @@
-﻿using SMS.Application.Interfaces.Repositories;
+﻿using SMS.Application.Interfaces.Helpers;
+using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Application.Mapping;
 using SMS.Contracts.Requests.Countries;
@@ -11,10 +12,12 @@ namespace SMS.Application.Services
     public class CountryService : ICountryService
     {
         private readonly ICountryRepository _repo;
+        private readonly IValidationHelper _validationHelper;
 
-        public CountryService(ICountryRepository repo)
+        public CountryService(ICountryRepository repo, IValidationHelper validationHelper)
         {
             _repo = repo;
+            _validationHelper = validationHelper;
         }
 
 
@@ -81,9 +84,7 @@ namespace SMS.Application.Services
 
         public async Task<PaginationResponse<CountryResponseDto>> GetPagedAsync(PaginationRequest paginationRequest)
         {
-            ArgumentNullException.ThrowIfNull(paginationRequest);
-            NumericGuard.AgainstInvalidId(paginationRequest.Page);
-            NumericGuard.AgainstInvalidId(paginationRequest.PageSize);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedAsync(paginationRequest);
             result.ThrowIfNotSuccess();

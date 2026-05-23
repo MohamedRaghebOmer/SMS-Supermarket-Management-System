@@ -5,7 +5,6 @@ using SMS.Application.Interfaces.Repositories;
 using SMS.Domain.Entities;
 using SMS.Shared.Common;
 using System.Data;
-using OperationStatus = SMS.Application.Common.Enums.OperationStatus;
 
 namespace SMS.Infrastructure.Repositories
 {

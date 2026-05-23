@@ -15,11 +15,13 @@ namespace SMS.Application.Services
     {
         private readonly IUserRepository _repo;
         private readonly IStringHelper _stringHelper;
+        private readonly IValidationHelper _validationHelper;
 
-        public UserService(IUserRepository repo, IStringHelper stringHelper)
+        public UserService(IUserRepository repo, IStringHelper stringHelper, IValidationHelper validationHelper)
         {
             _repo = repo;
             _stringHelper = stringHelper;
+            _validationHelper = validationHelper;
         }
 
 
@@ -72,7 +74,7 @@ namespace SMS.Application.Services
 
         public async Task<UserResponseDto> GetByEmailAsync(string email)
         {
-            StringGuard.AgainstNullOrEmpty(email, nameof(email));
+            _validationHelper.ValidateEmail(email, nameof(email));
 
             var result = await _repo.FindByEmailAsync(email);
             result.ThrowIfNotSuccess();
@@ -103,7 +105,7 @@ namespace SMS.Application.Services
 
         public async Task<bool> ExistsByEmailAsync(string email)
         {
-            StringGuard.AgainstNullOrEmpty(email, nameof(email));
+            _validationHelper.ValidateEmail(email, nameof(email));
 
             var result = await _repo.ExistsByEmail(email);
             result.ThrowIfNotSuccess();
@@ -113,7 +115,7 @@ namespace SMS.Application.Services
 
         public async Task<bool> IsEmailOwnedByUserAsync(string email, int userId)
         {
-            StringGuard.AgainstNullOrEmpty(email, nameof(email));
+            _validationHelper.ValidateEmail(email, nameof(email));
             NumericGuard.AgainstInvalidId(userId);
 
             var result = await _repo.IsEmailOwnedByUserAsync(email, userId);
@@ -125,7 +127,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<UserResponseDto>> GetByRoleIdAsync(int roleId, PaginationRequest paginationRequest)
         {
             NumericGuard.AgainstInvalidId(roleId);
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetByRoleId(roleId, paginationRequest);
             result.ThrowIfNotSuccess();
@@ -135,7 +137,7 @@ namespace SMS.Application.Services
 
         public async Task<PaginationResponse<UserResponseDto>> GetPagedAsync(PaginationRequest paginationRequest)
         {
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedAsync(paginationRequest);
             result.ThrowIfNotSuccess();
@@ -145,7 +147,7 @@ namespace SMS.Application.Services
 
         public async Task<PaginationResponse<UserResponseDto>> GetActiveUsersAsync(PaginationRequest paginationRequest)
         {
-            ValidatePagination(paginationRequest);
+            _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetActiveUsers(paginationRequest);
             result.ThrowIfNotSuccess();
@@ -232,14 +234,6 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
 
             return result.Data;
-        }
-
-
-        private static void ValidatePagination(PaginationRequest paginationRequest)
-        {
-            ArgumentNullException.ThrowIfNull(paginationRequest);
-            NumericGuard.AgainstInvalidId(paginationRequest.Page);
-            NumericGuard.AgainstInvalidId(paginationRequest.PageSize);
         }
 
         private static PaginationResponse<UserResponseDto> BuildPagedResponse(

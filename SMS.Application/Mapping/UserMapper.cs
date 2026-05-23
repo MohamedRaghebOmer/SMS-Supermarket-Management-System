@@ -1,7 +1,6 @@
 using SMS.Contracts.Requests.Users;
 using SMS.Contracts.Responses;
 using SMS.Domain.Entities;
-using System;
 
 namespace SMS.Application.Mapping
 {
