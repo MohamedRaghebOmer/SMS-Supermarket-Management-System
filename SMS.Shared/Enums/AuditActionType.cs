@@ -10,11 +10,7 @@
         Login = 5,
         Logout = 6,
         Register = 7,
-
-        FailedLogin = 8,
         TokenRefresh = 9,
-        TokenExpired = 10,
-        AccessDenied = 11,
 
         Unknown = 99
     }

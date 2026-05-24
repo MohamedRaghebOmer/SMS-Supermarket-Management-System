@@ -81,7 +81,7 @@ namespace SMS.Application.Services
 
         public async Task<PersonResponseDto> GetByNationalNoAsync(string nationalNo)
         {
-            StringGuard.AgainstNullOrEmpty(nationalNo, nameof(nationalNo));
+            StringGuard.AgainstNullOrWhiteSpace(nationalNo, nameof(nationalNo));
 
             var result = await _repo.FindByNationalNoAsync(nationalNo);
             result.ThrowIfNotSuccess();
@@ -147,7 +147,7 @@ namespace SMS.Application.Services
 
         public async Task<bool> ExistsByNationalNoAsync(string nationalNo)
         {
-            StringGuard.AgainstNullOrEmpty(nationalNo, nameof(nationalNo));
+            StringGuard.AgainstNullOrWhiteSpace(nationalNo, nameof(nationalNo));
 
             var result = await _repo.ExistsByNationalNoAsync(nationalNo);
             result.ThrowIfNotSuccess();
@@ -247,7 +247,7 @@ namespace SMS.Application.Services
 
         public async Task<bool> DeleteAsync(string nationalNo)
         {
-            StringGuard.AgainstNullOrEmpty(nationalNo, nameof(nationalNo));
+            StringGuard.AgainstNullOrWhiteSpace(nationalNo, nameof(nationalNo));
             var existing = await _repo.FindByNationalNoAsync(nationalNo);
             existing.ThrowIfNotSuccess();
             existing.ThrowNotFoundIfDataNull();
@@ -266,12 +266,12 @@ namespace SMS.Application.Services
 
         private static void ValidateDto(CreatePersonRequestDto dto)
         {
-            StringGuard.AgainstNullOrEmpty(dto.NationalNo, nameof(dto.NationalNo));
-            StringGuard.AgainstNullOrEmpty(dto.FirstName, nameof(dto.FirstName));
-            StringGuard.AgainstNullOrEmpty(dto.SecondName, nameof(dto.SecondName));
-            StringGuard.AgainstNullOrEmpty(dto.LastName, nameof(dto.LastName));
-            StringGuard.AgainstNullOrEmpty(dto.Address, nameof(dto.Address));
-            StringGuard.AgainstNullOrEmpty(dto.Phone, nameof(dto.Phone));
+            StringGuard.AgainstNullOrWhiteSpace(dto.NationalNo, nameof(dto.NationalNo));
+            StringGuard.AgainstNullOrWhiteSpace(dto.FirstName, nameof(dto.FirstName));
+            StringGuard.AgainstNullOrWhiteSpace(dto.SecondName, nameof(dto.SecondName));
+            StringGuard.AgainstNullOrWhiteSpace(dto.LastName, nameof(dto.LastName));
+            StringGuard.AgainstNullOrWhiteSpace(dto.Address, nameof(dto.Address));
+            StringGuard.AgainstNullOrWhiteSpace(dto.Phone, nameof(dto.Phone));
             NumericGuard.AgainstInvalidId(dto.NationalityCountryId);
             if (dto.DateOfBirth.Date > DateTime.UtcNow.Date)
             {
@@ -281,12 +281,12 @@ namespace SMS.Application.Services
 
         private static void ValidateDto(UpdatePersonRequestDto dto)
         {
-            StringGuard.AgainstNullOrEmpty(dto.NationalNo, nameof(dto.NationalNo));
-            StringGuard.AgainstNullOrEmpty(dto.FirstName, nameof(dto.FirstName));
-            StringGuard.AgainstNullOrEmpty(dto.SecondName, nameof(dto.SecondName));
-            StringGuard.AgainstNullOrEmpty(dto.LastName, nameof(dto.LastName));
-            StringGuard.AgainstNullOrEmpty(dto.Address, nameof(dto.Address));
-            StringGuard.AgainstNullOrEmpty(dto.Phone, nameof(dto.Phone));
+            StringGuard.AgainstNullOrWhiteSpace(dto.NationalNo, nameof(dto.NationalNo));
+            StringGuard.AgainstNullOrWhiteSpace(dto.FirstName, nameof(dto.FirstName));
+            StringGuard.AgainstNullOrWhiteSpace(dto.SecondName, nameof(dto.SecondName));
+            StringGuard.AgainstNullOrWhiteSpace(dto.LastName, nameof(dto.LastName));
+            StringGuard.AgainstNullOrWhiteSpace(dto.Address, nameof(dto.Address));
+            StringGuard.AgainstNullOrWhiteSpace(dto.Phone, nameof(dto.Phone));
             NumericGuard.AgainstInvalidId(dto.NationalityCountryId);
             if (dto.DateOfBirth.Date > DateTime.UtcNow.Date)
             {

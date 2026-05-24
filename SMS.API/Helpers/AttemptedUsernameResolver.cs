@@ -8,9 +8,10 @@ namespace SMS.API.Helpers
     {
         public async Task<string?> ResolveAsync(HttpContext context, AuditActionType actionType)
         {
-            if (actionType is not (AuditActionType.Login
-                or AuditActionType.FailedLogin
-                or AuditActionType.Register))
+            if (actionType != AuditActionType.Login
+                && actionType != AuditActionType.Register
+                && actionType != AuditActionType.TokenRefresh
+                && actionType != AuditActionType.Logout)
             {
                 return null;
             }
@@ -18,14 +19,18 @@ namespace SMS.API.Helpers
             context.Request.EnableBuffering();
 
             context.Request.Body.Position = 0;
+            context.Request.Body.Seek(0, SeekOrigin.Begin);
 
             using var reader = new StreamReader(
-                context.Request.Body,
-                leaveOpen: true);
+            context.Request.Body,
+            encoding: System.Text.Encoding.UTF8,
+            detectEncodingFromByteOrderMarks: false,
+            leaveOpen: true);
 
             var body = await reader.ReadToEndAsync();
 
             context.Request.Body.Position = 0;
+            context.Request.Body.Seek(0, SeekOrigin.Begin);
 
             if (string.IsNullOrWhiteSpace(body))
                 return null;

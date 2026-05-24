@@ -39,7 +39,6 @@ namespace SMS.Application.Mapping
                 UserId = entity.UserId,
                 PersonId = entity.PersonId,
                 UserName = entity.Username,
-                PasswordHash = entity.PasswordHash,
                 RoleId = entity.RoleId,
                 IsActive = entity.IsActive
             };

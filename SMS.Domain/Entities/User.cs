@@ -40,7 +40,7 @@ namespace SMS.Domain.Entities
             get => _username;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(Username));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(Username));
                 _username = value;
             }
         }
@@ -51,7 +51,7 @@ namespace SMS.Domain.Entities
 
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(PasswordHash));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(PasswordHash));
                 _passwordHash = value;
             }
         }
@@ -103,7 +103,7 @@ namespace SMS.Domain.Entities
 
             set
             {
-                if (value > DateTime.UtcNow)
+                if (value is not null && value > DateTime.UtcNow)
                 {
                     throw new ArgumentException("LastUpdatedAt cannot be in the future.");
                 }

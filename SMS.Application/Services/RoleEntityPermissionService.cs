@@ -30,6 +30,19 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
+        /// <summary>
+        /// Gets the role identifier for the specified user identifier.
+        /// </summary>
+        public async Task<int> GetRoleIdByUserIdAsync(int userId)
+        {
+            NumericGuard.AgainstInvalidId(userId);
+
+            var result = await _repo.GetRoleIdByUserIdAsync(userId);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
         public async Task<IReadOnlyList<RoleEntityPermissionsResponseDto>> GetByRoleIdAsync(int roleId)
         {
             NumericGuard.AgainstInvalidId(roleId);

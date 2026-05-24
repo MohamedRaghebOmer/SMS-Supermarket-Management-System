@@ -25,7 +25,7 @@ namespace SMS.API.Helpers
 
             return new AuditLogRequestDto
             {
-                UserId = Helpers.AuditLogHelper.GetUserId(context),
+                UserId = AuditLogHelper.GetUserId(context),
 
                 AttemptedLoginIdentifier =
                     await _attemptedUsernameResolver.ResolveAsync(
@@ -33,28 +33,28 @@ namespace SMS.API.Helpers
                         actionType),
 
                 CorrelationId =
-                    Helpers.AuditLogHelper.GetOrCreateCorrelationId(context),
+                    AuditLogHelper.GetOrCreateCorrelationId(context),
 
                 ActionType = actionType,
 
                 Endpoint =
-                    Helpers.AuditLogHelper.GetEndpoint(context),
+                    AuditLogHelper.GetEndpoint(context),
 
                 RequestBody =
-                    await Helpers.AuditLogHelper.GetRequestBodyAsync(context),
+                    await AuditLogHelper.GetRequestBodyAsync(context),
 
-                ResponseBody = responseBody,
+                ResponseBody = AuditLogHelper.MaskSensitiveData(responseBody),
 
                 UserAgent =
-                    Helpers.AuditLogHelper.GetUserAgent(context),
+                    AuditLogHelper.GetUserAgent(context),
 
                 HttpStatusCode =
-                    Helpers.AuditLogHelper.GetStatusCode(context),
+                    AuditLogHelper.GetStatusCode(context),
 
                 Duration = duration,
 
                 IpAddress =
-                    Helpers.AuditLogHelper.GetIpAddress(context),
+                    AuditLogHelper.GetIpAddress(context),
             };
         }
     }

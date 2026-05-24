@@ -31,7 +31,7 @@ namespace SMS.Infrastructure.Repositories
             };
             cmd.Parameters.Add(insertedIdParam);
 
-            return await _executor.ExecuteNonQueryAsync(cmd, conn, (int)insertedIdParam.Value);
+            return await _executor.ExecuteNonQueryAsync<int>(cmd, conn, insertedIdParam);
         }
 
         public async Task<OperationResult<Country?>> FindAsync(int countryId)

@@ -34,7 +34,7 @@ namespace SMS.Domain.Entities
             get => _nationalNo;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(NationalNo));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(NationalNo));
                 StringGuard.EnsureLengthInRange(value, 5, 20, nameof(NationalNo));
                 _nationalNo = value.Trim();
             }
@@ -45,7 +45,7 @@ namespace SMS.Domain.Entities
             get => _firstName;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(FirstName));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(FirstName));
                 StringGuard.EnsureLengthInRange(value, 1, 20, nameof(FirstName));
                 _firstName = value.Trim();
             }
@@ -56,7 +56,7 @@ namespace SMS.Domain.Entities
             get => _secondName;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(SecondName));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(SecondName));
                 StringGuard.EnsureLengthInRange(value, 1, 20, nameof(SecondName));
                 _secondName = value.Trim();
             }
@@ -84,7 +84,7 @@ namespace SMS.Domain.Entities
             get => _lastName;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(LastName));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(LastName));
                 StringGuard.EnsureLengthInRange(value, 1, 20, nameof(LastName));
                 _lastName = value.Trim();
             }
@@ -108,7 +108,7 @@ namespace SMS.Domain.Entities
             get => _address;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(Address));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(Address));
                 StringGuard.EnsureLengthInRange(value, 5, 200, nameof(Address));
                 _address = value.Trim();
             }
@@ -119,7 +119,7 @@ namespace SMS.Domain.Entities
             get => _phone;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(Phone));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(Phone));
                 StringGuard.EnsureLengthInRange(value, 3, 20, nameof(Phone));
                 _phone = value.Trim();
             }

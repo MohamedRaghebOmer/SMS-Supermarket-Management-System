@@ -26,7 +26,7 @@ namespace SMS.Application.Services
         {
             ArgumentNullException.ThrowIfNull(dto);
             NumericGuard.AgainstInvalidId(dto.AuditLogId);
-            StringGuard.AgainstNullOrEmpty(dto.Message, nameof(dto.Message));
+            StringGuard.AgainstNullOrWhiteSpace(dto.Message, nameof(dto.Message));
 
             var result = await _repo.AddAsync(dto.ToEntity());
             result.ThrowIfNotSuccess();

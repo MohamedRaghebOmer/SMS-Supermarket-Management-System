@@ -53,14 +53,12 @@ namespace SMS.API.Middlewares
             {
                 stopwatch.Stop();
 
-                string responseMessage = "Internal Server Error";
-
                 if (!context.Response.HasStarted)
                 {
                     await WriteErrorResponseAsync(
                         context,
                         StatusCodes.Status500InternalServerError,
-                        responseMessage);
+                        ex.Message);
                 }
 
                 try
@@ -69,7 +67,7 @@ namespace SMS.API.Middlewares
                         context,
                         auditLogRequestBuilder,
                         auditLogService,
-                        responseMessage,
+                        ex.Message,
                         (int)stopwatch.ElapsedMilliseconds);
 
                     await applicationLogService.AddAsync(new Contracts.Requests.ApplicationLogs.ApplicationLogRequestDto

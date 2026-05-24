@@ -73,7 +73,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("date-range/{startDate}/{endDate}", Name = "GetApplicationLogsByDateRange")]
+        [HttpGet("date-range/{startDate:datetime}/{endDate:datetime}", Name = "GetApplicationLogsByDateRange")]
         public async Task<IActionResult> GetByDateRange([FromRoute] DateTime startDate,
             [FromRoute] DateTime endDate, [FromQuery] PaginationRequest paginationRequest)
         {

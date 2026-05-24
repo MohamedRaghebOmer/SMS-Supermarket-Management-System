@@ -11,7 +11,7 @@ namespace SMS.API.CustomAttributes
 
         public RequirePermissionAttribute(PermissionAction action, SystemEntity entity)
         {
-            Policy = $"Permission:{nameof(action)}:{nameof(entity)}";
+            Policy = $"Permission:{entity}:{action}";
             Action = action;
             Entity = entity;
         }

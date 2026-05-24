@@ -60,7 +60,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("user/{userId}", Name = "GetAuditLogsByUserId")]
+        [HttpGet("user/{userId:int}", Name = "GetAuditLogsByUserId")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetByUserId([FromRoute] int userId,
             [FromQuery] PaginationRequest paginationRequest)
@@ -73,7 +73,7 @@ namespace SMS.API.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpGet("action/{action}", Name = "GetAuditLogByActionType")]
+        [HttpGet("action/{action:alpha}", Name = "GetAuditLogByActionType")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetByActionType([FromRoute] AuditActionType action,
             [FromQuery] PaginationRequest paginationRequest)
@@ -128,7 +128,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("before-date/{date}", Name = "GetAuditLogBeforeDate")]
+        [HttpGet("before-date/{date:datetime}", Name = "GetAuditLogBeforeDate")]
         public async Task<IActionResult> GetBeforeDate([FromRoute] DateTime date,
             [FromQuery] PaginationRequest paginationRequest)
         {
@@ -141,7 +141,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("after-date/{date}", Name = "GetAuditLogAfterDate")]
+        [HttpGet("after-date/{date:datetime}", Name = "GetAuditLogAfterDate")]
         public async Task<IActionResult> GetAfterDate([FromRoute] DateTime date,
             [FromQuery] PaginationRequest paginationRequest)
         {

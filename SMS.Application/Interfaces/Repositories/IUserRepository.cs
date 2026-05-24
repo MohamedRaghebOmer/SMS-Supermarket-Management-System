@@ -11,7 +11,19 @@ namespace SMS.Application.Interfaces.Repositories
         Task<OperationResult<User?>> FindByUsernameAsync(string username);
         Task<OperationResult<User?>> FindByPersonIdAsync(int personId);
         Task<OperationResult<User?>> FindByEmailAsync(string email);
-        Task<OperationResult<bool>> ExistsById(int userId);
+        /// <summary>
+        /// Gets the user identifier for the specified username.
+        /// </summary>
+        Task<OperationResult<int>> GetUserIdByUsernameAsync(string username);
+        /// <summary>
+        /// Gets the user identifier for the specified email address.
+        /// </summary>
+        Task<OperationResult<int>> GetUserIdByEmailAsync(string email);
+        /// <summary>
+        /// Gets the user identifier for the specified person identifier.
+        /// </summary>
+        Task<OperationResult<int>> GetUserIdByPersonIdAsync(int personId);
+        Task<OperationResult<bool>> ExistsByIdAsync(int userId);
         Task<OperationResult<bool>> ExistsByUsername(string username);
         Task<OperationResult<bool>> ExistsByEmail(string email);
         Task<OperationResult<bool>> IsEmailOwnedByUserAsync(string email, int userId);

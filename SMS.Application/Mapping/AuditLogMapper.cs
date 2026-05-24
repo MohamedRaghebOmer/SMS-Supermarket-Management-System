@@ -12,7 +12,7 @@ namespace SMS.Application.Mapping
             {
                 UserId = dto.UserId,
                 AttemptedLoginIdentifier = dto.AttemptedLoginIdentifier,
-                RequestGuid = dto.CorrelationId,
+                CorrelationId = dto.CorrelationId,
                 ActionType = dto.ActionType,
                 Endpoint = dto.Endpoint,
                 RequestBody = dto.RequestBody,
@@ -32,7 +32,7 @@ namespace SMS.Application.Mapping
             {
                 AuditLogId = entity.AuditLogId,
                 UserId = entity.UserId,
-                CorrelationId = entity.RequestGuid,
+                CorrelationId = entity.CorrelationId,
                 ActionType = entity.ActionType,
                 Endpoint = entity.Endpoint,
                 RequestBody = entity.RequestBody,

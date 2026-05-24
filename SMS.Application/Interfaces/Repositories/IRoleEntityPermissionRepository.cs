@@ -7,6 +7,10 @@ namespace SMS.Application.Interfaces.Repositories
     public interface IRoleEntityPermissionRepository
     {
         public Task<OperationResult<bool>> AddAsync(RoleEntityPermissions entity);
+        /// <summary>
+        /// Gets the role identifier for the specified user identifier.
+        /// </summary>
+        public Task<OperationResult<int>> GetRoleIdByUserIdAsync(int userId);
         public Task<OperationResult<IReadOnlyList<RoleEntityPermissions>>>
             GetByRoleIdAsync(int roleId);
         public Task<OperationResult<IReadOnlyList<RoleEntityPermissions>>>

@@ -28,6 +28,19 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteNonQueryAsync(cmd, conn);
         }
 
+        /// <summary>
+        /// Gets the role identifier for the specified user identifier.
+        /// </summary>
+        public async Task<OperationResult<int>> GetRoleIdByUserIdAsync(int userId)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_RoleEntityPermissions_GetRoleIdByUserId");
+
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+
+            return await _executor.ExecuteScalarAsync<int>(cmd, conn);
+        }
+
         public async Task<OperationResult<IReadOnlyList<RoleEntityPermissions>>> GetByRoleIdAsync(int roleId)
         {
             await using var conn = _executor.CreateConnection();

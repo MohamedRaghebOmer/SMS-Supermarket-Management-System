@@ -26,7 +26,7 @@ namespace SMS.Domain.Entities
 
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(TokenHash));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(TokenHash));
                 _tokenHash = value;
             }
         }

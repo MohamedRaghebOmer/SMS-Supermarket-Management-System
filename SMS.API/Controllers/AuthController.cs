@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SMS.API.CustomAttributes;
 using SMS.Application.Interfaces.Services;
 using SMS.Contracts.Requests.Auth;
+using SMS.Contracts.Responses.Auth;
+using SMS.Shared.Enums;
 
 namespace SMS.API.Controllers
 {
@@ -21,42 +24,48 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [AllowAnonymous]
+        [AuditActionType(AuditActionType.Login)]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-            var authResponse = await _authService.LoginAsync(request);
+            var loginResult = await _authService.LoginAsync(request);
 
-            if (authResponse == null)
+            if (loginResult.Status == LoginResultDto.LoginResultStatus.InvalidCredentials)
             {
-                return Unauthorized("Invalid credentials.");
+                return Unauthorized(loginResult.Message);
             }
 
-            return Ok(authResponse);
+            if (loginResult.Status == LoginResultDto.LoginResultStatus.AlreadyLoggedIn)
+            {
+                return Ok(loginResult.Message);
+            }
+
+            return Ok(new AuthResponseDto
+            {
+                AccessToken = loginResult.AccessToken,
+                RefreshToken = loginResult.RefreshToken
+            });
         }
 
 
 
         [HttpPost("refresh")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [AllowAnonymous]
+        [AuditActionType(AuditActionType.TokenRefresh)]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request)
         {
             var authResponse = await _authService.RefreshAsync(request);
-
-            if (authResponse == null)
-            {
-                // Return 200 OK with an empty body to indicate the token is invalid or expired,
-                // without revealing too much information to potential attackers.
-                return Ok();
-            }
-
-            return Ok(authResponse);
+            return authResponse is null ? NotFound() : Ok(authResponse);
         }
 
 
 
         [HttpPost("logout")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize]
+        [AuditActionType(AuditActionType.Logout)]
         public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request)
         {
             await _authService.LogoutAsync(request);
