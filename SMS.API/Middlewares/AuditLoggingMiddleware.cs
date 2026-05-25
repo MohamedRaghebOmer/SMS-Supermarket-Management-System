@@ -57,7 +57,8 @@ namespace SMS.API.Middlewares
             {
                 ApplicationLogRequestDto logRequest = new ApplicationLogRequestDto
                 {
-                    AuditLogId = auditLogId,
+                    AuditLogId = auditLogId == 0 ? null : auditLogId,
+                    LogLevel = Shared.Enums.LogLevel.Error,
                     Message = "An error occurred while creating audit log.",
                     Exception = ex,
                     StackTrace = ex.StackTrace

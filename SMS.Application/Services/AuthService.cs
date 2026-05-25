@@ -107,50 +107,39 @@ namespace SMS.Application.Services
 
         public async Task<AuthResponseDto?> RefreshAsync(RefreshTokenRequestDto refreshDto)
         {
-            refreshDto.Username = refreshDto.Username.Trim();
+            if (!ValidateRefreshRequest(refreshDto))
+                return null; // Return null to indicate refresh failure due to invalid request without throwing an exception
 
-            if (string.IsNullOrWhiteSpace(refreshDto.RefreshToken)
-                || string.IsNullOrWhiteSpace(refreshDto.Username))
-            {
-                return null; // Return null to indicate refresh failure without throwing an exception
-            }
 
-            var tokenResult =
-                await _refreshTokenRepository.FindValidTokenByUsername(refreshDto.Username);
-
-            if (!tokenResult.IsSuccess || tokenResult.Data == null)
-            {
+            var validRefreshTokenId = await GetValidRefreshTokenId(refreshDto);
+            if (validRefreshTokenId == null)
                 return null; // Return null to indicate refresh failure due to no valid refresh token without throwing an exception
-            }
 
-
-            // Verify the provided refresh token matches the stored valid refresh token
-            if (!_stringHelper.Verify(refreshDto.RefreshToken, tokenResult.Data.TokenHash))
-            {
-                return null; // Return null to indicate refresh failure due to invalid refresh token without throwing an exception
-            }
 
             // Revoke the old refresh token
-            var revokeOldRefreshTokenResult =
-                    await _refreshTokenRepository.RevokeAsync(tokenResult.Data.RefreshTokenId);
-
-            if (!revokeOldRefreshTokenResult.IsSuccess)
+            if (!await RevokeRefreshToken(validRefreshTokenId.Value))
             {
-                return null; // Return null to indicate refresh failure due to inability to revoke old refresh token without throwing an exception
+                return null; // Return null to indicate refresh failure due to token revocation failure without throwing an exception
             }
 
-
-            // Generate new access token and refresh token
-            var accessToken = await GenerateAccessToken(refreshDto.Username);
-            var refreshToken = await _refreshTokenService.GenerateRefreshTokenByUsernameAsync(refreshDto.Username);
-
-            if (accessToken is not null && refreshToken is not null)
+            try
             {
-                return new AuthResponseDto
+                // Generate new access token and refresh token
+                var accessToken = await GenerateAccessToken(refreshDto.Username);
+                var refreshToken = await _refreshTokenService.GenerateRefreshTokenByUsernameAsync(refreshDto.Username);
+
+                if (accessToken is not null && refreshToken is not null)
                 {
-                    AccessToken = accessToken,
-                    RefreshToken = refreshToken,
-                };
+                    return new AuthResponseDto
+                    {
+                        AccessToken = accessToken,
+                        RefreshToken = refreshToken,
+                    };
+                }
+            }
+            catch
+            {
+                return null;
             }
 
             return null;
@@ -164,20 +153,21 @@ namespace SMS.Application.Services
 
             // Find the valid refresh token for the user
             var tokenResult =
-                await _refreshTokenRepository.FindValidTokenByUsername(logoutDto.Username);
+                await _refreshTokenRepository.FindValidTokensByUsername(logoutDto.Username);
 
-            if (!tokenResult.IsSuccess || tokenResult.Data == null)
+            if (!tokenResult.IsSuccess || tokenResult.Data == null || tokenResult.Data.Count == 0)
             {
                 return; // No need to throw an error for no valid refresh token during logout
             }
 
-            // Verify the provided refresh token matches the stored valid refresh token
-            if (!_stringHelper.Verify(logoutDto.RefreshToken, tokenResult.Data.TokenHash))
+            foreach (var token in tokenResult.Data)
             {
-                return; // No need to throw an error for invalid refresh token during logout
+                if (_stringHelper.Verify(logoutDto.RefreshToken, token.TokenHash))
+                {
+                    await _refreshTokenRepository.RevokeAsync(token.RefreshTokenId);
+                    break; // Exit the loop after revoking the matching token
+                }
             }
-
-            await _refreshTokenRepository.RevokeAsync(tokenResult.Data.RefreshTokenId);
         }
 
 
@@ -257,6 +247,46 @@ namespace SMS.Application.Services
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
             return accessToken;
+        }
+
+        private bool ValidateRefreshRequest(RefreshTokenRequestDto refreshDto)
+        {
+            refreshDto.Username = refreshDto.Username.Trim();
+
+            if (string.IsNullOrWhiteSpace(refreshDto.RefreshToken)
+                || string.IsNullOrWhiteSpace(refreshDto.Username))
+            {
+                return false; // Return null to indicate refresh failure without throwing an exception
+            }
+
+            return true;
+        }
+
+        private async Task<Guid?> GetValidRefreshTokenId(RefreshTokenRequestDto refreshDto)
+        {
+            var tokensResult =
+            await _refreshTokenRepository.FindValidTokensByUsername(refreshDto.Username);
+
+            if (!tokensResult.IsSuccess || tokensResult.Data == null || !tokensResult.Data.Any())
+            {
+                return null;
+            }
+
+            foreach (var token in tokensResult.Data)
+            {
+                if (_stringHelper.Verify(refreshDto.RefreshToken, token.TokenHash))
+                {
+                    return token.RefreshTokenId;
+                }
+            }
+
+            return null;
+        }
+
+        private async Task<bool> RevokeRefreshToken(Guid refreshTokenId)
+        {
+            var revokeResult = await _refreshTokenRepository.RevokeAsync(refreshTokenId);
+            return revokeResult.IsSuccess;
         }
     }
 }

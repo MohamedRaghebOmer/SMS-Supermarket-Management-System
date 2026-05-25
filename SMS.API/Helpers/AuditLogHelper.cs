@@ -69,7 +69,7 @@ namespace SMS.API.Helpers
         {
             const int maxBodySize = 1024 * 50; // 50 KB
 
-            if (context.Request.ContentLength > maxBodySize)
+            if (context.Request.ContentLength is > maxBodySize)
             {
                 return "[Request body too large]";
             }
@@ -82,7 +82,6 @@ namespace SMS.API.Helpers
             context.Request.EnableBuffering();
 
             context.Request.Body.Position = 0;
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
 
             using var reader = new StreamReader(
                 context.Request.Body,
@@ -93,7 +92,6 @@ namespace SMS.API.Helpers
             var body = await reader.ReadToEndAsync();
 
             context.Request.Body.Position = 0;
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
 
             return MaskSensitiveData(body);
         }

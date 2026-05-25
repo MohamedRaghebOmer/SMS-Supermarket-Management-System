@@ -50,13 +50,13 @@ namespace SMS.API.Controllers
 
         [HttpPost("refresh")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [AllowAnonymous]
         [AuditActionType(AuditActionType.TokenRefresh)]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request)
         {
             var authResponse = await _authService.RefreshAsync(request);
-            return authResponse is null ? NotFound() : Ok(authResponse);
+            return authResponse is null ? Unauthorized("Invalid Refresh Token or Username") : Ok(authResponse);
         }
 
 
