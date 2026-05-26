@@ -73,7 +73,7 @@ namespace SMS.API.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpGet("action/{action:alpha}", Name = "GetAuditLogByActionType")]
+        [HttpGet("action/{action}", Name = "GetAuditLogByActionType")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetByActionType([FromRoute] AuditActionType action,
             [FromQuery] PaginationRequest paginationRequest)

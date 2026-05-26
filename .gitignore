@@ -6,6 +6,7 @@
 # Database snapshots and backups
 Backups/
 Snapshots/
+Storage/
 
 # User-specific files
 *.rsuser

@@ -1,18 +1,20 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using SMS.Application.Interfaces.Services;
+﻿using SMS.Application.Interfaces.Services;
 
 namespace SMS.Application.Services
 {
     public class DirectoryPathService : IDirectoryPathService
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileStoragePathProvider _fileStoragePathProvider;
 
-        public DirectoryPathService(IWebHostEnvironment env)
+        public DirectoryPathService(IFileStoragePathProvider fileStoragePathProvider)
         {
-            _env = env;
+            _fileStoragePathProvider = fileStoragePathProvider;
+
+            Directory.CreateDirectory(PeopleDirectory);
+            Directory.CreateDirectory(ProductsDirectory);
         }
 
-        public string BaseDirectory => _env.WebRootPath;
+        public string BaseDirectory => _fileStoragePathProvider.BaseDirectory;
 
         public string PeopleDirectory => Path.Combine(BaseDirectory, "people");
 

@@ -14,6 +14,6 @@
         public string Phone { get; set; } = string.Empty;
         public string? Email { get; set; }
         public int NationalityCountryId { get; set; }
-        public Stream? Image { get; set; }
+        public FileResponse? Image { get; set; }
     }
 }

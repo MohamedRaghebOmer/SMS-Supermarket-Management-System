@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SMS.Application.Exceptions;
 using SMS.Application.Interfaces.Helpers;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
@@ -7,8 +8,10 @@ using SMS.Contracts.Requests.People;
 using SMS.Contracts.Responses;
 using SMS.Domain.Entities;
 using SMS.Shared.Common;
+using SMS.Shared.Constants;
 using SMS.Shared.Enums;
 using SMS.Shared.Guards;
+using System.Collections.Immutable;
 
 namespace SMS.Application.Services
 {
@@ -37,17 +40,20 @@ namespace SMS.Application.Services
         {
             ArgumentNullException.ThrowIfNull(dto);
             ValidateDto(dto);
-            Guid? imageGuid = null;
-            if (image is not null)
-            {
-                imageGuid = await _fileStorageService.SaveFileAsync(image, _directoryPathService.PeopleDirectory);
-            }
+            EnsureIsImage(image, allowEmpty: true);
+
+            Guid? imageGuid = image is null ? null : Guid.NewGuid();
 
             var entity = dto.ToEntity();
             entity.ImageGuid = imageGuid;
 
             var result = await _repo.AddAsync(entity);
             result.ThrowIfNotSuccess();
+
+            if (imageGuid is not null)
+            {
+                await _fileStorageService.SaveFileAsync(image, _directoryPathService.PeopleDirectory, (Guid)imageGuid);
+            }
 
             return result.Data;
         }
@@ -60,10 +66,10 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return BuildDtoWithImage(result.Data);
+            return await BuildDtoWithImageAsync(result.Data);
         }
 
-        public async Task<Stream> GetImageAsync(int personId)
+        public async Task<FileResponse> GetImageAsync(int personId)
         {
             NumericGuard.AgainstInvalidId(personId);
 
@@ -72,11 +78,11 @@ namespace SMS.Application.Services
 
             if (!result.Data.HasValue)
             {
-                throw new InvalidOperationException("Person does not have an image.");
+                throw new NoContentException("Person does not have an image.");
             }
 
             var imagePath = _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory, result.Data.Value);
-            return _fileStorageService.LoadFile(imagePath);
+            return await _fileStorageService.LoadFileAsync(imagePath);
         }
 
         public async Task<PersonResponseDto> GetByNationalNoAsync(string nationalNo)
@@ -87,7 +93,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return BuildDtoWithImage(result.Data);
+            return await BuildDtoWithImageAsync(result.Data);
         }
 
         public async Task<PaginationResponse<PersonResponseDto>> GetPagedAsync(
@@ -98,7 +104,7 @@ namespace SMS.Application.Services
             var result = await _repo.GetPagedAsync(paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(result, paginationRequest);
+            return await BuildPagedResponseAsync(result, paginationRequest);
         }
 
         public async Task<PaginationResponse<PersonResponseDto>> GetByGenderAsync(
@@ -109,7 +115,7 @@ namespace SMS.Application.Services
             var result = await _repo.GetByGenderAsync(gender, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(result, paginationRequest);
+            return await BuildPagedResponseAsync(result, paginationRequest);
         }
 
         public async Task<PersonResponseDto> GetByEmailAsync(string email)
@@ -120,7 +126,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return BuildDtoWithImage(result.Data);
+            return await BuildDtoWithImageAsync(result.Data);
         }
 
         public async Task<PaginationResponse<PersonResponseDto>> GetByNationalityCountryIdAsync(
@@ -132,7 +138,7 @@ namespace SMS.Application.Services
             var result = await _repo.GetByNationalityCountryIdAsync(countryId, paginationRequest);
             result.ThrowIfNotSuccess();
 
-            return BuildPagedResponse(result, paginationRequest);
+            return await BuildPagedResponseAsync(result, paginationRequest);
         }
 
         public async Task<bool> ExistsByIdAsync(int personId)
@@ -165,10 +171,41 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<bool> UpdateImageAsync(int personId, IFormFile newImage)
+        public async Task<bool> SetImageAsync(int personId, IFormFile newImage)
         {
             NumericGuard.AgainstInvalidId(personId);
-            ArgumentNullException.ThrowIfNull(newImage);
+            EnsureIsImage(newImage);
+
+            var existing = await _repo.FindByIdAsync(personId);
+            existing.ThrowIfNotSuccess();
+            existing.ThrowNotFoundIfDataNull();
+
+            Guid newImageGuid = Guid.Empty;
+            if (existing.Data.ImageGuid.HasValue) // If person already has an image, replace it
+            {
+                newImageGuid = await _fileStorageService.ReplaceFileAsync(
+                existing.Data.ImageGuid.Value,
+                newImage,
+                _directoryPathService.PeopleDirectory);
+            }
+            else // If person does not have an image, save the new image and get its guid
+            {
+                newImageGuid = await _fileStorageService.SaveFileAsync(newImage, _directoryPathService.PeopleDirectory);
+            }
+
+            if (newImageGuid != Guid.Empty)
+            {
+                var result = await _repo.SetImageAsync(personId, newImageGuid);
+                result.ThrowIfNotSuccess();
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> RemoveImageAsync(int personId)
+        {
+            NumericGuard.AgainstInvalidId(personId);
 
             var existing = await _repo.FindByIdAsync(personId);
             existing.ThrowIfNotSuccess();
@@ -176,25 +213,28 @@ namespace SMS.Application.Services
 
             if (!existing.Data.ImageGuid.HasValue)
             {
-                throw new InvalidOperationException("Person does not have an image to update.");
+                throw new NoContentException("Person does not have an image.");
             }
 
-            var newImageGuid = await _fileStorageService.ReplaceFileAsync(
-                existing.Data.ImageGuid.Value,
-                newImage,
-                _directoryPathService.PeopleDirectory);
+            var imagePath = _imageHelper.ResolveImagePath(
+                _directoryPathService.PeopleDirectory,
+                existing.Data.ImageGuid.Value);
 
-            var result = await _repo.UpdateImageAsync(personId, newImageGuid);
+            await _fileStorageService.DeleteFileAsync(imagePath);
+
+            var result = await _repo.SetImageAsync(personId, null);
             result.ThrowIfNotSuccess();
 
             return result.Data;
         }
 
-        public async Task<bool> UpdateAsync(int personId, UpdatePersonRequestDto dto, IFormFile? newImage)
+        public async Task<bool> UpdateAsync(int personId, UpdatePersonRequestDto dto,
+            IFormFile? newImage)
         {
             ArgumentNullException.ThrowIfNull(dto);
             NumericGuard.AgainstInvalidId(personId);
             ValidateDto(dto);
+            EnsureIsImage(newImage, true);
 
             var existing = await _repo.FindByIdAsync(personId);
             existing.ThrowIfNotSuccess();
@@ -219,7 +259,7 @@ namespace SMS.Application.Services
 
             if (newImageGuid.HasValue)
             {
-                var updateImageResult = await _repo.UpdateImageAsync(personId, newImageGuid.Value);
+                var updateImageResult = await _repo.SetImageAsync(personId, newImageGuid.Value);
                 updateImageResult.ThrowIfNotSuccess();
             }
 
@@ -294,29 +334,74 @@ namespace SMS.Application.Services
             }
         }
 
-        private static PaginationResponse<PersonResponseDto> BuildPagedResponse(
+
+        private async Task<PaginationResponse<PersonResponseDto>> BuildPagedResponseAsync(
             Common.Results.OperationResult<PaginationResponse<Person>> result,
             PaginationRequest paginationRequest)
         {
+            var items = await Task.WhenAll(
+            result.Data.Items.Select(async p => await BuildDtoWithImageAsync(p)));
+
             return new PaginationResponse<PersonResponseDto>
             {
-                Items = result.Data.Items.Select(person => person.ToDto(null)).ToList(),
+                Items = items.ToImmutableList(),
                 TotalCount = result.Data.TotalCount,
                 Page = paginationRequest.Page,
                 PageSize = paginationRequest.PageSize
             };
         }
 
-        private PersonResponseDto BuildDtoWithImage(Person person)
+        private async Task<PersonResponseDto> BuildDtoWithImageAsync(Person person)
         {
-            Stream? imageStream = null;
+            FileResponse? imageResponse = null;
             if (person.ImageGuid.HasValue)
             {
                 var imagePath = _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory, person.ImageGuid.Value);
-                imageStream = _fileStorageService.LoadFile(imagePath);
+                imageResponse = await _fileStorageService.LoadFileAsync(imagePath);
             }
 
-            return person.ToDto(imageStream);
+            return person.ToDto(imageResponse);
+        }
+
+        private void EnsureIsImage(IFormFile? file, bool allowEmpty = false)
+        {
+            // Ensure file is provided if not allowed to be empty
+            if (file is null || file.Length == 0)
+            {
+                if (!allowEmpty)
+                {
+                    throw new ArgumentException("Invalid file.", nameof(file));
+                }
+                return;
+            }
+
+            // Validate file size
+            if (file.Length > Constants.MaxImageSizeInBytes)
+            {
+                throw new ArgumentException($"File size exceeds the allowed limit of {Constants.MaxImageSizeInBytes / (1024 * 1024)} MB.", nameof(file));
+            }
+
+            // Validate content type
+            if (!file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("The provided file is not an image.", nameof(file));
+            }
+
+            HashSet<string> allowedExtensions =
+            [
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".gif",
+                ".webp"
+            ];
+
+            var extension = Path.GetExtension(file.FileName);
+            if (string.IsNullOrWhiteSpace(extension) ||
+                !allowedExtensions.Contains(extension.ToLowerInvariant()))
+            {
+                throw new ArgumentException("Unsupported image extension.", nameof(file));
+            }
         }
     }
 }

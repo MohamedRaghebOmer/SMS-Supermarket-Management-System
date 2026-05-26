@@ -167,7 +167,8 @@ namespace SMS.Infrastructure.Helpers
             return CreateOperationResult((T?)operationResultDataParam.Value, statusCodeOutParam, statusMessageOutParam);
         }
 
-        public async Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd, SqlConnection conn)
+        public async Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd,
+            SqlConnection conn) where T : IConvertible
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 

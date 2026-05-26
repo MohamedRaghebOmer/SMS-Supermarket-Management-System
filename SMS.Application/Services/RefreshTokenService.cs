@@ -34,7 +34,7 @@ namespace SMS.Application.Services
             var token = GenerateRefreshToken();
             var tokenHash = _stringHelper.Hash(token);
             var refreshToken = new RefreshToken(Guid.NewGuid(), user.Data.UserId, tokenHash,
-                DateTime.UtcNow.AddDays(Constants.RefreshTokenPeriod),
+                DateTime.UtcNow.AddDays(Constants.RefreshTokenPeriodInDays),
                 DateTime.UtcNow, null, false);
 
             var result = await _refreshTokensRepository.AddAsync(refreshToken);
@@ -51,7 +51,7 @@ namespace SMS.Application.Services
             var token = GenerateRefreshToken();
             var tokenHash = _stringHelper.Hash(token);
             var refreshToken = new RefreshToken(Guid.NewGuid(), userId, tokenHash,
-                DateTime.UtcNow.AddDays(Constants.RefreshTokenPeriod),
+                DateTime.UtcNow.AddDays(Constants.RefreshTokenPeriodInDays),
                 DateTime.UtcNow, null, false);
 
             // 'AddAsync' validates the user exists before adding the refresh token

@@ -45,8 +45,8 @@ namespace SMS.API
             }
 
             // Add custom middlewares and other configurations
-            app.UseRouting();
             app.AddCustomMiddlewares();
+            app.UseRouting();
             app.UseHttpsRedirection();
             app.UseCors(Constants.CorePolicyName);
             app.UseRateLimiter();

@@ -49,6 +49,10 @@ namespace SMS.API.Middlewares
             {
                 await WriteErrorResponseAsync(context, StatusCodes.Status404NotFound, ex.Message);
             }
+            catch (NoContentException ex)
+            {
+                await WriteErrorResponseAsync(context, StatusCodes.Status204NoContent, ex.Message);
+            }
             catch (Exception ex)
             {
                 stopwatch.Stop();

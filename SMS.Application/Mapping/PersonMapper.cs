@@ -43,7 +43,7 @@ namespace SMS.Application.Mapping
                 createdAt: DateTime.UtcNow);
         }
 
-        public static PersonResponseDto ToDto(this Person entity, Stream? imageStream)
+        public static PersonResponseDto ToDto(this Person entity, FileResponse? imageResponse = null)
         {
             return new PersonResponseDto
             {
@@ -59,7 +59,7 @@ namespace SMS.Application.Mapping
                 Phone = entity.Phone,
                 Email = entity.Email,
                 NationalityCountryId = entity.NationalityCountryId,
-                Image = imageStream
+                Image = imageResponse
             };
         }
     }

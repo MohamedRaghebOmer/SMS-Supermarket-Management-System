@@ -96,21 +96,21 @@ namespace SMS.Infrastructure.Repositories
         {
             return new RoleEntityPermissions(
                 roleId: reader.GetInt32(reader.GetOrdinal("RoleId")),
-                systemEntity: (SystemEntity)reader.GetInt32(reader.GetOrdinal("Entity")),
-                permissionsMask: reader.GetInt32(reader.GetOrdinal("PermissionMask")));
+                systemEntity: (SystemEntity)reader.GetByte(reader.GetOrdinal("EntityId")),
+                permissionsMask: reader.GetInt32(reader.GetOrdinal("PermissionsMask")));
         }
 
         private static void AddRoleEntityPermissionParameters(SqlCommand cmd, RoleEntityPermissions entity)
         {
             cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = entity.RoleId;
-            cmd.Parameters.Add("@Entity", SqlDbType.Int).Value = (int)entity.Entity;
+            cmd.Parameters.Add("@EntityId", SqlDbType.Int).Value = (int)entity.Entity;
             cmd.Parameters.Add("@PermissionMask", SqlDbType.Int).Value = entity.PermissionsMask;
         }
 
         private static void AddRoleEntityPermissionParameters(SqlCommand cmd, int roleId, SystemEntity entity)
         {
             cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = roleId;
-            cmd.Parameters.Add("@Entity", SqlDbType.Int).Value = (int)entity;
+            cmd.Parameters.Add("@EntityId", SqlDbType.Int).Value = (int)entity;
         }
     }
 }

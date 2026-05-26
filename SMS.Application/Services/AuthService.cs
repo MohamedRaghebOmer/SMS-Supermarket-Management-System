@@ -207,7 +207,7 @@ namespace SMS.Application.Services
                 issuer: jwt["Issuer"],
                 audience: jwt["Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Constants.AccessTokenPeriod),
+                expires: DateTime.UtcNow.AddMinutes(Constants.AccessTokenPeriodInMinutes),
                 signingCredentials: creds);
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
@@ -242,7 +242,7 @@ namespace SMS.Application.Services
                 issuer: jwt["Issuer"],
                 audience: jwt["Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Constants.AccessTokenPeriod),
+                expires: DateTime.UtcNow.AddMinutes(Constants.AccessTokenPeriodInMinutes),
                 signingCredentials: creds);
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);

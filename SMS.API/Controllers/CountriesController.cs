@@ -23,13 +23,13 @@ namespace SMS.API.Controllers
 
         [RequirePermission(PermissionAction.Create, SystemEntity.Countries)]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Create([FromBody] CreateCountryRequestDto dto)
         {
             var result = await _service.AddAsync(dto);
-            return CreatedAtRoute("GetById", new { id = result }, result);
+            return CreatedAtRoute("GetCountryById", new { id = result }, result);
         }
 
 

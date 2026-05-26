@@ -82,12 +82,12 @@ namespace SMS.Infrastructure.Repositories
         }
 
         public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByEndpointUrlAsync(
-            string endpointUrl, PaginationRequest request)
+            string endpoint, PaginationRequest request)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_AuditLogs_GetPagedByEndpointUrl");
+            using var cmd = _executor.CreateCommand(conn, "usp_AuditLogs_GetPagedByEndpoint");
 
-            cmd.Parameters.Add("@Endpoint", SqlDbType.NVarChar, 200).Value = endpointUrl;
+            cmd.Parameters.Add("@Endpoint", SqlDbType.NVarChar, 200).Value = endpoint;
             return await _executor.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
         }
 

@@ -19,7 +19,7 @@ namespace SMS.Application.Interfaces.DataAccess
         Task<OperationResult<T?>> ExecuteSingleAsync<T>(SqlCommand cmd, SqlConnection conn, Func<SqlDataReader, T> mapFunc);
         Task<OperationResult<IReadOnlyList<T>>> ExecuteListAsync<T>(SqlCommand cmd, SqlConnection conn, Func<SqlDataReader, T> mapFunc);
         Task<OperationResult<bool>> ExecuteNonQueryAsync(SqlCommand cmd, SqlConnection conn);
-        Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd, SqlConnection conn);
+        Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd, SqlConnection conn) where T : IConvertible;
         Task<OperationResult<T?>> ExecuteNonQueryAsync<T>(SqlCommand cmd, SqlConnection conn, SqlParameter operationResultDataParam);
         Task<OperationResult<bool>> ExecuteExistsAsync(SqlConnection conn, SqlCommand cmd);
         Task<OperationResult<bool>> ExecuteBooleanOperationAsync(SqlCommand cmd, SqlConnection conn);

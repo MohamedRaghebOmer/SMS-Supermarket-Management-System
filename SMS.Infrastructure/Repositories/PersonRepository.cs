@@ -65,7 +65,7 @@ namespace SMS.Infrastructure.Repositories
             Gender gender, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_People_GetByGender");
+            using var cmd = _executor.CreateCommand(conn, "usp_People_GetPagedByGender");
 
             cmd.Parameters.Add("@Gender", SqlDbType.TinyInt).Value = (byte)gender;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToPerson);
@@ -86,14 +86,17 @@ namespace SMS.Infrastructure.Repositories
             using var cmd = _executor.CreateCommand(conn, "usp_People_GetImageGuid");
 
             cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
-            return await _executor.ExecuteScalarAsync<Guid?>(cmd, conn);
+            (SqlParameter code, SqlParameter message) = await _executor.PrepareCommandAsync(cmd, conn);
+            object? result = await cmd.ExecuteScalarAsync();
+
+            return _executor.CreateOperationResult<Guid?>(result as Guid?, code, message);
         }
 
         public async Task<OperationResult<PaginationResponse<Person>>> GetByNationalityCountryIdAsync(
             int countryId, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_People_GetByNationalityCountryId");
+            using var cmd = _executor.CreateCommand(conn, "usp_People_GetPagedByNationalityCountryId");
 
             cmd.Parameters.Add("@CountryId", SqlDbType.Int).Value = countryId;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToPerson);
@@ -126,13 +129,14 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteExistsAsync(conn, cmd);
         }
 
-        public async Task<OperationResult<bool>> UpdateImageAsync(int personId, Guid newImageFileName)
+        public async Task<OperationResult<bool>> SetImageAsync(int personId, Guid? newImageGuid)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_People_UpdateImage");
+            using var cmd = _executor.CreateCommand(conn, "usp_People_SetImage");
 
             cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
-            cmd.Parameters.Add("@ImageGuid", SqlDbType.UniqueIdentifier).Value = newImageFileName;
+            cmd.Parameters.Add("@NewImageGuid", SqlDbType.UniqueIdentifier).Value =
+                newImageGuid ?? (object)DBNull.Value;
 
             return await _executor.ExecuteNonQueryAsync(cmd, conn);
         }

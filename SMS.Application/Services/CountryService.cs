@@ -37,7 +37,8 @@ namespace SMS.Application.Services
             NumericGuard.AgainstInvalidId(id);
 
             var result = await _repo.ExistsAsync(id);
-            result.ThrowIfNotSuccess();
+            result.ThrowIfErrorExceptNotFound();
+
             return result.Data;
         }
 
@@ -102,9 +103,9 @@ namespace SMS.Application.Services
         {
             ArgumentNullException.ThrowIfNull(dto);
             NumericGuard.AgainstInvalidId(countryId);
-            StringGuard.AgainstNullOrWhiteSpace(dto.CountryName, "Country name");
+            StringGuard.AgainstNullOrWhiteSpace(dto.CountryName, nameof(dto.CountryName));
 
-            var result = await _repo.UpdateAsync(dto.ToEntity());
+            var result = await _repo.UpdateAsync(dto.ToEntity(countryId));
             result.ThrowIfNotSuccess();
 
             return result.Data;
