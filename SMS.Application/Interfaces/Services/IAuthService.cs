@@ -5,7 +5,7 @@ namespace SMS.Application.Interfaces.Services
 {
     public interface IAuthService
     {
-        Task<AuthResponseDto?> LoginAsync(LoginRequestDto loginRequestDto);
+        Task<LoginResultDto> LoginAsync(LoginRequestDto loginRequestDto);
         Task<AuthResponseDto?> RefreshAsync(RefreshTokenRequestDto refreshDto);
         Task LogoutAsync(LogoutRequestDto logoutDto);
     }

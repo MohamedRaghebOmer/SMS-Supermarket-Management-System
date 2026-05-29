@@ -25,6 +25,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("id/{id:int}", Name = "GetApplicationLogById")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var applicationLog = await _service.GetAsync(id);
@@ -36,6 +37,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("audit-log/{auditLogId:int}", Name = "GetApplicationLogsByAuditLogId")]
         public async Task<IActionResult> GetByAuditLogId([FromRoute] int auditLogId)
         {
@@ -47,6 +49,7 @@ namespace SMS.API.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationRequest paginationRequest)
         {
@@ -60,6 +63,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("log-level/{logLevel}", Name = "GetApplicationLogsByLogLevel")]
         public async Task<IActionResult> GetByLogLevel([FromRoute] LogLevel logLevel, [FromQuery] PaginationRequest paginationRequest)
         {
@@ -73,7 +77,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpGet("date-range/{startDate}/{endDate}", Name = "GetApplicationLogsByDateRange")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpGet("date-range/{startDate:datetime}/{endDate:datetime}", Name = "GetApplicationLogsByDateRange")]
         public async Task<IActionResult> GetByDateRange([FromRoute] DateTime startDate,
             [FromRoute] DateTime endDate, [FromQuery] PaginationRequest paginationRequest)
         {

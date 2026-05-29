@@ -22,7 +22,7 @@ namespace SMS.Application.Helpers
                 return;
             }
 
-            StringGuard.AgainstNullOrEmpty(email ?? string.Empty, parameterName);
+            StringGuard.AgainstNullOrWhiteSpace(email ?? string.Empty, parameterName);
             StringGuard.EnsureLengthInRange(email!, minLength, maxLength, parameterName);
 
             if (!new EmailAddressAttribute().IsValid(email))

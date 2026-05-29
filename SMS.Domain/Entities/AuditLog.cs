@@ -1,6 +1,5 @@
 ﻿using SMS.Shared.Enums;
 using SMS.Shared.Guards;
-using System.Net;
 
 namespace SMS.Domain.Entities
 {
@@ -8,7 +7,8 @@ namespace SMS.Domain.Entities
     {
         private long _auditLogId;
         private int? _userId;
-        private Guid _correlationId;
+        private int _statusCode;
+        private Guid? _correlationId;
         private string _endpoint = string.Empty;
         private int _duration;
         private string _ipAddress = string.Empty;
@@ -39,7 +39,7 @@ namespace SMS.Domain.Entities
 
         public string? AttemptedLoginIdentifier { get; set; }
 
-        public Guid RequestGuid
+        public Guid? CorrelationId
         {
             get => _correlationId;
 
@@ -47,7 +47,7 @@ namespace SMS.Domain.Entities
             {
                 if (value == Guid.Empty)
                 {
-                    throw new ArgumentException("Invalid Request Guid: Guid cannot be empty.", nameof(RequestGuid));
+                    throw new ArgumentException("Invalid Request Guid: Guid cannot be empty.", nameof(CorrelationId));
                 }
 
                 _correlationId = value;
@@ -62,7 +62,7 @@ namespace SMS.Domain.Entities
 
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(Endpoint));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(Endpoint));
                 _endpoint = value;
             }
         }
@@ -73,9 +73,22 @@ namespace SMS.Domain.Entities
 
         public string? UserAgent { get; set; }
 
-        public HttpStatusCode HttpStatusCode { get; set; }
+        public int HttpStatusCode
+        {
+            get => _statusCode;
 
-        public bool IsSuccess => ((int)HttpStatusCode >= 200 && (int)HttpStatusCode < 300);
+            set
+            {
+                if (value < 200 || value > 600)
+                {
+                    throw new ArgumentOutOfRangeException("Invalid Status Code");
+                }
+
+                _statusCode = value;
+            }
+        }
+
+        public bool IsSuccess => (HttpStatusCode >= 200 && HttpStatusCode < 300);
 
         public int Duration
         {
@@ -93,7 +106,7 @@ namespace SMS.Domain.Entities
             get => _ipAddress;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, nameof(IpAddress));
+                StringGuard.AgainstNullOrWhiteSpace(value, nameof(IpAddress));
                 _ipAddress = value;
             }
         }
@@ -114,11 +127,11 @@ namespace SMS.Domain.Entities
 
         public AuditLog() { }
 
-        public AuditLog(int? userId, string? attemptedLoginIdentifier, Guid correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, HttpStatusCode httpStatusCode, int duration, string ipAddress, string? details, DateTime createdAt)
+        public AuditLog(int? userId, string? attemptedLoginIdentifier, Guid? correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, int httpStatusCode, int duration, string ipAddress, string? details, DateTime createdAt)
         {
             UserId = userId;
             AttemptedLoginIdentifier = attemptedLoginIdentifier;
-            RequestGuid = correlationId;
+            CorrelationId = correlationId;
             ActionType = actionType;
             Endpoint = endpoint;
             RequestBody = requestBody;
@@ -131,7 +144,7 @@ namespace SMS.Domain.Entities
             CreatedAt = createdAt;
         }
 
-        public AuditLog(long auditLogId, int? userId, string? attemptedLoginIdentifier, Guid correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, HttpStatusCode httpStatusCode, int duration, string ipAddress, string? details, DateTime createdAt) : this(userId, attemptedLoginIdentifier, correlationId, actionType, endpoint, requestBody, responseBody, userAgent, httpStatusCode, duration, ipAddress, details, createdAt)
+        public AuditLog(long auditLogId, int? userId, string? attemptedLoginIdentifier, Guid? correlationId, AuditActionType actionType, string endpoint, string? requestBody, string? responseBody, string? userAgent, int httpStatusCode, int duration, string ipAddress, string? details, DateTime createdAt) : this(userId, attemptedLoginIdentifier, correlationId, actionType, endpoint, requestBody, responseBody, userAgent, httpStatusCode, duration, ipAddress, details, createdAt)
         {
             AuditLogId = auditLogId;
         }

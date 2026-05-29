@@ -36,15 +36,52 @@ namespace SMS.Application.Common.Results
             }
         }
 
-        public static OperationStatus FromCode(int code)
+        public void ThrowIfValidationError()
         {
-            return code switch
+            if (Status == OperationStatus.ValidationError)
             {
-                0 => OperationStatus.Success,
-                1 => OperationStatus.ValidationError,
-                2 => OperationStatus.NotFound,
-                _ => throw new ArgumentOutOfRangeException(nameof(code), $"Invalid operation status code: {code}")
-            };
+                throw new Exceptions.ValidationException(Message);
+            }
+        }
+
+        public void ThrowIfUnexpectedError()
+        {
+            if (Status == OperationStatus.UnexpectedError)
+            {
+                throw new Exception(Message);
+            }
+        }
+
+        public void ThrowIfNotFound()
+        {
+            if (Status == OperationStatus.NotFound)
+            {
+                throw new Exceptions.NotFoundException(Message);
+            }
+        }
+
+        public void ThrowIfErrorExceptNotFound()
+        {
+            if (Status == OperationStatus.UnexpectedError)
+            {
+                throw new Exception(Message);
+            }
+            else if (Status == OperationStatus.ValidationError)
+            {
+                throw new Exceptions.ValidationException(Message);
+            }
+        }
+
+        public void ThrowIfErrorExceptValidation()
+        {
+            if (Status == OperationStatus.UnexpectedError)
+            {
+                throw new Exception(Message);
+            }
+            else if (Status == OperationStatus.NotFound)
+            {
+                throw new Exceptions.NotFoundException(Message);
+            }
         }
 
         public OperationResult(T data, OperationStatus status, string message)

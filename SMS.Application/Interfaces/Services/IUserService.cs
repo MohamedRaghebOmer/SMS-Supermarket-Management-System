@@ -9,11 +9,27 @@ namespace SMS.Application.Interfaces.Services
         Task<int> RegisterAsync(CreateUserDto createDto);
         Task<UserResponseDto> GetByIdAsync(int userId);
         Task<UserResponseDto> GetByUsernameAsync(string username);
+        /// <summary>
+        /// Gets the user identifier for the specified username.
+        /// </summary>
+        Task<int> GetUserIdByUsernameAsync(string username);
+        /// <summary>
+        /// Gets the user identifier for the specified email address.
+        /// </summary>
+        Task<int> GetUserIdByEmailAsync(string email);
+        /// <summary>
+        /// Gets the user identifier for the specified person identifier.
+        /// </summary>
+        Task<int> GetUserIdByPersonIdAsync(int personId);
         Task<UserResponseDto> GetByPersonIdAsync(int personId);
         Task<UserResponseDto> GetByEmailAsync(string email);
         Task<bool> ExistsByIdAsync(int userId);
         Task<bool> ExistsByUsernameAsync(string username);
         Task<bool> ExistsByEmailAsync(string email);
+        /// <summary>
+        /// Determines whether the specified user is active.
+        /// </summary>
+        Task<bool> IsActiveAsync(int userId);
         Task<bool> IsEmailOwnedByUserAsync(string email, int userId);
         Task<PaginationResponse<UserResponseDto>> GetByRoleIdAsync(int roleId,
             PaginationRequest paginationRequest);

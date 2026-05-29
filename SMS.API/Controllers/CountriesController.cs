@@ -23,13 +23,14 @@ namespace SMS.API.Controllers
 
         [RequirePermission(PermissionAction.Create, SystemEntity.Countries)]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Create([FromBody] CreateCountryRequestDto dto)
         {
             var result = await _service.AddAsync(dto);
-            return CreatedAtRoute("GetById", new { id = result }, result);
+            return CreatedAtRoute("GetCountryById", new { id = result }, result);
         }
 
 
@@ -39,6 +40,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Exists([FromRoute] int id)
         {
             var result = await _service.ExistsAsync(id);
@@ -66,6 +68,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetById([FromRoute] int id)
         {
             var result = await _service.GetAsync(id);
@@ -74,12 +77,13 @@ namespace SMS.API.Controllers
 
 
 
-        [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
         [HttpGet("name/{countryName}", Name = "GetCountryByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByName([FromRoute] string countryName)
         {
             var result = await _service.GetAsync(countryName);
@@ -106,10 +110,11 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Update([FromRoute] int countryId, UpdateCountryRequestDto updateCountryRequestDto)
         {
             var result = await _service.UpdateAsync(countryId, updateCountryRequestDto);
-            return Ok(result);
+            return result ? Ok("Country updated successfully.") : NotFound("Country not found.");
         }
 
 
@@ -120,10 +125,11 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> DeleteById([FromRoute] int countryId)
         {
             var result = await _service.DeleteAsync(countryId);
-            return Ok(result);
+            return result ? Ok("Country deleted successfully.") : NotFound("Country not found.");
         }
     }
 }

@@ -24,7 +24,7 @@ namespace SMS.Application.Services
         public async Task<int> AddAsync(CreateCountryRequestDto dto)
         {
             ArgumentNullException.ThrowIfNull(dto);
-            StringGuard.AgainstNullOrEmpty(dto.CountryName, dto.CountryName);
+            StringGuard.AgainstNullOrWhiteSpace(dto.CountryName, dto.CountryName);
 
             var result = await _repo.AddAsync(dto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -37,13 +37,14 @@ namespace SMS.Application.Services
             NumericGuard.AgainstInvalidId(id);
 
             var result = await _repo.ExistsAsync(id);
-            result.ThrowIfNotSuccess();
+            result.ThrowIfErrorExceptNotFound();
+
             return result.Data;
         }
 
         public async Task<bool> ExistsAsync(string countryName)
         {
-            StringGuard.AgainstNullOrEmpty(countryName, "Country name");
+            StringGuard.AgainstNullOrWhiteSpace(countryName, "Country name");
 
             var result = await _repo.ExistsAsync(countryName);
             result.ThrowIfNotSuccess();
@@ -65,7 +66,7 @@ namespace SMS.Application.Services
 
         public async Task<CountryResponseDto> GetAsync(string countryName)
         {
-            StringGuard.AgainstNullOrEmpty(countryName, "Country name");
+            StringGuard.AgainstNullOrWhiteSpace(countryName, "Country name");
 
             var result = await _repo.FindByNameAsync(countryName);
 
@@ -102,9 +103,9 @@ namespace SMS.Application.Services
         {
             ArgumentNullException.ThrowIfNull(dto);
             NumericGuard.AgainstInvalidId(countryId);
-            StringGuard.AgainstNullOrEmpty(dto.CountryName, "Country name");
+            StringGuard.AgainstNullOrWhiteSpace(dto.CountryName, nameof(dto.CountryName));
 
-            var result = await _repo.UpdateAsync(dto.ToEntity());
+            var result = await _repo.UpdateAsync(dto.ToEntity(countryId));
             result.ThrowIfNotSuccess();
 
             return result.Data;

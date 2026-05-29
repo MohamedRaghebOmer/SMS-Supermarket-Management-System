@@ -2,6 +2,7 @@
 using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
 using SMS.Domain.Entities;
+using SMS.Shared.Constants;
 using SMS.Shared.Guards;
 using System.Security.Cryptography;
 
@@ -21,23 +22,100 @@ namespace SMS.Application.Services
             _stringHelper = stringHelper;
         }
 
-        public async Task<string> GenerateRefreshTokenAsync(string username)
+        public async Task<string> GenerateRefreshTokenByUsernameAsync(string username)
         {
-            StringGuard.AgainstNullOrEmpty(username, nameof(username));
+            username = username.Trim();
+            StringGuard.AgainstNullOrWhiteSpace(username, nameof(username));
 
             var user = await _userRepository.FindByUsernameAsync(username);
-
             user.ThrowIfNotSuccess();
             user.ThrowNotFoundIfDataNull();
 
-            var token = _stringHelper.Hash(GenerateRefreshToken());
-            var refreshToken = new RefreshToken(Guid.NewGuid(), user.Data.UserId, token, DateTime.UtcNow.AddDays(7),
+            var token = GenerateRefreshToken();
+            var tokenHash = _stringHelper.Hash(token);
+            var refreshToken = new RefreshToken(Guid.NewGuid(), user.Data.UserId, tokenHash,
+                DateTime.UtcNow.AddDays(Constants.RefreshTokenPeriodInDays),
                 DateTime.UtcNow, null, false);
 
-            await _refreshTokensRepository.AddAsync(refreshToken);
+            var result = await _refreshTokensRepository.AddAsync(refreshToken);
+            result.ThrowIfNotSuccess();
+
 
             return token;
         }
+
+        public async Task<string> GenerateRefreshTokenByUserIdAsync(int userId)
+        {
+            NumericGuard.AgainstInvalidId(userId);
+
+            var token = GenerateRefreshToken();
+            var tokenHash = _stringHelper.Hash(token);
+            var refreshToken = new RefreshToken(Guid.NewGuid(), userId, tokenHash,
+                DateTime.UtcNow.AddDays(Constants.RefreshTokenPeriodInDays),
+                DateTime.UtcNow, null, false);
+
+            // 'AddAsync' validates the user exists before adding the refresh token
+            var result = await _refreshTokensRepository.AddAsync(refreshToken);
+            result.ThrowIfNotSuccess();
+
+            return token;
+        }
+
+        public async Task<bool> IsValidRefreshTokenByUsernameAsync(Guid refreshTokenId, string username)
+        {
+            username = username.Trim();
+
+            if (refreshTokenId == Guid.Empty || string.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
+
+            var result = await _refreshTokensRepository.IsValidRefreshTokenByUsernameAsync(
+                refreshTokenId, username);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
+        public async Task<bool> RevokeRefreshTokenAsync(Guid refreshTokenId)
+        {
+            if (refreshTokenId == Guid.Empty)
+            {
+                return false;
+            }
+
+            var result = await _refreshTokensRepository.RevokeAsync(refreshTokenId);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
+        public async Task<bool> RevokeRefreshTokenByUsernameAsync(Guid refreshTokenId, string username)
+        {
+            username = username.Trim();
+            StringGuard.AgainstNullOrWhiteSpace(username, nameof(username));
+
+            if (refreshTokenId == Guid.Empty)
+            {
+                throw new ArgumentException("Refresh token ID cannot be empty.", nameof(refreshTokenId));
+            }
+
+            var result = await _refreshTokensRepository.RevokeByUsernameAsync(refreshTokenId, username);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
+        public async Task<bool> HasValidRefreshToken(int userId)
+        {
+            NumericGuard.AgainstInvalidId(userId);
+
+            var result = await _refreshTokensRepository.HasValidRefreshTokenAsync(userId);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
 
         private static string GenerateRefreshToken()
         {
@@ -47,31 +125,6 @@ namespace SMS.Application.Services
             rng.GetBytes(randomBytes);
 
             return Convert.ToBase64String(randomBytes);
-        }
-
-        public async Task<bool> IsValidRefreshTokenByUsernameAsync(string refreshToken, string username)
-        {
-            if (string.IsNullOrEmpty(refreshToken) || string.IsNullOrEmpty(username))
-            {
-                return false;
-            }
-
-            var result = await _refreshTokensRepository.IsValidRefreshTokenByUsernameAsync(
-                _stringHelper.Hash(refreshToken.Trim()), username.Trim());
-
-            result.ThrowIfNotSuccess();
-
-            return result.Data;
-        }
-
-        public async Task RevokeRefreshTokenAsync(string refreshToken)
-        {
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                return;
-            }
-
-            await _refreshTokensRepository.RevokeAsync(_stringHelper.Hash(refreshToken.Trim()));
         }
     }
 }

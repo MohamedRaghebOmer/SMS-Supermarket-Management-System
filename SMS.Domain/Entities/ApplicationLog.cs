@@ -39,7 +39,7 @@ namespace SMS.Domain.Entities
             get => _message;
             set
             {
-                StringGuard.AgainstNullOrEmpty(value, "Message");
+                StringGuard.AgainstNullOrWhiteSpace(value, "Message");
                 _message = value;
             }
         }

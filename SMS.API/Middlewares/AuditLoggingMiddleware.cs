@@ -50,15 +50,15 @@ namespace SMS.API.Middlewares
 
                 context.Response.Body = originalBodyStream;
 
-                auditLogId = await auditLogService.AddAsync(
-                    await auditLogRequestBuilder.BuildAsync(
-                        context, responseBody, (int)stopwatch.ElapsedMilliseconds));
+                var auditLogRequest = await auditLogRequestBuilder.BuildAsync(context, responseBody, (int)stopwatch.ElapsedMilliseconds);
+                auditLogId = await auditLogService.AddAsync(auditLogRequest);
             }
             catch (Exception ex)
             {
                 ApplicationLogRequestDto logRequest = new ApplicationLogRequestDto
                 {
-                    AuditLogId = auditLogId,
+                    AuditLogId = auditLogId == 0 ? null : auditLogId,
+                    LogLevel = Shared.Enums.LogLevel.Error,
                     Message = "An error occurred while creating audit log.",
                     Exception = ex,
                     StackTrace = ex.StackTrace
@@ -85,10 +85,7 @@ namespace SMS.API.Middlewares
                 || actionType == AuditActionType.Login
                 || actionType == AuditActionType.Logout
                 || actionType == AuditActionType.Register
-                || actionType == AuditActionType.FailedLogin
-                || actionType == AuditActionType.TokenRefresh
-                || actionType == AuditActionType.TokenExpired
-                || actionType == AuditActionType.AccessDenied;
+                || actionType == AuditActionType.TokenRefresh;
         }
     }
 }

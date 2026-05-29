@@ -26,6 +26,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Create([FromForm] CreatePersonRequestDto dto,
             IFormFile? image)
         {
@@ -39,6 +40,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> ExistsById([FromRoute] int personId)
         {
             var result = await _service.ExistsByIdAsync(personId);
@@ -51,6 +53,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> ExistsByNationalNo([FromRoute] string nationalNo)
         {
             var result = await _service.ExistsByNationalNoAsync(nationalNo);
@@ -63,6 +66,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> ExistsByEmail([FromRoute] string email)
         {
             var result = await _service.ExistsByEmailAsync(email);
@@ -76,6 +80,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetById([FromRoute] int personId)
         {
             var result = await _service.GetByIdAsync(personId);
@@ -89,10 +94,12 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetImage([FromRoute] int personId)
         {
-            var stream = await _service.GetImageAsync(personId);
-            return File(stream, "application/octet-stream");
+            var imageResponse = await _service.GetImageAsync(personId);
+            return File(imageResponse.Bytes, imageResponse.ContentType);
         }
 
 
@@ -102,6 +109,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByNationalNo([FromRoute] string nationalNo)
         {
             var result = await _service.GetByNationalNoAsync(nationalNo);
@@ -115,6 +123,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByEmail([FromRoute] string email)
         {
             var result = await _service.GetByEmailAsync(email);
@@ -127,6 +136,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByGender([FromRoute] Gender gender,
             [FromQuery] PaginationRequest paginationRequest)
         {
@@ -140,6 +150,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByNationalityCountryId([FromRoute] int countryId,
             [FromQuery] PaginationRequest paginationRequest)
         {
@@ -149,10 +161,11 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.People)]
-        [HttpGet("paged", Name = "GetPeoplePaged")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetPaged([FromQuery] PaginationRequest paginationRequest)
         {
             var result = await _service.GetPagedAsync(paginationRequest);
@@ -167,26 +180,43 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Update([FromRoute] int personId,
             [FromForm] UpdatePersonRequestDto dto,
             IFormFile? newImage)
         {
             var result = await _service.UpdateAsync(personId, dto, newImage);
-            return Ok(result);
+            return result ? Ok("Person updated successfully") : NotFound("Person not found");
         }
 
 
         [RequirePermission(PermissionAction.Update, SystemEntity.People)]
-        [HttpPatch("{personId:int}/image", Name = "UpdatePersonImage")]
+        [HttpPatch("{personId:int}/image", Name = "SetPersonImage")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult> UpdateImage([FromRoute] int personId,
-            IFormFile newImage)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> SetImage([FromRoute] int personId,
+            IFormFile image)
         {
-            var result = await _service.UpdateImageAsync(personId, newImage);
-            return Ok(result);
+            var result = await _service.SetImageAsync(personId, image);
+            return result ? Ok("Person image set successfully") : NotFound("Person not found");
+        }
+
+
+        [RequirePermission(PermissionAction.Update, SystemEntity.People)]
+        [HttpDelete("{personId:int}/image", Name = "RemovePersonImage")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> RemoveImage([FromRoute] int personId)
+        {
+            var result = await _service.RemoveImageAsync(personId);
+            return result ? Ok("Person image removed successfully") : NotFound("Person not found");
         }
 
 
@@ -195,10 +225,12 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteById([FromRoute] int personId)
         {
             var result = await _service.DeleteAsync(personId);
-            return Ok(result);
+            return result ? Ok("Person deleted successfully") : NotFound("Person not found");
         }
 
 
@@ -207,10 +239,12 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteByNationalNo([FromRoute] string nationalNo)
         {
             var result = await _service.DeleteAsync(nationalNo);
-            return Ok(result);
+            return result ? Ok("Person deleted successfully") : NotFound("Person not found");
         }
     }
 }

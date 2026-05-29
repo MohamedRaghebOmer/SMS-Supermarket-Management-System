@@ -26,7 +26,7 @@ namespace SMS.Domain.Entities
             get => _permissionsMask;
             set
             {
-                NumericGuard.AgainstNonPositiveNumber(value, nameof(PermissionsMask));
+                NumericGuard.AgainstNegativeNumber(value, nameof(PermissionsMask));
                 _permissionsMask = value;
             }
         }

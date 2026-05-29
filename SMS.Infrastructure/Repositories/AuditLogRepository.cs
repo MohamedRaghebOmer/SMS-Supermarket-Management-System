@@ -32,13 +32,13 @@ namespace SMS.Infrastructure.Repositories
             };
             cmd.Parameters.Add(insertedIdParam);
 
-            return await _executor.ExecuteNonQueryAsync(cmd, conn, (long)insertedIdParam.Value);
+            return await _executor.ExecuteNonQueryAsync<long>(cmd, conn, insertedIdParam);
         }
 
         public async Task<OperationResult<AuditLog?>> FindAsync(long auditLogId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_AuditLogs_GitById");
+            using var cmd = _executor.CreateCommand(conn, "usp_AuditLogs_GetById");
 
             cmd.Parameters.Add("@AuditLogId", SqlDbType.BigInt).Value = auditLogId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapAuditLog);
@@ -82,12 +82,12 @@ namespace SMS.Infrastructure.Repositories
         }
 
         public async Task<OperationResult<PaginationResponse<AuditLog>>> GetPagedByEndpointUrlAsync(
-            string endpointUrl, PaginationRequest request)
+            string endpoint, PaginationRequest request)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_AuditLogs_GetPagedByEndpointUrl");
+            using var cmd = _executor.CreateCommand(conn, "usp_AuditLogs_GetPagedByEndpoint");
 
-            cmd.Parameters.Add("@Endpoint", SqlDbType.NVarChar, 200).Value = endpointUrl;
+            cmd.Parameters.Add("@Endpoint", SqlDbType.NVarChar, 200).Value = endpoint;
             return await _executor.ExecutePaginationAsync(cmd, conn, request, MapAuditLog);
         }
 
@@ -140,6 +140,9 @@ namespace SMS.Infrastructure.Repositories
             var userIdOrdinal = reader.GetOrdinal("UserId");
             int? userId = reader.IsDBNull(userIdOrdinal) ? null : reader.GetInt32(userIdOrdinal);
 
+            var correlationIdOrdinal = reader.GetOrdinal("CorrelationId");
+            Guid? correlationId = reader.IsDBNull(correlationIdOrdinal) ? null : reader.GetGuid(correlationIdOrdinal);
+
             var attemptedLoginIdentifierOrdinal = reader.GetOrdinal("AttemptedLoginIdentifier");
             string? attemptedLoginIdentifier = reader.IsDBNull(attemptedLoginIdentifierOrdinal) ? null : reader.GetString(attemptedLoginIdentifierOrdinal);
 
@@ -156,13 +159,13 @@ namespace SMS.Infrastructure.Repositories
                 auditLogId: reader.GetInt64(reader.GetOrdinal("AuditLogId")),
                 userId: userId,
                 attemptedLoginIdentifier: attemptedLoginIdentifier,
-                correlationId: reader.GetGuid(reader.GetOrdinal("CorrelationId")),
-                actionType: (AuditActionType)reader.GetInt32(reader.GetOrdinal("ActionType")),
+                correlationId: correlationId,
+                actionType: (AuditActionType)reader.GetByte(reader.GetOrdinal("ActionType")),
                 endpoint: reader.GetString(reader.GetOrdinal("Endpoint")),
                 requestBody: requestBody,
                 responseBody: responseBody,
                 userAgent: userAgent,
-                httpStatusCode: (HttpStatusCode)reader.GetInt32(reader.GetOrdinal("StatusCode")),
+                httpStatusCode: reader.GetInt32(reader.GetOrdinal("HttpStatusCode")),
                 duration: reader.GetInt32(reader.GetOrdinal("Duration")),
                 ipAddress: reader.GetString(reader.GetOrdinal("IpAddress")),
                 details: details,
@@ -179,13 +182,13 @@ namespace SMS.Infrastructure.Repositories
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = auditLog.UserId ?? (object)DBNull.Value;
             cmd.Parameters.Add("@AttemptedLoginIdentifier", SqlDbType.NVarChar, 100).Value =
                 auditLog.AttemptedLoginIdentifier ?? (object)DBNull.Value;
-            cmd.Parameters.Add("@CorrelationId", SqlDbType.UniqueIdentifier).Value = auditLog.RequestGuid;
+            cmd.Parameters.Add("@CorrelationId", SqlDbType.UniqueIdentifier).Value = auditLog.CorrelationId;
             cmd.Parameters.Add("@ActionType", SqlDbType.TinyInt).Value = (byte)auditLog.ActionType;
             cmd.Parameters.Add("@Endpoint", SqlDbType.NVarChar, 200).Value = auditLog.Endpoint;
             cmd.Parameters.Add("@RequestBody", SqlDbType.NVarChar, -1).Value = auditLog.RequestBody ?? (object)DBNull.Value;
             cmd.Parameters.Add("@ResponseBody", SqlDbType.NVarChar, -1).Value = auditLog.ResponseBody ?? (object)DBNull.Value;
             cmd.Parameters.Add("@UserAgent", SqlDbType.NVarChar, 300).Value = auditLog.UserAgent ?? (object)DBNull.Value;
-            cmd.Parameters.Add("@HttpStatusCode", SqlDbType.Int).Value = (int)auditLog.HttpStatusCode;
+            cmd.Parameters.Add("@HttpStatusCode", SqlDbType.Int).Value = auditLog.HttpStatusCode;
             cmd.Parameters.Add("@Duration", SqlDbType.Int).Value = auditLog.Duration;
             cmd.Parameters.Add("@IpAddress", SqlDbType.NVarChar, 50).Value = auditLog.IpAddress;
             cmd.Parameters.Add("@Details", SqlDbType.NVarChar, -1).Value = auditLog.Details ?? (object)DBNull.Value;

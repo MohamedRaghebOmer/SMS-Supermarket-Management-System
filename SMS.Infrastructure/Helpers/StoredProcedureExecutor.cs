@@ -3,7 +3,6 @@ using SMS.Application.Common.Enums;
 using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Shared.Common;
-using SMS.Shared.Constants;
 using System.Data;
 
 namespace SMS.Infrastructure.Helpers
@@ -78,19 +77,19 @@ namespace SMS.Infrastructure.Helpers
         {
             var items = new List<T>();
 
-            int totalCount = -1;
+            int totalCount = 0;
             using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
                     items.Add(mapFunc(reader));
 
-                    if (totalCount == -1)
+                    if (totalCount == 0)
                     {
                         // After this line, the total count value will change to the actual count from the database,
                         // and we won't read it again, and it's impossible to be -1 in the database,
                         // so we can use this value to determine whether we have read the total count or not.
-                        totalCount = reader.GetInt32(reader.GetOrdinal(Constants.PaginationResponseTotalCountParamName));
+                        totalCount = reader.GetInt32(reader.GetOrdinal("TotalCount"));
                     }
                 }
             }
@@ -158,16 +157,17 @@ namespace SMS.Infrastructure.Helpers
             return CreateOperationResult(statusCodeOutParam, statusMessageOutParam);
         }
 
-        public async Task<OperationResult<T?>> ExecuteNonQueryAsync<T>(SqlCommand cmd, SqlConnection conn, T? operationResultData)
+        public async Task<OperationResult<T?>> ExecuteNonQueryAsync<T>(SqlCommand cmd, SqlConnection conn, SqlParameter operationResultDataParam)
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 
             await cmd.ExecuteNonQueryAsync();
 
-            return CreateOperationResult(operationResultData, statusCodeOutParam, statusMessageOutParam);
+            return CreateOperationResult((T?)operationResultDataParam.Value, statusCodeOutParam, statusMessageOutParam);
         }
 
-        public async Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd, SqlConnection conn)
+        public async Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd,
+            SqlConnection conn) where T : IConvertible
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 

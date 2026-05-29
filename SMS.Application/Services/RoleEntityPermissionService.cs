@@ -30,6 +30,19 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
+        /// <summary>
+        /// Gets the role identifier for the specified user identifier.
+        /// </summary>
+        public async Task<int> GetRoleIdByUserIdAsync(int userId)
+        {
+            NumericGuard.AgainstInvalidId(userId);
+
+            var result = await _repo.GetRoleIdByUserIdAsync(userId);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
         public async Task<IReadOnlyList<RoleEntityPermissionsResponseDto>> GetByRoleIdAsync(int roleId)
         {
             NumericGuard.AgainstInvalidId(roleId);
@@ -62,6 +75,12 @@ namespace SMS.Application.Services
         {
             NumericGuard.AgainstInvalidId(roleId);
             NumericGuard.AgainstNegativeNumber(permissionMask, nameof(permissionMask));
+
+            int permissionsSumValue = Enum.GetValues(typeof(PermissionAction)).Cast<int>().Sum();
+            if (permissionMask < 0 || permissionMask > permissionsSumValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(permissionMask), "Invalid permission mask value.");
+            }
 
             var result = await _repo.UpdatePermissionsMaskAsync(roleId, entity, permissionMask);
             result.ThrowIfNotSuccess();

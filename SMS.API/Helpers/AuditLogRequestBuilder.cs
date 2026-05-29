@@ -21,40 +21,31 @@ namespace SMS.API.Helpers
             string responseBody,
             int duration)
         {
+            var userId = AuditLogHelper.GetUserId(context);
             var actionType = _actionTypeResolver.Resolve(context);
+            var attemptedLoginIdentifier = await _attemptedUsernameResolver.ResolveAsync(context, actionType);
+            var correlationId = AuditLogHelper.GetOrCreateCorrelationId(context);
+            var endpoint = AuditLogHelper.GetEndpoint(context);
+            var requestBody = await AuditLogHelper.GetRequestBodyAsync(context);
+            var maskedResponseBody = AuditLogHelper.MaskSensitiveData(responseBody);
+            var userAgent = AuditLogHelper.GetUserAgent(context);
+            var httpStatusCode = AuditLogHelper.GetStatusCode(context);
+            var durationInMilliseconds = duration;
+            var ipAddress = AuditLogHelper.GetIpAddress(context);
 
             return new AuditLogRequestDto
             {
-                UserId = Helpers.AuditLogHelper.GetUserId(context),
-
-                AttemptedLoginIdentifier =
-                    await _attemptedUsernameResolver.ResolveAsync(
-                        context,
-                        actionType),
-
-                CorrelationId =
-                    Helpers.AuditLogHelper.GetOrCreateCorrelationId(context),
-
+                UserId = userId,
+                AttemptedLoginIdentifier = attemptedLoginIdentifier,
+                CorrelationId = correlationId,
                 ActionType = actionType,
-
-                Endpoint =
-                    Helpers.AuditLogHelper.GetEndpoint(context),
-
-                RequestBody =
-                    await Helpers.AuditLogHelper.GetRequestBodyAsync(context),
-
-                ResponseBody = responseBody,
-
-                UserAgent =
-                    Helpers.AuditLogHelper.GetUserAgent(context),
-
-                HttpStatusCode =
-                    Helpers.AuditLogHelper.GetStatusCode(context),
-
-                Duration = duration,
-
-                IpAddress =
-                    Helpers.AuditLogHelper.GetIpAddress(context),
+                Endpoint = endpoint,
+                RequestBody = requestBody,
+                ResponseBody = maskedResponseBody,
+                UserAgent = userAgent,
+                HttpStatusCode = httpStatusCode,
+                Duration = durationInMilliseconds,
+                IpAddress = ipAddress
             };
         }
     }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Net.Http.Headers;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -9,17 +8,19 @@ namespace SMS.API.Helpers
 {
     public static class AuditLogHelper
     {
-        public static int GetUserId(HttpContext context)
+        public static int? GetUserId(HttpContext context)
         {
             if (context.User.Identity?.IsAuthenticated == true)
             {
-                var userIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                if (userIdClaim is not null && int.TryParse(userIdClaim.Value, out int userId))
+                var userIdClaim = context.User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+                if (userIdClaim is not null && int.TryParse(userIdClaim.Value, out int claimUserId))
                 {
-                    return userId;
+                    return claimUserId;
                 }
             }
-            return 0; // Return 0 for unauthenticated users or if the claim is missing/invalid
+            return null;
         }
 
         public static string GetEndpoint(HttpContext context)
@@ -27,7 +28,7 @@ namespace SMS.API.Helpers
             return context.Request.Path.ToString();
         }
 
-        public static Guid GetOrCreateCorrelationId(HttpContext context)
+        public static Guid? GetOrCreateCorrelationId(HttpContext context)
         {
             const string correlationIdHeaderFormat = "X-Correlation-ID";
 
@@ -47,9 +48,13 @@ namespace SMS.API.Helpers
             {
                 correlationId = parsedCorrelationId;
             }
-            else
+            else if (!context.Response.HasStarted)
             {
                 correlationId = Guid.NewGuid();
+            }
+            else // If response has already started, we cannot modify headers, so we won't create a new correlation ID
+            {
+                return null;
             }
 
             context.Items["CorrelationId"] = correlationId;
@@ -62,9 +67,9 @@ namespace SMS.API.Helpers
 
         public static async Task<string> GetRequestBodyAsync(HttpContext context)
         {
-            const int maxBodySize = 1024 * 50;
+            const int maxBodySize = 1024 * 50; // 50 KB
 
-            if (context.Request.ContentLength > maxBodySize)
+            if (context.Request.ContentLength is > maxBodySize)
             {
                 return "[Request body too large]";
             }
@@ -91,7 +96,7 @@ namespace SMS.API.Helpers
             return MaskSensitiveData(body);
         }
 
-        private static string MaskSensitiveData(string body)
+        public static string MaskSensitiveData(string body)
         {
             if (string.IsNullOrWhiteSpace(body))
             {
@@ -176,9 +181,9 @@ namespace SMS.API.Helpers
             return context.Request.Headers[HeaderNames.UserAgent].ToString() ?? null;
         }
 
-        public static HttpStatusCode GetStatusCode(HttpContext context)
+        public static int GetStatusCode(HttpContext context)
         {
-            return (HttpStatusCode)context.Response.StatusCode;
+            return context.Response.StatusCode;
         }
 
         public static string GetIpAddress(HttpContext context)

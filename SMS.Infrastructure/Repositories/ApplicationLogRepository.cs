@@ -31,7 +31,7 @@ namespace SMS.Infrastructure.Repositories
             };
             cmd.Parameters.Add(insertedIdParam);
 
-            return await _executor.ExecuteNonQueryAsync(cmd, conn, (int)insertedIdParam.Value);
+            return await _executor.ExecuteNonQueryAsync<int>(cmd, conn, insertedIdParam);
         }
 
         public async Task<OperationResult<ApplicationLog?>> FindAsync(int id)
@@ -87,7 +87,7 @@ namespace SMS.Infrastructure.Repositories
         private static ApplicationLog MapApplicationLog(SqlDataReader reader)
         {
             var auditLogIdOrdinal = reader.GetOrdinal("AuditLogId");
-            int? auditLogId = reader.IsDBNull(auditLogIdOrdinal) ? null : reader.GetInt32(auditLogIdOrdinal);
+            long? auditLogId = reader.IsDBNull(auditLogIdOrdinal) ? null : reader.GetInt64(auditLogIdOrdinal);
 
             var exceptionOrdinal = reader.GetOrdinal("Exception");
             string? exceptionMessage = reader.IsDBNull(exceptionOrdinal) ? null : reader.GetString(exceptionOrdinal);

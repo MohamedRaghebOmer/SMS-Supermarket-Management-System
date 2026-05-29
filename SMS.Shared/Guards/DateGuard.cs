@@ -33,7 +33,7 @@
             if (dateOfBirth > DateTime.UtcNow.AddYears(-age)) age--;
             if (age < adultAge)
             {
-                throw new ArgumentException($"{parameterName} indicates an age of {age}, which is below the required adult age of {adultAge}.");
+                throw new ArgumentException($"Age {age} is below the required adult age of {adultAge}.");
             }
         }
     }

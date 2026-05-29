@@ -28,6 +28,19 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteNonQueryAsync(cmd, conn);
         }
 
+        /// <summary>
+        /// Gets the role identifier for the specified user identifier.
+        /// </summary>
+        public async Task<OperationResult<int>> GetRoleIdByUserIdAsync(int userId)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_RoleEntityPermissions_GetRoleIdByUserId");
+
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+
+            return await _executor.ExecuteScalarAsync<int>(cmd, conn);
+        }
+
         public async Task<OperationResult<IReadOnlyList<RoleEntityPermissions>>> GetByRoleIdAsync(int roleId)
         {
             await using var conn = _executor.CreateConnection();
@@ -83,21 +96,21 @@ namespace SMS.Infrastructure.Repositories
         {
             return new RoleEntityPermissions(
                 roleId: reader.GetInt32(reader.GetOrdinal("RoleId")),
-                systemEntity: (SystemEntity)reader.GetInt32(reader.GetOrdinal("Entity")),
-                permissionsMask: reader.GetInt32(reader.GetOrdinal("PermissionMask")));
+                systemEntity: (SystemEntity)reader.GetByte(reader.GetOrdinal("EntityId")),
+                permissionsMask: reader.GetInt32(reader.GetOrdinal("PermissionsMask")));
         }
 
         private static void AddRoleEntityPermissionParameters(SqlCommand cmd, RoleEntityPermissions entity)
         {
             cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = entity.RoleId;
-            cmd.Parameters.Add("@Entity", SqlDbType.Int).Value = (int)entity.Entity;
+            cmd.Parameters.Add("@EntityId", SqlDbType.Int).Value = (int)entity.Entity;
             cmd.Parameters.Add("@PermissionMask", SqlDbType.Int).Value = entity.PermissionsMask;
         }
 
         private static void AddRoleEntityPermissionParameters(SqlCommand cmd, int roleId, SystemEntity entity)
         {
             cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = roleId;
-            cmd.Parameters.Add("@Entity", SqlDbType.Int).Value = (int)entity;
+            cmd.Parameters.Add("@EntityId", SqlDbType.Int).Value = (int)entity;
         }
     }
 }

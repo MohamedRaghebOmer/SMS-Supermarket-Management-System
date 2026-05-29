@@ -30,7 +30,6 @@ namespace SMS.API
 
             // Add authentication configuration
             builder.Services.AddAuthenticationConfiguration(builder.Configuration);
-            builder.Services.AddUserOwnerOrAdminPolicy();
 
             // Add rate limiting configuration
             builder.Services.AddSlidingRateLimiting();
@@ -46,10 +45,10 @@ namespace SMS.API
             }
 
             // Add custom middlewares and other configurations
-            app.UseRouting();
             app.AddCustomMiddlewares();
+            app.UseRouting();
             app.UseHttpsRedirection();
-            app.UseCors("SMSApiCorsPolicy");
+            app.UseCors(Constants.CorePolicyName);
             app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAuthorization();

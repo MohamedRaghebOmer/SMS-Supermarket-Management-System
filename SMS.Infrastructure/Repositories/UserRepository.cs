@@ -31,7 +31,7 @@ namespace SMS.Infrastructure.Repositories
             };
             cmd.Parameters.Add(insertedIdParam);
 
-            return await _executor.ExecuteNonQueryAsync(cmd, conn, (int)insertedIdParam.Value);
+            return await _executor.ExecuteNonQueryAsync<int>(cmd, conn, insertedIdParam);
         }
 
         public async Task<OperationResult<User?>> FindByIdAsync(int userId)
@@ -52,6 +52,19 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToUser);
         }
 
+        /// <summary>
+        /// Gets the user identifier for the specified username.
+        /// </summary>
+        public async Task<OperationResult<int>> GetUserIdByUsernameAsync(string username)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByUsername");
+
+            cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username;
+
+            return await _executor.ExecuteScalarAsync<int>(cmd, conn);
+        }
+
         public async Task<OperationResult<User?>> FindByPersonIdAsync(int personId)
         {
             await using var conn = _executor.CreateConnection();
@@ -59,6 +72,19 @@ namespace SMS.Infrastructure.Repositories
 
             cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToUser);
+        }
+
+        /// <summary>
+        /// Gets the user identifier for the specified person identifier.
+        /// </summary>
+        public async Task<OperationResult<int>> GetUserIdByPersonIdAsync(int personId)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByPersonId");
+
+            cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
+
+            return await _executor.ExecuteScalarAsync<int>(cmd, conn);
         }
 
         public async Task<OperationResult<User?>> FindByEmailAsync(string email)
@@ -70,7 +96,20 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToUser);
         }
 
-        public async Task<OperationResult<bool>> ExistsById(int userId)
+        /// <summary>
+        /// Gets the user identifier for the specified email address.
+        /// </summary>
+        public async Task<OperationResult<int>> GetUserIdByEmailAsync(string email)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByEmail");
+
+            cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = email;
+
+            return await _executor.ExecuteScalarAsync<int>(cmd, conn);
+        }
+
+        public async Task<OperationResult<bool>> ExistsByIdAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
             using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsById");
@@ -94,6 +133,18 @@ namespace SMS.Infrastructure.Repositories
             using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsByEmail");
 
             cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = email;
+            return await _executor.ExecuteExistsAsync(conn, cmd);
+        }
+
+        /// <summary>
+        /// Determines whether the specified user is active.
+        /// </summary>
+        public async Task<OperationResult<bool>> IsActive(int userId)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_IsActive");
+
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             return await _executor.ExecuteExistsAsync(conn, cmd);
         }
 
@@ -121,7 +172,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<User>>> GetByRoleId(int roleId, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByRoleId");
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedByRoleId");
 
             cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = roleId;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToUser);
@@ -138,18 +189,17 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<User>>> GetActiveUsers(PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetActiveUsers");
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedActiveUsers");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToUser);
         }
 
-        public async Task<OperationResult<bool>> Login(string username, string password)
+        public async Task<OperationResult<bool>> RegisterLoginAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Login");
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_RegisterLogin");
 
-            cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username;
-            cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 100).Value = password;
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
 
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);
         }
@@ -190,7 +240,7 @@ namespace SMS.Infrastructure.Repositories
             using var cmd = _executor.CreateCommand(conn, "usp_Users_Update");
 
             AddCommonUserParameters(cmd, user);
-            cmd.Parameters.Add("@LastUpdatedAt", SqlDbType.DateTime2).Value = user.LastUpdatedAt ?? (object)DBNull.Value;
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.UserId;
             cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = user.IsActive;
 
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);
@@ -211,8 +261,8 @@ namespace SMS.Infrastructure.Repositories
             var lastLoginAtOrdinal = reader.GetOrdinal("LastLoginAt");
             DateTime? lastLoginAt = reader.IsDBNull(lastLoginAtOrdinal) ? null : reader.GetDateTime(lastLoginAtOrdinal);
 
-            var lastUpdatedAtOrdinal = reader.GetOrdinal("LastUpdatedAt");
-            DateTime? lastUpdatedAt = reader.IsDBNull(lastUpdatedAtOrdinal) ? null : reader.GetDateTime(lastUpdatedAtOrdinal);
+            var updatedAtOrdinal = reader.GetOrdinal("UpdatedAt");
+            DateTime? updatedAt = reader.IsDBNull(updatedAtOrdinal) ? null : reader.GetDateTime(updatedAtOrdinal);
 
             return new User(
                 userId: reader.GetInt32(reader.GetOrdinal("UserId")),
@@ -223,7 +273,7 @@ namespace SMS.Infrastructure.Repositories
                 isActive: reader.GetBoolean(reader.GetOrdinal("IsActive")),
                 lastLoginAt: lastLoginAt,
                 createdAt: reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
-                lastUpdatedAt: lastUpdatedAt);
+                lastUpdatedAt: updatedAt);
         }
 
         private static void AddCommonUserParameters(SqlCommand cmd, User user)

@@ -35,9 +35,9 @@ namespace SMS.Application.Services
                 throw new ArgumentException("CorrelationId cannot be empty.", nameof(requestDto.CorrelationId));
             }
 
-            StringGuard.AgainstNullOrEmpty(requestDto.Endpoint, nameof(requestDto.Endpoint));
+            StringGuard.AgainstNullOrWhiteSpace(requestDto.Endpoint, nameof(requestDto.Endpoint));
             NumericGuard.AgainstNegativeNumber(requestDto.Duration, nameof(requestDto.Duration));
-            StringGuard.AgainstNullOrEmpty(requestDto.IpAddress, nameof(requestDto.IpAddress));
+            StringGuard.AgainstNullOrWhiteSpace(requestDto.IpAddress, nameof(requestDto.IpAddress));
 
             var result = await _repo.AddAuditLogAsync(requestDto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -108,7 +108,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByEndpointAsync(
             string endpointUrl, PaginationRequest paginationRequest)
         {
-            StringGuard.AgainstNullOrEmpty(endpointUrl, nameof(endpointUrl));
+            StringGuard.AgainstNullOrWhiteSpace(endpointUrl, nameof(endpointUrl));
             _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedByEndpointUrlAsync(endpointUrl, paginationRequest);
@@ -131,7 +131,7 @@ namespace SMS.Application.Services
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedByIpAddressAsync(
             string ipAddress, PaginationRequest paginationRequest)
         {
-            StringGuard.AgainstNullOrEmpty(ipAddress, nameof(ipAddress));
+            StringGuard.AgainstNullOrWhiteSpace(ipAddress, nameof(ipAddress));
             _validationHelper.ValidatePagination(paginationRequest);
 
             var result = await _repo.GetPagedByIpAddressAsync(ipAddress, paginationRequest);

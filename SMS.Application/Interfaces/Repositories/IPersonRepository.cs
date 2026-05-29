@@ -18,7 +18,7 @@ namespace SMS.Application.Interfaces.Repositories
         Task<OperationResult<bool>> ExistsByIdAsync(int personId);
         Task<OperationResult<bool>> ExistsByNationalNoAsync(string nationalNo);
         Task<OperationResult<bool>> ExistsByEmailAsync(string email);
-        Task<OperationResult<bool>> UpdateImageAsync(int personId, Guid newImageFileName);
+        Task<OperationResult<bool>> SetImageAsync(int personId, Guid? newImageFileName);
         Task<OperationResult<bool>> UpdateAsync(Person person);
         Task<OperationResult<bool>> DeleteAsync(int personId);
         Task<OperationResult<bool>> DeleteAsync(string nationalNo);
