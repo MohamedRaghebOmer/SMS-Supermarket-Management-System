@@ -66,7 +66,6 @@ namespace SMS.Application.Services
                 };
             }
 
-
             if (!_stringHelper.Verify(loginRequestDto.Password, userResult.Data.PasswordHash))
             {
                 return new LoginResultDto
@@ -78,6 +77,19 @@ namespace SMS.Application.Services
                 };
             }
 
+            var isActiveResult = await _userRepo.IsActive(userResult.Data.UserId);
+            isActiveResult.ThrowIfNotSuccess();
+
+            if (!isActiveResult.Data)
+            {
+                return new LoginResultDto
+                {
+                    AccessToken = null,
+                    RefreshToken = null,
+                    Status = LoginResultDto.LoginResultStatus.InactiveAccount,
+                    Message = "Inactive Account."
+                };
+            }
 
             var hasValidRefreshTokenResult = await _refreshTokenRepository.HasValidRefreshTokenAsync(userResult.Data.UserId);
             hasValidRefreshTokenResult.ThrowIfNotSuccess();
@@ -95,6 +107,9 @@ namespace SMS.Application.Services
 
             var accessToken = await GenerateAccessToken(userResult.Data);
             var refreshToken = await _refreshTokenService.GenerateRefreshTokenByUserIdAsync(userResult.Data.UserId);
+
+            var registerLoginResult = await _userRepo.RegisterLoginAsync(userResult.Data.UserId);
+            registerLoginResult.ThrowIfNotSuccess();
 
             return new LoginResultDto
             {

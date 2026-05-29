@@ -23,10 +23,11 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Create([FromBody] RoleEntityPermissionsRequestDto dto)
         {
             var result = await _service.AddAsync(dto);
-            return result ? Ok(result) : BadRequest(result);
+            return result ? Ok("Role entity permissions created successfully.") : BadRequest("Failed to create role entity permissions.");
         }
 
 
@@ -37,6 +38,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByRoleId([FromRoute] int roleId)
         {
             var result = await _service.GetByRoleIdAsync(roleId);
@@ -49,6 +51,7 @@ namespace SMS.API.Controllers
         [HttpGet("entity/{entity}", Name = "GetByEntityId")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByEntityId([FromRoute] SystemEntity entity)
         {
             var result = await _service.GetByEntityAsync(entity);
@@ -64,6 +67,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetPermissionsMask([FromRoute] int roleId, [FromRoute] SystemEntity entity)
         {
             var result = await _service.GetPermissionsMaskAsync(roleId, entity);
@@ -79,11 +83,12 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> UpdatePermissionsMask([FromRoute] int roleId, [FromRoute] SystemEntity entity,
             [FromBody] int permissionsMask)
         {
             var result = await _service.UpdatePermissionsMaskAsync(roleId, entity, permissionsMask);
-            return Ok(result);
+            return result ? Ok("Permissions mask updated successfully.") : NotFound("Permissions mask not found.");
         }
 
 
@@ -94,11 +99,11 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> DeleteMask([FromRoute] int roleId, [FromRoute] SystemEntity entity)
         {
             var result = await _service.DeleteByRoleAndEntityAsync(roleId, entity);
-            return Ok(result);
+            return result ? Ok("Permissions mask deleted successfully.") : NotFound("Permissions mask not found.");
         }
 
 
@@ -110,6 +115,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> HasPermission([FromRoute] int roleId, [FromRoute] SystemEntity entity,
             [FromRoute] PermissionAction permissionAction)
         {

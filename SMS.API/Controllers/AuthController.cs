@@ -34,6 +34,11 @@ namespace SMS.API.Controllers
                 return Unauthorized(loginResult.Message);
             }
 
+            if (loginResult.Status == LoginResultDto.LoginResultStatus.InactiveAccount)
+            {
+                return Unauthorized(loginResult.Message);
+            }
+
             if (loginResult.Status == LoginResultDto.LoginResultStatus.AlreadyLoggedIn)
             {
                 return Ok(loginResult.Message);

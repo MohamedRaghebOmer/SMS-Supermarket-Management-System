@@ -136,6 +136,18 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteExistsAsync(conn, cmd);
         }
 
+        /// <summary>
+        /// Determines whether the specified user is active.
+        /// </summary>
+        public async Task<OperationResult<bool>> IsActive(int userId)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_IsActive");
+
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+            return await _executor.ExecuteExistsAsync(conn, cmd);
+        }
+
         public async Task<OperationResult<bool>> IsEmailOwnedByUserAsync(string email, int userId)
         {
             await using var conn = _executor.CreateConnection();
@@ -160,7 +172,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<User>>> GetByRoleId(int roleId, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByRoleId");
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedByRoleId");
 
             cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = roleId;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToUser);
@@ -177,18 +189,17 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<User>>> GetActiveUsers(PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetActiveUsers");
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedActiveUsers");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToUser);
         }
 
-        public async Task<OperationResult<bool>> Login(string username, string password)
+        public async Task<OperationResult<bool>> RegisterLoginAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Login");
+            using var cmd = _executor.CreateCommand(conn, "usp_Users_RegisterLogin");
 
-            cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username;
-            cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 100).Value = password;
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
 
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);
         }
@@ -229,7 +240,7 @@ namespace SMS.Infrastructure.Repositories
             using var cmd = _executor.CreateCommand(conn, "usp_Users_Update");
 
             AddCommonUserParameters(cmd, user);
-            cmd.Parameters.Add("@LastUpdatedAt", SqlDbType.DateTime2).Value = user.LastUpdatedAt ?? (object)DBNull.Value;
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.UserId;
             cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = user.IsActive;
 
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);

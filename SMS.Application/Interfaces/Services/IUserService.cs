@@ -26,6 +26,10 @@ namespace SMS.Application.Interfaces.Services
         Task<bool> ExistsByIdAsync(int userId);
         Task<bool> ExistsByUsernameAsync(string username);
         Task<bool> ExistsByEmailAsync(string email);
+        /// <summary>
+        /// Determines whether the specified user is active.
+        /// </summary>
+        Task<bool> IsActiveAsync(int userId);
         Task<bool> IsEmailOwnedByUserAsync(string email, int userId);
         Task<PaginationResponse<UserResponseDto>> GetByRoleIdAsync(int roleId,
             PaginationRequest paginationRequest);

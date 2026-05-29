@@ -6,6 +6,7 @@
         {
             Success,
             InvalidCredentials,
+            InactiveAccount,
             AlreadyLoggedIn
         }
 

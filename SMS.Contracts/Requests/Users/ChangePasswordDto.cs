@@ -11,5 +11,9 @@ namespace SMS.Contracts.Requests.Users
         [Required]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
         public required string NewPassword { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+        public required string ConfirmNewPassword { get; set; }
     }
 }

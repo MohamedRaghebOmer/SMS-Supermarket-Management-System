@@ -3,7 +3,6 @@ using SMS.Application.Common.Enums;
 using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Shared.Common;
-using SMS.Shared.Constants;
 using System.Data;
 
 namespace SMS.Infrastructure.Helpers
@@ -90,7 +89,7 @@ namespace SMS.Infrastructure.Helpers
                         // After this line, the total count value will change to the actual count from the database,
                         // and we won't read it again, and it's impossible to be -1 in the database,
                         // so we can use this value to determine whether we have read the total count or not.
-                        totalCount = reader.GetInt32(reader.GetOrdinal(Constants.PaginationResponseTotalCountParamName));
+                        totalCount = reader.GetInt32(reader.GetOrdinal("TotalCount"));
                     }
                 }
             }

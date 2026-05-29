@@ -33,6 +33,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Create, SystemEntity.Users)]
         [AuditActionType(AuditActionType.Register)]
         public async Task<IActionResult> Register([FromBody] CreateUserDto createUserDto)
@@ -54,6 +55,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
@@ -77,6 +79,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> GetByUsername([FromRoute] string username)
         {
@@ -100,6 +103,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> GetByEmail([FromRoute] string email)
         {
@@ -124,6 +128,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> GetByPersonId([FromRoute] int personId)
         {
@@ -146,6 +151,8 @@ namespace SMS.API.Controllers
         [HttpGet("exists/{userId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> ExistsById([FromRoute] int userId)
         {
@@ -162,6 +169,8 @@ namespace SMS.API.Controllers
         [HttpGet("exists/username/{username}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> ExistsByUsername([FromRoute] string username)
         {
@@ -178,6 +187,8 @@ namespace SMS.API.Controllers
         [HttpGet("exists/email/{email}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> ExistsByEmail([FromRoute] string email)
         {
@@ -192,9 +203,35 @@ namespace SMS.API.Controllers
 
 
 
+        [HttpGet("{userId:int}/is-active")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
+        public async Task<IActionResult> IsActive([FromRoute] int userId)
+        {
+            if (userId <= 0)
+            {
+                return BadRequest("Invalid user ID.");
+            }
+
+            if (await IsModifyingTheSameOrHigherRoleByUserId(userId))
+            {
+                return Forbid("You cannot access a user with a higher role than your own.");
+            }
+
+            var result = await _userService.IsActiveAsync(userId);
+            return Ok(result);
+        }
+
+
+
         [HttpGet("email/{email}/owned-by/{userId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> IsEmailOwnedByUserAsync(
             [FromRoute] string email, [FromRoute] int userId)
@@ -217,6 +254,9 @@ namespace SMS.API.Controllers
         [HttpGet("role-id/{roleId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> GetByRoleId([FromRoute] int roleId,
             [FromQuery] PaginationRequest paginationRequest)
@@ -239,7 +279,9 @@ namespace SMS.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPaged(
             [FromQuery] PaginationRequest paginationRequest)
         {
@@ -251,8 +293,10 @@ namespace SMS.API.Controllers
 
         [HttpGet("active")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetActiveUsers(
             [FromQuery] PaginationRequest paginationRequest)
         {
@@ -262,27 +306,16 @@ namespace SMS.API.Controllers
 
 
 
-        [HttpPatch("{userId:int}/change-password")]
+        [HttpPatch("change-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ChangePassword([FromRoute] int userId,
-            [FromBody] ChangePasswordDto dto)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
-            if (userId <= 0)
-            {
-                return BadRequest("Invalid user ID.");
-            }
-
-            if (!User.Identity.IsAuthenticated
-                || (int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0") != userId
-                && !User.IsInRole("admin")))
-            {
-                return Forbid("You can only change your own password.");
-            }
-
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
             var result = await _userService.ChangePasswordAsync(userId, dto);
-            return Ok(result);
+            return result ? Ok("Password changed successfully.") : BadRequest("Failed to change password.");
         }
 
 
@@ -291,6 +324,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> Activate([FromRoute] int userId)
         {
@@ -305,7 +340,7 @@ namespace SMS.API.Controllers
             }
 
             var result = await _userService.ActivateAsync(userId);
-            return Ok(result);
+            return result ? Ok("User activated successfully.") : NotFound("User not found.");
         }
 
 
@@ -314,6 +349,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> Deactivate([FromRoute] int userId)
         {
@@ -328,7 +365,7 @@ namespace SMS.API.Controllers
             }
 
             var result = await _userService.DeactivateAsync(userId);
-            return Ok(result);
+            return result ? Ok("User deactivated successfully.") : NotFound("User not found.");
         }
 
 
@@ -337,6 +374,8 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [RequirePermission(PermissionAction.Read, SystemEntity.Users)]
         public async Task<IActionResult> Update([FromRoute] int userId,
             [FromBody] UpdateUserDto updateUserDto)
@@ -352,7 +391,7 @@ namespace SMS.API.Controllers
             }
 
             var result = await _userService.UpdateAsync(userId, updateUserDto);
-            return Ok(result);
+            return result ? Ok("User updated successfully.") : NotFound("User not found.");
         }
 
 
@@ -361,7 +400,9 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Roles = "admin,manager")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Delete([FromRoute] int userId)
         {
             if (userId <= 0)
@@ -374,7 +415,7 @@ namespace SMS.API.Controllers
 
             // Managers can only delete users with a lower role than themselves (i.e., regular users),
             // but not other managers or admins.
-            if (currentRole.Equals("manager", StringComparison.OrdinalIgnoreCase)
+            if (currentRole.Equals("Manager", StringComparison.OrdinalIgnoreCase)
                 && targetRoleId <= await _role.GetRoleIdByUserIdAsync(
                     int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0")))
             {
@@ -383,7 +424,7 @@ namespace SMS.API.Controllers
 
 
             var result = await _userService.DeleteAsync(userId);
-            return Ok(result);
+            return result ? Ok("User deleted successfully.") : NotFound("User not found.");
         }
 
 
@@ -392,7 +433,7 @@ namespace SMS.API.Controllers
         {
             string currentUserRole = User?.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
-            if (currentUserRole.Equals("admin", StringComparison.OrdinalIgnoreCase))
+            if (currentUserRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
             {
                 return false; // Admin can modify any user
             }
@@ -413,7 +454,7 @@ namespace SMS.API.Controllers
         {
             string currentUserRole = User?.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
-            if (currentUserRole.Equals("admin", StringComparison.OrdinalIgnoreCase))
+            if (currentUserRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
             {
                 return false; // Admin can modify any user
             }

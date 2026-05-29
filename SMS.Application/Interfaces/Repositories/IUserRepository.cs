@@ -26,12 +26,16 @@ namespace SMS.Application.Interfaces.Repositories
         Task<OperationResult<bool>> ExistsByIdAsync(int userId);
         Task<OperationResult<bool>> ExistsByUsername(string username);
         Task<OperationResult<bool>> ExistsByEmail(string email);
+        /// <summary>
+        /// Determines whether the specified user is active.
+        /// </summary>
+        Task<OperationResult<bool>> IsActive(int userId);
         Task<OperationResult<bool>> IsEmailOwnedByUserAsync(string email, int userId);
         Task<OperationResult<string>> GetPasswordHashAsync(int userId);
         Task<OperationResult<PaginationResponse<User>>> GetByRoleId(int roleId, PaginationRequest paginationRequest);
         Task<OperationResult<PaginationResponse<User>>> GetPagedAsync(PaginationRequest paginationRequest);
         Task<OperationResult<PaginationResponse<User>>> GetActiveUsers(PaginationRequest paginationRequest);
-        Task<OperationResult<bool>> Login(string username, string password);
+        Task<OperationResult<bool>> RegisterLoginAsync(int userId);
         Task<OperationResult<bool>> ChangePassword(int userId, string newPasswordHash);
         Task<OperationResult<bool>> ActivateAsync(int userId);
         Task<OperationResult<bool>> DeactivateAsync(int userId);

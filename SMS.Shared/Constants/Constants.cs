@@ -2,7 +2,6 @@
 {
     public static class Constants
     {
-        public const string PaginationResponseTotalCountParamName = "TotalCount";
         public const string SlidingIp = "sliding-ip";
         public const string ApiVersion = "v1";
         public const string ApiTitle = "SMS API";

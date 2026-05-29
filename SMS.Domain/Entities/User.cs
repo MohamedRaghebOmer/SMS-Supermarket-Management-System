@@ -103,7 +103,7 @@ namespace SMS.Domain.Entities
 
             set
             {
-                if (value is not null && value > DateTime.UtcNow)
+                if (value.HasValue && value > DateTime.UtcNow)
                 {
                     throw new ArgumentException("LastUpdatedAt cannot be in the future.");
                 }

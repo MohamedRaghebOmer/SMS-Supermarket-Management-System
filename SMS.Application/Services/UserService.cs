@@ -1,4 +1,5 @@
 ﻿using SMS.Application.Common.Results;
+using SMS.Application.Exceptions;
 using SMS.Application.Interfaces.Helpers;
 using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Interfaces.Services;
@@ -32,6 +33,13 @@ namespace SMS.Application.Services
             StringGuard.AgainstNullOrWhiteSpace(createDto.Username, nameof(createDto.Username));
             StringGuard.AgainstNullOrWhiteSpace(createDto.Password, nameof(createDto.Password));
             NumericGuard.AgainstInvalidId(createDto.RoleId);
+
+            if (createDto.Password.Length < 8)
+            {
+                throw new ArgumentException("New password must be at least 8 characters long.");
+            }
+
+            createDto.Password = _stringHelper.Hash(createDto.Password);
 
             var result = await _repo.RegisterAsync(createDto.ToEntity());
             result.ThrowIfNotSuccess();
@@ -152,6 +160,19 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
+        /// <summary>
+        /// Determines whether the specified user is active.
+        /// </summary>
+        public async Task<bool> IsActiveAsync(int userId)
+        {
+            NumericGuard.AgainstInvalidId(userId);
+
+            var result = await _repo.IsActive(userId);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
         public async Task<bool> IsEmailOwnedByUserAsync(string email, int userId)
         {
             _validationHelper.ValidateEmail(email, nameof(email));
@@ -200,6 +221,17 @@ namespace SMS.Application.Services
             StringGuard.AgainstNullOrWhiteSpace(dto.OldPassword, nameof(dto.OldPassword));
             StringGuard.AgainstNullOrWhiteSpace(dto.NewPassword, nameof(dto.NewPassword));
 
+            if (string.IsNullOrWhiteSpace(dto.ConfirmNewPassword)
+                || dto.NewPassword != dto.ConfirmNewPassword)
+            {
+                throw new ArgumentException("New password and confirmation do not match.");
+            }
+
+            if (dto.NewPassword.Length < 8)
+            {
+                throw new ArgumentException("New password must be at least 8 characters long.");
+            }
+
             if (dto.OldPassword == dto.NewPassword)
             {
                 throw new ArgumentException("New password must be different from the old password.");
@@ -211,7 +243,7 @@ namespace SMS.Application.Services
             {
                 // This exception will be caught by the global exception handler
                 // and converted to a 500 Internal Server Error response
-                throw new InvalidOperationException("Failed to retrieve password hash.");
+                throw new NotFoundException("User not found.");
             }
 
             if (!_stringHelper.Verify(dto.OldPassword, passwordHash.Data))
@@ -255,6 +287,11 @@ namespace SMS.Application.Services
             StringGuard.AgainstNullOrWhiteSpace(updateDto.Username, nameof(updateDto.Username));
             StringGuard.AgainstNullOrWhiteSpace(updateDto.Password, nameof(updateDto.Password));
             NumericGuard.AgainstInvalidId(updateDto.RoleId);
+
+            if (updateDto.Password.Length < 8)
+            {
+                throw new ArgumentException("New password must be at least 8 characters long.");
+            }
 
             var entity = updateDto.ToEntity();
             entity.UserId = userId;
