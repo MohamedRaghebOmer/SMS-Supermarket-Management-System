@@ -1,8 +1,8 @@
 ﻿namespace SMS.Contracts.Responses.Auth
 {
-    public sealed record class AuthResponseDto
+    public sealed record AuthResponseDto
     {
-        public string? AccessToken { get; set; } = null;
-        public string? RefreshToken { get; set; } = null;
+        public string? AccessToken { get; init; } = null;
+        public string? RefreshToken { get; init; } = null;
     }
 }

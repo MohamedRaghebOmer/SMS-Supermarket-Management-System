@@ -3,47 +3,47 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SMS.Contracts.Requests.People
 {
-    public class UpdatePersonRequestDto
+    public sealed record UpdatePersonRequestDto
     {
         [Required]
         [StringLength(20, MinimumLength = 1)]
-        public string NationalNo { get; set; } = string.Empty;
+        public string NationalNo { get; init; } = string.Empty;
 
         [Required]
         [StringLength(50, MinimumLength = 1)]
-        public string FirstName { get; set; } = string.Empty;
+        public string FirstName { get; init; } = string.Empty;
 
         [Required]
         [StringLength(50, MinimumLength = 1)]
-        public string SecondName { get; set; } = string.Empty;
+        public string SecondName { get; init; } = string.Empty;
 
         [StringLength(50)]
-        public string? ThirdName { get; set; }
+        public string? ThirdName { get; init; }
 
         [Required]
         [StringLength(50, MinimumLength = 1)]
-        public string LastName { get; set; } = string.Empty;
+        public string LastName { get; init; } = string.Empty;
 
         [Required]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; init; }
 
         [Required]
-        public Gender Gender { get; set; }
+        public Gender Gender { get; init; }
 
         [Required]
         [StringLength(200, MinimumLength = 1)]
-        public string Address { get; set; } = string.Empty;
+        public string Address { get; init; } = string.Empty;
 
         [Required]
         [StringLength(20, MinimumLength = 1)]
-        public string Phone { get; set; } = string.Empty;
+        public string Phone { get; init; } = string.Empty;
 
         [EmailAddress]
         [StringLength(50)]
-        public string? Email { get; set; }
+        public string? Email { get; init; }
 
         [Required]
         [Range(1, int.MaxValue)]
-        public int NationalityCountryId { get; set; }
+        public int NationalityCountryId { get; init; }
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace SMS.Contracts.Responses
 {
-    public class UserResponseDto
+    public sealed record UserResponseDto
     {
-        public int UserId { get; set; }
-        public int PersonId { get; set; }
-        public string UserName { get; set; } = null!;
-        public int RoleId { get; set; }
-        public bool IsActive { get; set; }
+        public int UserId { get; init; }
+        public int PersonId { get; init; }
+        public string UserName { get; init; } = null!;
+        public int RoleId { get; init; }
+        public bool IsActive { get; init; }
     }
 }

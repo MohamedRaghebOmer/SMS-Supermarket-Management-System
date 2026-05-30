@@ -2,10 +2,10 @@
 
 namespace SMS.Contracts.Requests.Countries
 {
-    public class UpdateCountryRequestDto
+    public sealed record UpdateCountryRequestDto
     {
         [Required]
         [StringLength(50, MinimumLength = 2)]
-        public string CountryName { get; set; } = string.Empty;
+        public string CountryName { get; init; } = string.Empty;
     }
 }

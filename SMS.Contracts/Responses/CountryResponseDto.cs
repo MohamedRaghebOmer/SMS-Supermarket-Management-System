@@ -1,8 +1,8 @@
 ﻿namespace SMS.Contracts.Responses
 {
-    public class CountryResponseDto
+    public sealed record CountryResponseDto
     {
-        public int CountryId { get; set; }
-        public string CountryName { get; set; } = string.Empty;
+        public int CountryId { get; init; }
+        public string CountryName { get; init; } = string.Empty;
     }
 }
