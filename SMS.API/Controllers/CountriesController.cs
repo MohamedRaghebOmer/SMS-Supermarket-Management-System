@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMS.API.CustomAttributes;
+using SMS.Application.Interfaces.Helpers;
 using SMS.Application.Interfaces.Services;
 using SMS.Contracts.Requests.Countries;
 using SMS.Shared.Common;
@@ -13,10 +14,12 @@ namespace SMS.API.Controllers
     public class CountriesController : ControllerBase
     {
         private readonly ICountryService _service;
+        private readonly IStringHelper _stringHelper;
 
-        public CountriesController(ICountryService service)
+        public CountriesController(ICountryService service, IStringHelper stringHelper)
         {
             this._service = service;
+            this._stringHelper = stringHelper;
         }
 
 

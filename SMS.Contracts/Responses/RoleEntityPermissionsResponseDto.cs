@@ -2,10 +2,10 @@
 
 namespace SMS.Contracts.Responses
 {
-    public class RoleEntityPermissionsResponseDto
+    public sealed record RoleEntityPermissionsResponseDto
     {
-        public int RoleId { get; set; }
-        public SystemEntity Entity { get; set; }
-        public int PermissionsMask { get; set; }
+        public int RoleId { get; init; }
+        public SystemEntity Entity { get; init; }
+        public int PermissionsMask { get; init; }
     }
 }

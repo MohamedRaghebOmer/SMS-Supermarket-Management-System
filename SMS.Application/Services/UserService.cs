@@ -39,9 +39,12 @@ namespace SMS.Application.Services
                 throw new ArgumentException("New password must be at least 8 characters long.");
             }
 
-            createDto.Password = _stringHelper.Hash(createDto.Password);
+            var hashedDto = createDto with
+            {
+                Password = _stringHelper.Hash(createDto.Password)
+            };
 
-            var result = await _repo.RegisterAsync(createDto.ToEntity());
+            var result = await _repo.RegisterAsync(hashedDto.ToEntity());
             result.ThrowIfNotSuccess();
 
             return result.Data;
@@ -295,6 +298,7 @@ namespace SMS.Application.Services
 
             var entity = updateDto.ToEntity();
             entity.UserId = userId;
+            entity.PasswordHash = _stringHelper.Hash(updateDto.Password);
 
             var result = await _repo.UpdateAsync(entity);
             result.ThrowIfNotSuccess();

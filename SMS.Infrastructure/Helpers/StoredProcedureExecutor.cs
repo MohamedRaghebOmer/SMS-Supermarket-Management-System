@@ -132,6 +132,57 @@ namespace SMS.Infrastructure.Helpers
             return CreateOperationResult(result, statusCodeOutParam, statusMessageOutParam);
         }
 
+        public async Task<OperationResult<decimal>> ExecuteDecimalScalarAsync(string storedProcedure)
+        {
+            await using var conn = CreateConnection();
+            using var cmd = CreateCommand(conn, storedProcedure);
+
+            return await ExecuteScalarAsync<decimal>(cmd, conn);
+        }
+
+        public async Task<OperationResult<int>> ExecuteIntScalarAsync(string storedProcedure)
+        {
+            await using var conn = CreateConnection();
+            using var cmd = CreateCommand(conn, storedProcedure);
+
+            return await ExecuteScalarAsync<int>(cmd, conn);
+        }
+
+        public async Task<OperationResult<bool>> ExecuteBoolScalarAsync(string storedProcedure)
+        {
+            await using var conn = CreateConnection();
+            using var cmd = CreateCommand(conn, storedProcedure);
+
+            return await ExecuteScalarAsync<bool>(cmd, conn);
+        }
+
+        public async Task<OperationResult<bool>> ExecuteDecimalUpdateAsync(string storedProcedure, string parameterName, decimal value)
+        {
+            await using var conn = CreateConnection();
+            using var cmd = CreateCommand(conn, storedProcedure);
+
+            cmd.Parameters.Add(parameterName, SqlDbType.Decimal).Value = value;
+            return await ExecuteNonQueryAsync(cmd, conn);
+        }
+
+        public async Task<OperationResult<bool>> ExecuteIntUpdateAsync(string storedProcedure, string parameterName, int value)
+        {
+            await using var conn = CreateConnection();
+            using var cmd = CreateCommand(conn, storedProcedure);
+
+            cmd.Parameters.Add(parameterName, SqlDbType.Int).Value = value;
+            return await ExecuteNonQueryAsync(cmd, conn);
+        }
+
+        public async Task<OperationResult<bool>> ExecuteBoolUpdateAsync(string storedProcedure, string parameterName, bool value)
+        {
+            await using var conn = CreateConnection();
+            using var cmd = CreateCommand(conn, storedProcedure);
+
+            cmd.Parameters.Add(parameterName, SqlDbType.Bit).Value = value;
+            return await ExecuteNonQueryAsync(cmd, conn);
+        }
+
         public async Task<OperationResult<IReadOnlyList<T>>> ExecuteListAsync<T>(SqlCommand cmd, SqlConnection conn, Func<SqlDataReader, T> mapFunc)
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);

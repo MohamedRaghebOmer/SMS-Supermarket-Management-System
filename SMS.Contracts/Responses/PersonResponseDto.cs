@@ -1,19 +1,19 @@
 ﻿namespace SMS.Contracts.Responses
 {
-    public class PersonResponseDto
+    public sealed record PersonResponseDto
     {
-        public int PersonId { get; set; }
-        public string NationalNo { get; set; } = string.Empty;
-        public string FirstName { get; set; } = string.Empty;
-        public string SecondName { get; set; } = string.Empty;
-        public string? ThirdName { get; set; }
-        public string LastName { get; set; } = string.Empty;
-        public DateTime DateOfBirth { get; set; }
-        public SMS.Shared.Enums.Gender Gender { get; set; }
-        public string Address { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public string? Email { get; set; }
-        public int NationalityCountryId { get; set; }
-        public FileResponse? Image { get; set; }
+        public int PersonId { get; init; }
+        public string NationalNo { get; init; } = string.Empty;
+        public string FirstName { get; init; } = string.Empty;
+        public string SecondName { get; init; } = string.Empty;
+        public string? ThirdName { get; init; }
+        public string LastName { get; init; } = string.Empty;
+        public DateTime DateOfBirth { get; init; }
+        public SMS.Shared.Enums.Gender Gender { get; init; }
+        public string Address { get; init; } = string.Empty;
+        public string Phone { get; init; } = string.Empty;
+        public string? Email { get; init; }
+        public int NationalityCountryId { get; init; }
+        public FileResponse? Image { get; init; }
     }
 }

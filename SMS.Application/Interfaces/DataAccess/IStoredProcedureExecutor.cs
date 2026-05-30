@@ -21,6 +21,12 @@ namespace SMS.Application.Interfaces.DataAccess
         Task<OperationResult<bool>> ExecuteNonQueryAsync(SqlCommand cmd, SqlConnection conn);
         Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd, SqlConnection conn) where T : IConvertible;
         Task<OperationResult<T?>> ExecuteNonQueryAsync<T>(SqlCommand cmd, SqlConnection conn, SqlParameter operationResultDataParam);
+        Task<OperationResult<decimal>> ExecuteDecimalScalarAsync(string storedProcedure);
+        Task<OperationResult<int>> ExecuteIntScalarAsync(string storedProcedure);
+        Task<OperationResult<bool>> ExecuteBoolScalarAsync(string storedProcedure);
+        Task<OperationResult<bool>> ExecuteDecimalUpdateAsync(string storedProcedure, string parameterName, decimal value);
+        Task<OperationResult<bool>> ExecuteIntUpdateAsync(string storedProcedure, string parameterName, int value);
+        Task<OperationResult<bool>> ExecuteBoolUpdateAsync(string storedProcedure, string parameterName, bool value);
         Task<OperationResult<bool>> ExecuteExistsAsync(SqlConnection conn, SqlCommand cmd);
         Task<OperationResult<bool>> ExecuteBooleanOperationAsync(SqlCommand cmd, SqlConnection conn);
     }

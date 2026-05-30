@@ -2,12 +2,12 @@
 
 namespace SMS.Contracts.Requests.Auth
 {
-    public class LoginRequestDto
+    public sealed record LoginRequestDto
     {
         [Required]
-        public required string Username { get; set; } = string.Empty;
+        public required string Username { get; init; } = string.Empty;
 
         [Required]
-        public required string Password { get; set; } = string.Empty;
+        public required string Password { get; init; } = string.Empty;
     }
 }

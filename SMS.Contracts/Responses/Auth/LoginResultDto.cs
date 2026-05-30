@@ -1,6 +1,6 @@
 ﻿namespace SMS.Contracts.Responses.Auth
 {
-    public sealed record class LoginResultDto
+    public sealed record LoginResultDto
     {
         public enum LoginResultStatus
         {
@@ -10,9 +10,9 @@
             AlreadyLoggedIn
         }
 
-        public string? AccessToken { get; set; } = null;
-        public string? RefreshToken { get; set; } = null;
-        public LoginResultStatus Status { get; set; } = LoginResultStatus.InvalidCredentials;
-        public string? Message { get; set; } = null;
+        public string? AccessToken { get; init; } = null;
+        public string? RefreshToken { get; init; } = null;
+        public LoginResultStatus Status { get; init; } = LoginResultStatus.InvalidCredentials;
+        public string? Message { get; init; } = null;
     }
 }

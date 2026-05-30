@@ -2,12 +2,12 @@
 
 namespace SMS.Contracts.Requests.Auth
 {
-    public class LogoutRequestDto
+    public sealed record LogoutRequestDto
     {
         [Required]
-        public required string RefreshToken { get; set; }
+        public required string RefreshToken { get; init; }
 
         [Required]
-        public required string Username { get; set; }
+        public required string Username { get; init; }
     }
 }

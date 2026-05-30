@@ -22,6 +22,7 @@ namespace SMS.Application
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<IDirectoryPathService, DirectoryPathService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<ISystemSettingsService, SystemSettingsService>();
 
             return services;
         }

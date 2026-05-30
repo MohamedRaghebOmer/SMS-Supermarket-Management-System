@@ -40,9 +40,9 @@ namespace SMS.Application.Services
 
         public async Task<LoginResultDto> LoginAsync(LoginRequestDto loginRequestDto)
         {
-            loginRequestDto.Username = loginRequestDto.Username.Trim();
+            var normalizedUsername = loginRequestDto.Username.Trim();
 
-            if (string.IsNullOrWhiteSpace(loginRequestDto.Username)
+            if (string.IsNullOrWhiteSpace(normalizedUsername)
                 || string.IsNullOrWhiteSpace(loginRequestDto.Password))
             {
                 return new LoginResultDto
@@ -54,7 +54,7 @@ namespace SMS.Application.Services
                 };
             }
 
-            var userResult = await _userRepo.FindByUsernameAsync(loginRequestDto.Username);
+            var userResult = await _userRepo.FindByUsernameAsync(normalizedUsername);
             if (!userResult.IsSuccess || userResult.Data == null)
             {
                 return new LoginResultDto
@@ -122,11 +122,11 @@ namespace SMS.Application.Services
 
         public async Task<AuthResponseDto?> RefreshAsync(RefreshTokenRequestDto refreshDto)
         {
-            if (!ValidateRefreshRequest(refreshDto))
+            if (!ValidateRefreshRequest(refreshDto, out var normalizedUsername))
                 return null; // Return null to indicate refresh failure due to invalid request without throwing an exception
 
 
-            var validRefreshTokenId = await GetValidRefreshTokenId(refreshDto);
+            var validRefreshTokenId = await GetValidRefreshTokenId(refreshDto, normalizedUsername);
             if (validRefreshTokenId == null)
                 return null; // Return null to indicate refresh failure due to no valid refresh token without throwing an exception
 
@@ -140,8 +140,8 @@ namespace SMS.Application.Services
             try
             {
                 // Generate new access token and refresh token
-                var accessToken = await GenerateAccessToken(refreshDto.Username);
-                var refreshToken = await _refreshTokenService.GenerateRefreshTokenByUsernameAsync(refreshDto.Username);
+                var accessToken = await GenerateAccessToken(normalizedUsername);
+                var refreshToken = await _refreshTokenService.GenerateRefreshTokenByUsernameAsync(normalizedUsername);
 
                 if (accessToken is not null && refreshToken is not null)
                 {
@@ -264,12 +264,12 @@ namespace SMS.Application.Services
             return accessToken;
         }
 
-        private bool ValidateRefreshRequest(RefreshTokenRequestDto refreshDto)
+        private bool ValidateRefreshRequest(RefreshTokenRequestDto refreshDto, out string normalizedUsername)
         {
-            refreshDto.Username = refreshDto.Username.Trim();
+            normalizedUsername = refreshDto.Username.Trim();
 
             if (string.IsNullOrWhiteSpace(refreshDto.RefreshToken)
-                || string.IsNullOrWhiteSpace(refreshDto.Username))
+                || string.IsNullOrWhiteSpace(normalizedUsername))
             {
                 return false; // Return null to indicate refresh failure without throwing an exception
             }
@@ -277,10 +277,10 @@ namespace SMS.Application.Services
             return true;
         }
 
-        private async Task<Guid?> GetValidRefreshTokenId(RefreshTokenRequestDto refreshDto)
+        private async Task<Guid?> GetValidRefreshTokenId(RefreshTokenRequestDto refreshDto, string normalizedUsername)
         {
             var tokensResult =
-            await _refreshTokenRepository.FindValidTokensByUsername(refreshDto.Username);
+            await _refreshTokenRepository.FindValidTokensByUsername(normalizedUsername);
 
             if (!tokensResult.IsSuccess || tokensResult.Data == null || !tokensResult.Data.Any())
             {
