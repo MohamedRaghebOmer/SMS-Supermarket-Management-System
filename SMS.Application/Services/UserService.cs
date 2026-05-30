@@ -298,6 +298,7 @@ namespace SMS.Application.Services
 
             var entity = updateDto.ToEntity();
             entity.UserId = userId;
+            entity.PasswordHash = _stringHelper.Hash(updateDto.Password);
 
             var result = await _repo.UpdateAsync(entity);
             result.ThrowIfNotSuccess();

@@ -11,7 +11,7 @@ namespace SMS.Contracts.Requests.SystemSettings
         public decimal MinimumPaymentPercent { get; init; }
 
         [Range(0, int.MaxValue)]
-        public int? GraceDays { get; init; }
+        public int GraceDays { get; init; }
 
         [Range(0, int.MaxValue)]
         public int FeesFrequencyDays { get; init; }
@@ -20,7 +20,7 @@ namespace SMS.Contracts.Requests.SystemSettings
         public decimal FeesPercent { get; init; }
 
         [Range(0, 100)]
-        public decimal GracePercent { get; init; }
+        public decimal CapPercent { get; init; }
 
         public bool AllowCreditSales { get; init; } = true;
     }

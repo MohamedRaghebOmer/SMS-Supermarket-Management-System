@@ -66,13 +66,13 @@ namespace SMS.Domain.Entities
             }
         }
 
-        public decimal GracePercent
+        public decimal CapPercent
         {
             get => _capPercent;
 
             set
             {
-                NumericGuard.AgainstNegativeNumber(value, nameof(GracePercent));
+                NumericGuard.AgainstNegativeNumber(value, nameof(CapPercent));
                 _capPercent = value;
             }
         }
@@ -99,7 +99,7 @@ namespace SMS.Domain.Entities
             GraceDays = graceDays;
             FeesFrequencyDays = feesFrequencyDays;
             FeesPercent = feesPercent;
-            GracePercent = capPercent;
+            CapPercent = capPercent;
             AllowCreditSales = allowCreditSales;
             UpdatedAt = updatedAt;
         }

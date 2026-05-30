@@ -7,7 +7,7 @@
         public int? GraceDays { get; init; }
         public int FeesFrequencyDays { get; init; }
         public decimal FeesPercent { get; init; }
-        public decimal GracePercent { get; init; }
+        public decimal CapPercent { get; init; }
         public bool AllowCreditSales { get; init; }
     }
 }

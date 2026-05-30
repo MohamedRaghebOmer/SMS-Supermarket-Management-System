@@ -24,6 +24,7 @@ namespace SMS.Infrastructure
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IStringHelper, StringHelper>();
             services.AddScoped<IRolesRepository, RolesRepository>();
+            services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
 
             return services;
         }
