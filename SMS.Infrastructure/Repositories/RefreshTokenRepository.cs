@@ -68,7 +68,17 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteExistsAsync(conn, cmd);
         }
 
-        public async Task<OperationResult<IReadOnlyList<RefreshToken>>> FindValidTokensByUsername(string username)
+        public async Task<OperationResult<IReadOnlyList<RefreshToken>>> FindValidTokensByUserIdAsync(int userId)
+        {
+            await using var conn = _executor.CreateConnection();
+            using var cmd = _executor.CreateCommand(conn, "usp_RefreshTokens_GetValidTokensByUserId");
+
+            cmd.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = userId;
+
+            return await _executor.ExecuteListAsync(cmd, conn, MapToRefreshToken);
+        }
+
+        public async Task<OperationResult<IReadOnlyList<RefreshToken>>> FindValidTokensByUsernameAsync(string username)
         {
             await using var conn = _executor.CreateConnection();
             using var cmd = _executor.CreateCommand(conn, "usp_RefreshTokens_GetValidTokensByUsername");

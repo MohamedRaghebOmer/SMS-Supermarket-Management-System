@@ -10,8 +10,10 @@ namespace SMS.Application.Helpers
         public void ValidatePagination(PaginationRequest paginationRequest)
         {
             ArgumentNullException.ThrowIfNull(paginationRequest);
-            NumericGuard.AgainstInvalidId(paginationRequest.Page);
-            NumericGuard.AgainstInvalidId(paginationRequest.PageSize);
+            NumericGuard.AgainstNonPositiveNumber(paginationRequest.Page,
+                nameof(paginationRequest.Page));
+            NumericGuard.AgainstNonPositiveNumber(paginationRequest.PageSize,
+                nameof(paginationRequest.PageSize));
         }
 
         public void ValidateEmail(string? email, string parameterName, bool isRequired = true,
