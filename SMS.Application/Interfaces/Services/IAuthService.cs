@@ -7,6 +7,6 @@ namespace SMS.Application.Interfaces.Services
     {
         Task<LoginResultDto> LoginAsync(LoginRequestDto loginRequestDto);
         Task<AuthResponseDto?> RefreshAsync(RefreshTokenRequestDto refreshDto);
-        Task LogoutAsync(LogoutRequestDto logoutDto);
+        Task LogoutAsync(LogoutRequestDto logoutDto, int userId);
     }
 }

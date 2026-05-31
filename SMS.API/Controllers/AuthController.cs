@@ -5,6 +5,7 @@ using SMS.Application.Interfaces.Services;
 using SMS.Contracts.Requests.Auth;
 using SMS.Contracts.Responses.Auth;
 using SMS.Shared.Enums;
+using System.Security.Claims;
 
 namespace SMS.API.Controllers
 {
@@ -73,7 +74,8 @@ namespace SMS.API.Controllers
         [AuditActionType(AuditActionType.Logout)]
         public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request)
         {
-            await _authService.LogoutAsync(request);
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            await _authService.LogoutAsync(request, userId);
             return NoContent();
         }
     }

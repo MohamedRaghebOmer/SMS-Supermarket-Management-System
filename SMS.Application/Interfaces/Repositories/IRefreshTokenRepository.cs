@@ -10,6 +10,7 @@ namespace SMS.Application.Interfaces.Repositories
         Task<OperationResult<bool>> RevokeAsync(Guid refreshToken);
         Task<OperationResult<bool>> RevokeByUsernameAsync(Guid refreshTokenId, string username);
         Task<OperationResult<bool>> HasValidRefreshTokenAsync(int userId);
-        Task<OperationResult<IReadOnlyList<RefreshToken>>> FindValidTokensByUsername(string username);
+        Task<OperationResult<IReadOnlyList<RefreshToken>>> FindValidTokensByUserIdAsync(int userId);
+        Task<OperationResult<IReadOnlyList<RefreshToken>>> FindValidTokensByUsernameAsync(string username);
     }
 }
