@@ -32,5 +32,17 @@ namespace SMS.Application.Helpers
                 throw new ArgumentException("Invalid email format.", parameterName);
             }
         }
+
+        public void ValidateEnum<T>(T value, Type enumType) where T : struct, Enum
+        {
+            if (!Enum.IsDefined(enumType, value))
+            {
+                int minimumValue = Enum.GetValues(enumType).Cast<int>().Min();
+                int maximumValue = Enum.GetValues(enumType).Cast<int>().Max();
+
+                throw new ArgumentException($"Invalid value for {enumType.Name}." +
+                    $" Must be between {minimumValue} and {maximumValue}.");
+            }
+        }
     }
 }
