@@ -15,6 +15,7 @@ namespace SMS.Infrastructure
         {
             services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICustomerLedgerRepository, CustomerLedgerRepository>();
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
             services.AddScoped<IStoredProcedureExecutor, StoredProcedureExecutor>();

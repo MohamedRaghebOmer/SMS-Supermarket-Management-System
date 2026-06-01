@@ -122,6 +122,7 @@ Make sure the new feature is wired up the same way as the rest of the solution.
 - Do not change unrelated files unless the feature requires it.
 - If the schema implies nullable vs non-nullable fields, respect that.
 - If the project already has a repeated style for similar features, mirror it.
+- Build the solution after your implementation to ensure there are no errors.
 
 ## Output expectation
 Implement the full feature end-to-end across all required layers so it fits naturally into the existing SMS solution.

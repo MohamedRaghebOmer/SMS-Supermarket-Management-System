@@ -199,7 +199,8 @@ namespace SMS.Infrastructure.Helpers
             return CreateOperationResult((IReadOnlyList<T>)results, statusCodeOutParam, statusMessageOutParam);
         }
 
-        public async Task<OperationResult<bool>> ExecuteNonQueryAsync(SqlCommand cmd, SqlConnection conn)
+        public async Task<OperationResult<bool>> ExecuteNonQueryAsync(SqlCommand cmd,
+            SqlConnection conn)
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 
@@ -214,7 +215,7 @@ namespace SMS.Infrastructure.Helpers
 
             await cmd.ExecuteNonQueryAsync();
 
-            return CreateOperationResult((T?)operationResultDataParam.Value, statusCodeOutParam, statusMessageOutParam);
+            return CreateOperationResult(operationResultDataParam.Value == DBNull.Value ? default : (T?)operationResultDataParam.Value, statusCodeOutParam, statusMessageOutParam);
         }
 
         public async Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd,
