@@ -8,7 +8,6 @@ namespace SMS.Domain.Entities
         private int _personId;
         private DateTime _joinDate;
         private byte _paymentDay;
-        private decimal _currentBalance;
         private DateTime? _lastPaymentDate;
         private DateTime? _nextDueDate;
         private string? _notes;
@@ -54,19 +53,12 @@ namespace SMS.Domain.Entities
                 {
                     throw new ArgumentOutOfRangeException(nameof(PaymentDay), "PaymentDay must be between 1 and 31.");
                 }
+
                 _paymentDay = value;
             }
         }
 
-        public decimal CurrentBalance
-        {
-            get => _currentBalance;
-            set
-            {
-                NumericGuard.AgainstNegativeNumber(value, nameof(CurrentBalance));
-                _currentBalance = value;
-            }
-        }
+        public decimal CurrentBalance { get; set; }
 
         public DateTime? LastPaymentDate
         {
@@ -77,6 +69,7 @@ namespace SMS.Domain.Entities
                 {
                     DateGuard.AgainstFutureDate(value.Value, nameof(LastPaymentDate));
                 }
+
                 _lastPaymentDate = value;
             }
         }
@@ -90,6 +83,7 @@ namespace SMS.Domain.Entities
                 {
                     DateGuard.AgainstPastDate(value.Value, nameof(NextDueDate));
                 }
+
                 _nextDueDate = value?.Date;
             }
         }
@@ -111,7 +105,9 @@ namespace SMS.Domain.Entities
             }
         }
 
-        public Customer() { }
+        public Customer()
+        {
+        }
 
         public Customer(int personId, DateTime joinDate, bool isActive, byte paymentDay,
             decimal currentBalance, DateTime? lastPaymentDate, DateTime? nextDueDate, string? notes)

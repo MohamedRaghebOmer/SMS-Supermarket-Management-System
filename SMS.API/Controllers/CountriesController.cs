@@ -23,7 +23,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [RequirePermission(PermissionAction.Create, SystemEntity.Countries)]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -35,7 +34,6 @@ namespace SMS.API.Controllers
             var result = await _service.AddAsync(dto);
             return CreatedAtRoute("GetCountryById", new { id = result }, result);
         }
-
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
@@ -51,7 +49,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [AllowAnonymous]
         [HttpGet("exists/name/{countryName}", Name = "DoesCountryExistByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -62,7 +59,6 @@ namespace SMS.API.Controllers
             var result = await _service.ExistsAsync(countryName);
             return Ok(result);
         }
-
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.Countries)]
@@ -79,7 +75,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [HttpGet("name/{countryName}", Name = "GetCountryByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,7 +89,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -106,7 +100,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [RequirePermission(PermissionAction.Update, SystemEntity.Countries)]
         [HttpPut("{countryId:int}", Name = "UpdateCountry")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -114,12 +107,12 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Update([FromRoute] int countryId, UpdateCountryRequestDto updateCountryRequestDto)
+        public async Task<ActionResult> Update([FromRoute] int countryId,
+            UpdateCountryRequestDto updateCountryRequestDto)
         {
             var result = await _service.UpdateAsync(countryId, updateCountryRequestDto);
             return result ? Ok("Country updated successfully.") : NotFound("Country not found.");
         }
-
 
 
         [RequirePermission(PermissionAction.Delete, SystemEntity.Countries)]

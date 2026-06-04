@@ -2,7 +2,7 @@
 
 namespace SMS.Domain.Entities
 {
-    public class User
+    public sealed class User
     {
         private int _userId;
         private int _personId;

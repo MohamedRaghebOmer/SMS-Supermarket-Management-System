@@ -48,7 +48,8 @@ namespace SMS.Infrastructure.Helpers
             cmd.Parameters.Add(message);
         }
 
-        public async Task<(SqlParameter code, SqlParameter message)> PrepareCommandAsync(SqlCommand cmd, SqlConnection conn)
+        public async Task<(SqlParameter code, SqlParameter message)> PrepareCommandAsync(SqlCommand cmd,
+            SqlConnection conn)
         {
             AttachStatusParameters(cmd, out SqlParameter code, out SqlParameter message);
             await conn.OpenAsync();
@@ -73,7 +74,8 @@ namespace SMS.Infrastructure.Helpers
                 message.Value?.ToString() ?? string.Empty);
         }
 
-        public async Task<PaginationResponse<T>> ReadPaginationAsync<T>(SqlCommand cmd, PaginationRequest paginationRequest, Func<SqlDataReader, T> mapFunc)
+        public async Task<PaginationResponse<T>> ReadPaginationAsync<T>(SqlCommand cmd,
+            PaginationRequest paginationRequest, Func<SqlDataReader, T> mapFunc)
         {
             var items = new List<T>();
 
@@ -113,10 +115,11 @@ namespace SMS.Infrastructure.Helpers
 
             var pagination = await ReadPaginationAsync(cmd, paginationRequest, mapFunc);
 
-            return CreateOperationResult(pagination, statusCodeOutParam, statusMessageOutParam);
+            return CreateOperationResult(pagination, statusCodeOutParam, statusMessageOutParam)!;
         }
 
-        public async Task<OperationResult<T?>> ExecuteSingleAsync<T>(SqlCommand cmd, SqlConnection conn, Func<SqlDataReader, T> mapFunc)
+        public async Task<OperationResult<T?>> ExecuteSingleAsync<T>(SqlCommand cmd, SqlConnection conn,
+            Func<SqlDataReader, T> mapFunc)
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 
@@ -156,7 +159,8 @@ namespace SMS.Infrastructure.Helpers
             return await ExecuteScalarAsync<bool>(cmd, conn);
         }
 
-        public async Task<OperationResult<bool>> ExecuteDecimalUpdateAsync(string storedProcedure, string parameterName, decimal value)
+        public async Task<OperationResult<bool>> ExecuteDecimalUpdateAsync(string storedProcedure, string parameterName,
+            decimal value)
         {
             await using var conn = CreateConnection();
             using var cmd = CreateCommand(conn, storedProcedure);
@@ -165,7 +169,8 @@ namespace SMS.Infrastructure.Helpers
             return await ExecuteNonQueryAsync(cmd, conn);
         }
 
-        public async Task<OperationResult<bool>> ExecuteIntUpdateAsync(string storedProcedure, string parameterName, int value)
+        public async Task<OperationResult<bool>> ExecuteIntUpdateAsync(string storedProcedure, string parameterName,
+            int value)
         {
             await using var conn = CreateConnection();
             using var cmd = CreateCommand(conn, storedProcedure);
@@ -174,7 +179,8 @@ namespace SMS.Infrastructure.Helpers
             return await ExecuteNonQueryAsync(cmd, conn);
         }
 
-        public async Task<OperationResult<bool>> ExecuteBoolUpdateAsync(string storedProcedure, string parameterName, bool value)
+        public async Task<OperationResult<bool>> ExecuteBoolUpdateAsync(string storedProcedure, string parameterName,
+            bool value)
         {
             await using var conn = CreateConnection();
             using var cmd = CreateCommand(conn, storedProcedure);
@@ -183,7 +189,8 @@ namespace SMS.Infrastructure.Helpers
             return await ExecuteNonQueryAsync(cmd, conn);
         }
 
-        public async Task<OperationResult<IReadOnlyList<T>>> ExecuteListAsync<T>(SqlCommand cmd, SqlConnection conn, Func<SqlDataReader, T> mapFunc)
+        public async Task<OperationResult<IReadOnlyList<T>>> ExecuteListAsync<T>(SqlCommand cmd, SqlConnection conn,
+            Func<SqlDataReader, T> mapFunc)
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 
@@ -196,7 +203,7 @@ namespace SMS.Infrastructure.Helpers
                 }
             }
 
-            return CreateOperationResult((IReadOnlyList<T>)results, statusCodeOutParam, statusMessageOutParam);
+            return CreateOperationResult((IReadOnlyList<T>)results, statusCodeOutParam, statusMessageOutParam)!;
         }
 
         public async Task<OperationResult<bool>> ExecuteNonQueryAsync(SqlCommand cmd,
@@ -209,13 +216,16 @@ namespace SMS.Infrastructure.Helpers
             return CreateOperationResult(statusCodeOutParam, statusMessageOutParam);
         }
 
-        public async Task<OperationResult<T?>> ExecuteNonQueryAsync<T>(SqlCommand cmd, SqlConnection conn, SqlParameter operationResultDataParam)
+        public async Task<OperationResult<T?>> ExecuteNonQueryAsync<T>(SqlCommand cmd, SqlConnection conn,
+            SqlParameter operationResultDataParam)
         {
             var (statusCodeOutParam, statusMessageOutParam) = await PrepareCommandAsync(cmd, conn);
 
             await cmd.ExecuteNonQueryAsync();
 
-            return CreateOperationResult(operationResultDataParam.Value == DBNull.Value ? default : (T?)operationResultDataParam.Value, statusCodeOutParam, statusMessageOutParam);
+            return CreateOperationResult(
+                operationResultDataParam.Value == DBNull.Value ? default : (T?)operationResultDataParam.Value,
+                statusCodeOutParam, statusMessageOutParam);
         }
 
         public async Task<OperationResult<T>> ExecuteScalarAsync<T>(SqlCommand cmd,
@@ -231,7 +241,7 @@ namespace SMS.Infrastructure.Helpers
                 result = (T)Convert.ChangeType(scalarResult, typeof(T));
             }
 
-            return CreateOperationResult(result, statusCodeOutParam, statusMessageOutParam);
+            return CreateOperationResult(result, statusCodeOutParam, statusMessageOutParam)!;
         }
 
         public async Task<OperationResult<bool>> ExecuteExistsAsync(SqlConnection conn, SqlCommand cmd)
@@ -251,9 +261,10 @@ namespace SMS.Infrastructure.Helpers
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
 
-            OperationStatus codeValue = code.Value != null ? (OperationStatus)(int)code.Value : OperationStatus.UnexpectedError;
+            OperationStatus codeValue =
+                code.Value != null ? (OperationStatus)(int)code.Value : OperationStatus.UnexpectedError;
 
-            return CreateOperationResult<bool>(codeValue == OperationStatus.Success, code, message);
+            return CreateOperationResult(codeValue == OperationStatus.Success, code, message);
         }
     }
 }

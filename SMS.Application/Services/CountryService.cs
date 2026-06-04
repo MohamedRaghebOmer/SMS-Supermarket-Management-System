@@ -61,7 +61,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<CountryResponseDto> GetAsync(string countryName)
@@ -73,14 +73,14 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<List<CountryResponseDto>> GetAllAsync()
         {
             var result = await _repo.GetAllAsync();
             result.ThrowIfNotSuccess();
-            return result.Data.Select(c => c.ToDto()).ToList();
+            return result.Data!.Select(c => c.ToDto()).ToList();
         }
 
         public async Task<PaginationResponse<CountryResponseDto>> GetPagedAsync(PaginationRequest paginationRequest)
@@ -92,7 +92,7 @@ namespace SMS.Application.Services
 
             return new PaginationResponse<CountryResponseDto>
             {
-                Items = result.Data.Items.Select(c => c.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(c => c.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = paginationRequest.Page,
                 PageSize = paginationRequest.PageSize

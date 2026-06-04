@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SMS.Domain.Entities
 {
-    public class Person
+    public sealed class Person
     {
         private int _personId;
         private string _nationalNo = null!;

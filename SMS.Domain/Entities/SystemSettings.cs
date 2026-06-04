@@ -2,7 +2,7 @@
 
 namespace SMS.Domain.Entities
 {
-    public class SystemSettings
+    public sealed class SystemSettings
     {
         private decimal _maxCreditLimit;
         private decimal _minimumPaymentPercent;

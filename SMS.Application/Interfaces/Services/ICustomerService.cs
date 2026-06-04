@@ -13,11 +13,14 @@ namespace SMS.Application.Interfaces.Services
         Task<PaginationResponse<CustomerResponseDto>> GetPagedActiveAsync(PaginationRequest paginationRequest);
         Task<bool> ExistsByIdAsync(int customerId);
         Task<bool> ExistsByPersonIdAsync(int personId);
+        Task<decimal> GetDebitAmountAsync(int customerId);
+
         /// <summary>
         /// Determines whether the specified customer is blocked.
         /// </summary>
         Task<bool> IsBlockedAsync(int customerId);
+
         Task<bool> UpdateAsync(int customerId, UpdateCustomerRequestDto dto);
-        Task<bool> DeleteAsync(int customerId);
+        Task<bool> DeactivateAsync(int customerId);
     }
 }

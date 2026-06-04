@@ -148,7 +148,7 @@ namespace SMS.Application.Services
         {
             return new PaginationResponse<CustomerLedgerResponseDto>
             {
-                Items = result.Data.Items.Select(ledger => ledger.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(ledger => ledger.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = paginationRequest.Page,
                 PageSize = paginationRequest.PageSize

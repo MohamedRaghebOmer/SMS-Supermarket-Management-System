@@ -33,7 +33,7 @@ namespace SMS.Application.Services
 
             var token = GenerateRefreshToken();
             var tokenHash = _stringHelper.Hash(token);
-            var refreshToken = new RefreshToken(Guid.NewGuid(), user.Data.UserId, tokenHash,
+            var refreshToken = new RefreshToken(Guid.NewGuid(), user.Data!.UserId, tokenHash,
                 DateTime.UtcNow.AddDays(Constants.RefreshTokenPeriodInDays),
                 DateTime.UtcNow, null, false);
 

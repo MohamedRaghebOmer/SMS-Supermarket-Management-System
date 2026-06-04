@@ -41,7 +41,7 @@ namespace SMS.Application.Helpers
                 int maximumValue = Enum.GetValues(enumType).Cast<int>().Max();
 
                 throw new ArgumentException($"Invalid value for {enumType.Name}." +
-                    $" Must be between {minimumValue} and {maximumValue}.");
+                                            $" Must be between {minimumValue} and {maximumValue}.");
             }
         }
     }

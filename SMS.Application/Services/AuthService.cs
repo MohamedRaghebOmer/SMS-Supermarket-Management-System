@@ -91,7 +91,8 @@ namespace SMS.Application.Services
                 };
             }
 
-            var hasValidRefreshTokenResult = await _refreshTokenRepository.HasValidRefreshTokenAsync(userResult.Data.UserId);
+            var hasValidRefreshTokenResult =
+                await _refreshTokenRepository.HasValidRefreshTokenAsync(userResult.Data.UserId);
             hasValidRefreshTokenResult.ThrowIfNotSuccess();
 
             if (hasValidRefreshTokenResult.Data)
@@ -123,18 +124,21 @@ namespace SMS.Application.Services
         public async Task<AuthResponseDto?> RefreshAsync(RefreshTokenRequestDto refreshDto)
         {
             if (!ValidateRefreshRequest(refreshDto))
-                return null; // Return null to indicate refresh failure due to invalid request without throwing an exception
+                return
+                    null; // Return null to indicate refresh failure due to invalid request without throwing an exception
 
 
             var validRefreshTokenId = await GetValidRefreshTokenId(refreshDto);
             if (validRefreshTokenId == null)
-                return null; // Return null to indicate refresh failure due to no valid refresh token without throwing an exception
+                return
+                    null; // Return null to indicate refresh failure due to no valid refresh token without throwing an exception
 
 
             // Revoke the old refresh token
             if (!await RevokeRefreshToken(validRefreshTokenId.Value))
             {
-                return null; // Return null to indicate refresh failure due to token revocation failure without throwing an exception
+                return
+                    null; // Return null to indicate refresh failure due to token revocation failure without throwing an exception
             }
 
             try
@@ -143,7 +147,7 @@ namespace SMS.Application.Services
                 var accessToken = await GenerateAccessToken(refreshDto.Username);
                 var refreshToken = await _refreshTokenService.GenerateRefreshTokenByUsernameAsync(refreshDto.Username);
 
-                if (accessToken is not null && refreshToken is not null)
+                if (accessToken is not null && !string.IsNullOrWhiteSpace(refreshToken))
                 {
                     return new AuthResponseDto
                     {
@@ -186,35 +190,34 @@ namespace SMS.Application.Services
         }
 
 
-
         private async Task<string?> GenerateAccessToken(string username)
         {
-            var user = await _userRepo.FindByUsernameAsync(username.Trim());
+            var userResult = await _userRepo.FindByUsernameAsync(username.Trim());
 
-            if (user == null || user.Data == null)
+            if (userResult.Data == null)
             {
                 return null;
             }
 
-            var role = await _rolesRepo.FindRoleNameByIdAsync(user.Data.RoleId);
+            var roleResult = await _rolesRepo.FindRoleNameByIdAsync(userResult.Data.RoleId);
 
-            if (role == null || string.IsNullOrWhiteSpace(role.Data))
+            if (string.IsNullOrWhiteSpace(roleResult.Data))
             {
                 return null;
             }
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Data.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.Data.Username),
-                new Claim(ClaimTypes.Role, role.Data),
-                new Claim("RoleId", user.Data.RoleId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, userResult.Data.UserId.ToString()),
+                new Claim(ClaimTypes.Name, userResult.Data.Username),
+                new Claim(ClaimTypes.Role, roleResult.Data),
+                new Claim("RoleId", userResult.Data.RoleId.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding
-                .UTF8.GetBytes(_configuration["SMS_JWT_SECRET_KEY"]));
+                .UTF8.GetBytes(_configuration["SMS_JWT_SECRET_KEY"]!));
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var jwt = _configuration.GetSection("Jwt");
 
@@ -223,7 +226,7 @@ namespace SMS.Application.Services
                 audience: jwt["Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(Constants.AccessTokenPeriodInMinutes),
-                signingCredentials: creds);
+                signingCredentials: signingCredentials);
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
             return accessToken;
@@ -247,9 +250,9 @@ namespace SMS.Application.Services
             };
 
             var key = new SymmetricSecurityKey(Encoding
-                .UTF8.GetBytes(_configuration["SMS_JWT_SECRET_KEY"]));
+                .UTF8.GetBytes(_configuration["SMS_JWT_SECRET_KEY"]!));
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var jwt = _configuration.GetSection("Jwt");
 
@@ -258,13 +261,13 @@ namespace SMS.Application.Services
                 audience: jwt["Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(Constants.AccessTokenPeriodInMinutes),
-                signingCredentials: creds);
+                signingCredentials: credentials);
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
             return accessToken;
         }
 
-        private bool ValidateRefreshRequest(RefreshTokenRequestDto refreshDto)
+        private static bool ValidateRefreshRequest(RefreshTokenRequestDto refreshDto)
         {
             if (string.IsNullOrWhiteSpace(refreshDto.RefreshToken)
                 || string.IsNullOrWhiteSpace(refreshDto.Username))
@@ -278,7 +281,7 @@ namespace SMS.Application.Services
         private async Task<Guid?> GetValidRefreshTokenId(RefreshTokenRequestDto refreshDto)
         {
             var tokensResult =
-            await _refreshTokenRepository.FindValidTokensByUsernameAsync(refreshDto.Username.Trim());
+                await _refreshTokenRepository.FindValidTokensByUsernameAsync(refreshDto.Username.Trim());
 
             if (!tokensResult.IsSuccess || tokensResult.Data == null || !tokensResult.Data.Any())
             {

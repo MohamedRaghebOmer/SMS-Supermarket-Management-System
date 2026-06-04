@@ -96,6 +96,16 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
+        public async Task<decimal> GetDebitAmountAsync(int customerId)
+        {
+            NumericGuard.AgainstInvalidId(customerId);
+
+            var result = await _repo.GetDebitAmountAsync(customerId);
+            result.ThrowIfNotSuccess();
+
+            return result.Data;
+        }
+
         /// <summary>
         /// Determines whether the specified customer is blocked.
         /// </summary>
@@ -121,16 +131,15 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<bool> DeleteAsync(int customerId)
+        public async Task<bool> DeactivateAsync(int customerId)
         {
             NumericGuard.AgainstInvalidId(customerId);
 
-            var result = await _repo.DeleteAsync(customerId);
+            var result = await _repo.DeactivateAsync(customerId);
             result.ThrowIfNotSuccess();
 
             return result.Data;
         }
-
 
 
         private static void ValidateDto(CreateCustomerRequestDto dto)
@@ -162,12 +171,12 @@ namespace SMS.Application.Services
         }
 
         private static PaginationResponse<CustomerResponseDto> BuildPagedResponse(
-            SMS.Application.Common.Results.OperationResult<PaginationResponse<Customer>> result,
+            Common.Results.OperationResult<PaginationResponse<Customer>> result,
             PaginationRequest paginationRequest)
         {
             return new PaginationResponse<CustomerResponseDto>
             {
-                Items = result.Data.Items.Select(customer => customer.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(customer => customer.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = paginationRequest.Page,
                 PageSize = paginationRequest.PageSize
