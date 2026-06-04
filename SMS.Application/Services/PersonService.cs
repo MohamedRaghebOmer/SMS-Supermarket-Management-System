@@ -52,7 +52,7 @@ namespace SMS.Application.Services
 
             if (imageGuid is not null)
             {
-                await _fileStorageService.SaveFileAsync(image, _directoryPathService.PeopleDirectory, (Guid)imageGuid);
+                await _fileStorageService.SaveFileAsync(image!, _directoryPathService.PeopleDirectory, (Guid)imageGuid);
             }
 
             return result.Data;
@@ -66,7 +66,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return await BuildDtoWithImageAsync(result.Data);
+            return await BuildDtoWithImageAsync(result.Data!);
         }
 
         public async Task<FileResponse> GetImageAsync(int personId)
@@ -93,7 +93,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return await BuildDtoWithImageAsync(result.Data);
+            return await BuildDtoWithImageAsync(result.Data!);
         }
 
         public async Task<PaginationResponse<PersonResponseDto>> GetPagedAsync(
@@ -126,7 +126,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return await BuildDtoWithImageAsync(result.Data);
+            return await BuildDtoWithImageAsync(result.Data!);
         }
 
         public async Task<PaginationResponse<PersonResponseDto>> GetByNationalityCountryIdAsync(
@@ -180,13 +180,13 @@ namespace SMS.Application.Services
             existing.ThrowIfNotSuccess();
             existing.ThrowNotFoundIfDataNull();
 
-            Guid newImageGuid = Guid.Empty;
-            if (existing.Data.ImageGuid.HasValue) // If person already has an image, replace it
+            Guid newImageGuid;
+            if (existing.Data!.ImageGuid.HasValue) // If person already has an image, replace it
             {
                 newImageGuid = await _fileStorageService.ReplaceFileAsync(
-                existing.Data.ImageGuid.Value,
-                newImage,
-                _directoryPathService.PeopleDirectory);
+                    existing.Data!.ImageGuid.Value,
+                    newImage,
+                    _directoryPathService.PeopleDirectory);
             }
             else // If person does not have an image, save the new image and get its guid
             {
@@ -211,7 +211,7 @@ namespace SMS.Application.Services
             existing.ThrowIfNotSuccess();
             existing.ThrowNotFoundIfDataNull();
 
-            if (!existing.Data.ImageGuid.HasValue)
+            if (!existing.Data!.ImageGuid.HasValue)
             {
                 throw new NoContentException("Person does not have an image.");
             }
@@ -243,7 +243,7 @@ namespace SMS.Application.Services
             Guid? newImageGuid = null;
             if (newImage is not null)
             {
-                if (!existing.Data.ImageGuid.HasValue)
+                if (!existing.Data!.ImageGuid.HasValue)
                 {
                     throw new InvalidOperationException("Person does not have an image to update.");
                 }
@@ -276,9 +276,10 @@ namespace SMS.Application.Services
             var result = await _repo.DeleteAsync(personId);
             result.ThrowIfNotSuccess();
 
-            if (existing.Data.ImageGuid.HasValue)
+            if (existing.Data!.ImageGuid.HasValue)
             {
-                var imagePath = _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory, existing.Data.ImageGuid.Value);
+                var imagePath = _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory,
+                    existing.Data.ImageGuid.Value);
                 await _fileStorageService.DeleteFileAsync(imagePath);
             }
 
@@ -295,9 +296,10 @@ namespace SMS.Application.Services
             var result = await _repo.DeleteAsync(nationalNo);
             result.ThrowIfNotSuccess();
 
-            if (existing.Data.ImageGuid.HasValue)
+            if (existing.Data!.ImageGuid.HasValue)
             {
-                var imagePath = _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory, existing.Data.ImageGuid.Value);
+                var imagePath = _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory,
+                    existing.Data.ImageGuid.Value);
                 await _fileStorageService.DeleteFileAsync(imagePath);
             }
 
@@ -340,7 +342,7 @@ namespace SMS.Application.Services
             PaginationRequest paginationRequest)
         {
             var items = await Task.WhenAll(
-            result.Data.Items.Select(async p => await BuildDtoWithImageAsync(p)));
+                result.Data!.Items.Select(async p => await BuildDtoWithImageAsync(p)));
 
             return new PaginationResponse<PersonResponseDto>
             {
@@ -356,7 +358,8 @@ namespace SMS.Application.Services
             FileResponse? imageResponse = null;
             if (person.ImageGuid.HasValue)
             {
-                var imagePath = _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory, person.ImageGuid.Value);
+                var imagePath =
+                    _imageHelper.ResolveImagePath(_directoryPathService.PeopleDirectory, person.ImageGuid.Value);
                 imageResponse = await _fileStorageService.LoadFileAsync(imagePath);
             }
 
@@ -372,13 +375,16 @@ namespace SMS.Application.Services
                 {
                     throw new ArgumentException("Invalid file.", nameof(file));
                 }
+
                 return;
             }
 
             // Validate file size
             if (file.Length > Constants.MaxImageSizeInBytes)
             {
-                throw new ArgumentException($"File size exceeds the allowed limit of {Constants.MaxImageSizeInBytes / (1024 * 1024)} MB.", nameof(file));
+                throw new ArgumentException(
+                    $"File size exceeds the allowed limit of {Constants.MaxImageSizeInBytes / (1024 * 1024)} MB.",
+                    nameof(file));
             }
 
             // Validate content type

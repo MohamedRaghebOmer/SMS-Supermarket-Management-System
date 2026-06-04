@@ -3,7 +3,7 @@ using SMS.Shared.Guards;
 
 namespace SMS.Domain.Entities
 {
-    public class AuditLog
+    public sealed class AuditLog
     {
         private long _auditLogId;
         private int? _userId;

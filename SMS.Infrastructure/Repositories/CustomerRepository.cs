@@ -52,7 +52,8 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToCustomer);
         }
 
-        public async Task<OperationResult<PaginationResponse<Customer>>> GetPagedAsync(PaginationRequest paginationRequest)
+        public async Task<OperationResult<PaginationResponse<Customer>>> GetPagedAsync(
+            PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
             using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetPaged");
@@ -60,7 +61,8 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomer);
         }
 
-        public async Task<OperationResult<PaginationResponse<Customer>>> GetPagedActiveAsync(PaginationRequest paginationRequest)
+        public async Task<OperationResult<PaginationResponse<Customer>>> GetPagedActiveAsync(
+            PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
             using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetPagedActive");
@@ -86,6 +88,16 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteExistsAsync(conn, cmd);
         }
 
+        public async Task<OperationResult<decimal>> GetDebitAmountAsync(int customerId)
+        {
+            await using var conn = _executor.CreateConnection();
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetDebitAmount");
+
+            cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
+
+            return await _executor.ExecuteScalarAsync<decimal>(cmd, conn);
+        }
+
         /// <summary>
         /// Determines whether the specified customer is blocked.
         /// </summary>
@@ -108,7 +120,7 @@ namespace SMS.Infrastructure.Repositories
             return await _executor.ExecuteNonQueryAsync(cmd, conn);
         }
 
-        public async Task<OperationResult<bool>> DeleteAsync(int customerId)
+        public async Task<OperationResult<bool>> DeactivateAsync(int customerId)
         {
             await using var conn = _executor.CreateConnection();
             using var cmd = _executor.CreateCommand(conn, "usp_Customers_Delete");

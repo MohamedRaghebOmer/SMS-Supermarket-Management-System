@@ -50,7 +50,7 @@ namespace SMS.Application.Services
             var result = await _repo.GetByRoleIdAsync(roleId);
             result.ThrowIfNotSuccess();
 
-            return result.Data.Select(permission => permission.ToDto()).ToList();
+            return result.Data!.Select(permission => permission.ToDto()).ToList();
         }
 
         public async Task<IReadOnlyList<RoleEntityPermissionsResponseDto>> GetByEntityAsync(SystemEntity entity)
@@ -58,7 +58,7 @@ namespace SMS.Application.Services
             var result = await _repo.GetByEntityAsync(entity);
             result.ThrowIfNotSuccess();
 
-            return result.Data.Select(permission => permission.ToDto()).ToList();
+            return result.Data!.Select(permission => permission.ToDto()).ToList();
         }
 
         public async Task<int> GetPermissionsMaskAsync(int roleId, SystemEntity entity)

@@ -58,7 +58,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<UserResponseDto> GetByUsernameAsync(string username)
@@ -69,7 +69,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<UserResponseDto> GetByEmailAsync(string email)
@@ -130,7 +130,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<bool> ExistsByIdAsync(int userId)
@@ -187,7 +187,8 @@ namespace SMS.Application.Services
             return result.Data;
         }
 
-        public async Task<PaginationResponse<UserResponseDto>> GetByRoleIdAsync(int roleId, PaginationRequest paginationRequest)
+        public async Task<PaginationResponse<UserResponseDto>> GetByRoleIdAsync(int roleId,
+            PaginationRequest paginationRequest)
         {
             NumericGuard.AgainstInvalidId(roleId);
             _validationHelper.ValidatePagination(paginationRequest);
@@ -322,7 +323,7 @@ namespace SMS.Application.Services
         {
             return new PaginationResponse<UserResponseDto>
             {
-                Items = result.Data.Items.Select(user => user.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(user => user.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = paginationRequest.Page,
                 PageSize = paginationRequest.PageSize

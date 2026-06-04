@@ -2,7 +2,7 @@
 
 namespace SMS.Domain.Entities
 {
-    public class RefreshToken
+    public sealed class RefreshToken
     {
         private int _userId;
         private string _tokenHash = string.Empty;

@@ -16,14 +16,11 @@ namespace SMS.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IRoleEntityPermissionService _role;
-        private readonly IAuthorizationService _authorizationService;
 
         public UsersController(IUserService userService,
-            IRoleEntityPermissionService role,
-            IAuthorizationService authorizationService)
+            IRoleEntityPermissionService role)
         {
             _userService = userService;
-            _authorizationService = authorizationService;
             _role = role;
         }
 
@@ -38,7 +35,8 @@ namespace SMS.API.Controllers
         [AuditActionType(AuditActionType.Register)]
         public async Task<IActionResult> Register([FromBody] CreateUserDto createUserDto)
         {
-            int currentRoleId = await _role.GetRoleIdByUserIdAsync(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"));
+            int currentRoleId =
+                await _role.GetRoleIdByUserIdAsync(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"));
 
             if (await IsModifyingTheSameOrHigherRoleByRoleId(createUserDto.RoleId))
             {
@@ -122,7 +120,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [HttpGet("person/{personId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -145,7 +142,6 @@ namespace SMS.API.Controllers
             var user = await _userService.GetByPersonIdAsync(personId);
             return Ok(user);
         }
-
 
 
         [HttpGet("exists/{userId:int}")]
@@ -202,7 +198,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [HttpGet("{userId:int}/is-active")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -224,7 +219,6 @@ namespace SMS.API.Controllers
             var result = await _userService.IsActiveAsync(userId);
             return Ok(result);
         }
-
 
 
         [HttpGet("email/{email}/owned-by/{userId:int}")]
@@ -276,7 +270,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -288,7 +281,6 @@ namespace SMS.API.Controllers
             var result = await _userService.GetPagedAsync(paginationRequest);
             return Ok(result);
         }
-
 
 
         [HttpGet("active")]
@@ -305,7 +297,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [HttpPatch("change-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -317,7 +308,6 @@ namespace SMS.API.Controllers
             var result = await _userService.ChangePasswordAsync(userId, dto);
             return result ? Ok("Password changed successfully.") : BadRequest("Failed to change password.");
         }
-
 
 
         [HttpPatch("{userId:int}/activate")]
@@ -344,7 +334,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [HttpPatch("{userId:int}/deactivate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -367,7 +356,6 @@ namespace SMS.API.Controllers
             var result = await _userService.DeactivateAsync(userId);
             return result ? Ok("User deactivated successfully.") : NotFound("User not found.");
         }
-
 
 
         [HttpPut("{userId:int}")]
@@ -395,7 +383,6 @@ namespace SMS.API.Controllers
         }
 
 
-
         [HttpDelete("{userId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -411,7 +398,7 @@ namespace SMS.API.Controllers
             }
 
             var targetRoleId = await _role.GetRoleIdByUserIdAsync(userId);
-            var currentRole = User?.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+            var currentRole = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
             // Managers can only delete users with a lower role than themselves (i.e., regular users),
             // but not other managers or admins.
@@ -428,17 +415,16 @@ namespace SMS.API.Controllers
         }
 
 
-
         private async Task<bool> IsModifyingTheSameOrHigherRoleByUserId(int affectedUserId)
         {
-            string currentUserRole = User?.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+            string currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
             if (currentUserRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
             {
                 return false; // Admin can modify any user
             }
 
-            string? currentUserIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(currentUserIdClaim, out int currentUserId) || currentUserId <= 0)
             {
                 return true;
@@ -452,14 +438,14 @@ namespace SMS.API.Controllers
 
         private async Task<bool> IsModifyingTheSameOrHigherRoleByRoleId(int affectedRoleId)
         {
-            string currentUserRole = User?.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+            string currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
             if (currentUserRole.Equals("Admin", StringComparison.OrdinalIgnoreCase))
             {
                 return false; // Admin can modify any user
             }
 
-            string? currentUserIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(currentUserIdClaim, out int currentUserId) || currentUserId <= 0)
             {
                 return true;
@@ -469,6 +455,5 @@ namespace SMS.API.Controllers
 
             return affectedRoleId <= currentRoleId;
         }
-
     }
 }

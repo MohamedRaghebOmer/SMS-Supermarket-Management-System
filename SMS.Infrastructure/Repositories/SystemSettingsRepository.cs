@@ -19,9 +19,9 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<SystemSettings>> GetSystemSettingsAsync()
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_SystemSettings_Get");
+            await using var cmd = _executor.CreateCommand(conn, "usp_SystemSettings_Get");
 
-            return await _executor.ExecuteSingleAsync(cmd, conn, MapToSystemSettings);
+            return (await _executor.ExecuteSingleAsync(cmd, conn, MapToSystemSettings))!;
         }
 
         public async Task<OperationResult<bool>> UpdateSystemSettingsAsync(SystemSettings settings)
@@ -40,7 +40,8 @@ namespace SMS.Infrastructure.Repositories
 
         public async Task<OperationResult<bool>> UpdateMaxCreditLimitAsync(decimal maxCreditLimit)
         {
-            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateMaxCreditLimit", "@MaxCreditLimit", maxCreditLimit);
+            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateMaxCreditLimit",
+                "@MaxCreditLimit", maxCreditLimit);
         }
 
         public async Task<OperationResult<decimal>> GetMinimumPaymentPercentAsync()
@@ -50,7 +51,8 @@ namespace SMS.Infrastructure.Repositories
 
         public async Task<OperationResult<bool>> UpdateMinimumPaymentPercentAsync(decimal minimumPaymentPercent)
         {
-            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateMinimumPaymentPercent", "@MinimumPaymentPercent", minimumPaymentPercent);
+            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateMinimumPaymentPercent",
+                "@MinimumPaymentPercent", minimumPaymentPercent);
         }
 
         public async Task<OperationResult<int>> GetGraceDaysAsync()
@@ -70,7 +72,8 @@ namespace SMS.Infrastructure.Repositories
 
         public async Task<OperationResult<bool>> UpdateFeesFrequencyDaysAsync(int feesFrequencyDays)
         {
-            return await _executor.ExecuteIntUpdateAsync("usp_SystemSettings_UpdateFeesFrequencyDays", "@FeesFrequencyDays", feesFrequencyDays);
+            return await _executor.ExecuteIntUpdateAsync("usp_SystemSettings_UpdateFeesFrequencyDays",
+                "@FeesFrequencyDays", feesFrequencyDays);
         }
 
         public async Task<OperationResult<decimal>> GetFeesPercentAsync()
@@ -80,7 +83,8 @@ namespace SMS.Infrastructure.Repositories
 
         public async Task<OperationResult<bool>> UpdateFeesPercentAsync(decimal feesPercent)
         {
-            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateFeesPercent", "@FeesPercent", feesPercent);
+            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateFeesPercent", "@FeesPercent",
+                feesPercent);
         }
 
         public async Task<OperationResult<decimal>> GetCapPercentAsync()
@@ -90,7 +94,8 @@ namespace SMS.Infrastructure.Repositories
 
         public async Task<OperationResult<bool>> UpdateCapPercentAsync(decimal capPercent)
         {
-            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateCapPercent", "@CapPercent", capPercent);
+            return await _executor.ExecuteDecimalUpdateAsync("usp_SystemSettings_UpdateCapPercent", "@CapPercent",
+                capPercent);
         }
 
         public async Task<OperationResult<bool>> IsCreditSalesAllowed()
@@ -100,7 +105,8 @@ namespace SMS.Infrastructure.Repositories
 
         public async Task<OperationResult<bool>> UpdateAllowCreditSalesAsync(bool allowCreditSales)
         {
-            return await _executor.ExecuteBoolUpdateAsync("usp_SystemSettings_UpdateAllowCreditSales", "@AllowCreditSales", allowCreditSales);
+            return await _executor.ExecuteBoolUpdateAsync("usp_SystemSettings_UpdateAllowCreditSales",
+                "@AllowCreditSales", allowCreditSales);
         }
 
         private static SystemSettings MapToSystemSettings(SqlDataReader reader)
@@ -126,6 +132,5 @@ namespace SMS.Infrastructure.Repositories
             cmd.Parameters.Add("@CapPercent", SqlDbType.Decimal).Value = settings.CapPercent;
             cmd.Parameters.Add("@AllowCreditSales", SqlDbType.Bit).Value = settings.AllowCreditSales;
         }
-
     }
 }

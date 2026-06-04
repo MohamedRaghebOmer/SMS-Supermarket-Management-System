@@ -22,7 +22,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<bool> UpdateSystemSettingsAsync(UpdateSystemSettingsRequestDto dto)

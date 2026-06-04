@@ -115,6 +115,19 @@ namespace SMS.API.Controllers
 
 
         [RequirePermission(PermissionAction.Read, SystemEntity.Customers)]
+        [HttpGet("{customerId:int}/debit-amount", Name = "GetCustomerDebitAmount")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> GetDebitAmount([FromRoute] int customerId)
+        {
+            var result = await _service.GetDebitAmountAsync(customerId);
+            return Ok(result);
+        }
+
+
+        [RequirePermission(PermissionAction.Read, SystemEntity.Customers)]
         [HttpGet("active", Name = "GetActiveCustomers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -125,6 +138,7 @@ namespace SMS.API.Controllers
             var result = await _service.GetPagedActiveAsync(paginationRequest);
             return Ok(result);
         }
+
 
         [RequirePermission(PermissionAction.Update, SystemEntity.Customers)]
         [HttpPut("{customerId:int}", Name = "UpdateCustomer")]
@@ -141,17 +155,17 @@ namespace SMS.API.Controllers
         }
 
 
-        [RequirePermission(PermissionAction.Delete, SystemEntity.Customers)]
-        [HttpDelete("{customerId:int}", Name = "DeleteCustomer")]
+        [RequirePermission(PermissionAction.Update, SystemEntity.Customers)]
+        [HttpPatch("{customerId:int}", Name = "DeactivateCustomer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Delete([FromRoute] int customerId)
+        public async Task<ActionResult> Deactivate([FromRoute] int customerId)
         {
-            var result = await _service.DeleteAsync(customerId);
-            return result ? Ok("Customer deleted successfully.") : NotFound("Customer not found.");
+            var result = await _service.DeactivateAsync(customerId);
+            return result ? Ok("Customer deactivated successfully.") : NotFound("Customer not found.");
         }
     }
 }

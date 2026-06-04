@@ -3,7 +3,7 @@ using SMS.Shared.Guards;
 
 namespace SMS.Domain.Entities
 {
-    public class RoleEntityPermissions
+    public sealed class RoleEntityPermissions
     {
         private int _roleId;
         private int _permissionsMask;

@@ -54,7 +54,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<AuditLogResponseDto> GetByCorrelationIdAsync(Guid correlationId)
@@ -68,7 +68,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<PaginationResponse<AuditLogResponseDto>> GetPagedAsync(
@@ -165,13 +165,12 @@ namespace SMS.Application.Services
         }
 
 
-
         private static PaginationResponse<AuditLogResponseDto> BuildPagedResponse(
             OperationResult<PaginationResponse<AuditLog>> result)
         {
             return new PaginationResponse<AuditLogResponseDto>
             {
-                Items = result.Data.Items.Select(p => p.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(p => p.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = result.Data.Page,
                 PageSize = result.Data.PageSize

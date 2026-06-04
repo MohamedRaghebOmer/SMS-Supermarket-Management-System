@@ -4,7 +4,7 @@ using SMS.Shared.Guards;
 
 namespace SMS.Domain.Entities
 {
-    public class CustomerLedger
+    public sealed class CustomerLedger
     {
         private int _ledgerId;
         private int _customerId;
@@ -13,8 +13,6 @@ namespace SMS.Domain.Entities
         private int? _referenceId;
         private decimal _debitAmount;
         private decimal _creditAmount;
-        private decimal _balanceBefore;
-        private decimal _balanceAfter;
         private string? _notes;
 
         public int LedgerId
@@ -123,7 +121,9 @@ namespace SMS.Domain.Entities
             }
         }
 
-        public CustomerLedger() { }
+        public CustomerLedger()
+        {
+        }
 
         public CustomerLedger(int customerId, DateTime entryDate, CustomerLedgerEntryType entryType,
             CustomerLedgerReferenceType referenceType, int? referenceId, decimal debitAmount,

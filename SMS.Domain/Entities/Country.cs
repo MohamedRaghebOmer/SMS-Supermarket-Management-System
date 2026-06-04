@@ -1,6 +1,6 @@
 ﻿namespace SMS.Domain.Entities
 {
-    public class Country
+    public sealed class Country
     {
         private string _countryName = null!;
 

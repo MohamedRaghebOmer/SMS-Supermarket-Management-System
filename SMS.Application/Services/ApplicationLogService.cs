@@ -42,7 +42,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<ApplicationLogResponseDto> GetByAuditLogIdAsync(int auditLogId)
@@ -54,7 +54,7 @@ namespace SMS.Application.Services
             result.ThrowIfNotSuccess();
             result.ThrowNotFoundIfDataNull();
 
-            return result.Data.ToDto();
+            return result.Data!.ToDto();
         }
 
         public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedAsync(
@@ -67,7 +67,7 @@ namespace SMS.Application.Services
 
             return new PaginationResponse<ApplicationLogResponseDto>
             {
-                Items = result.Data.Items.Select(log => log.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(log => log.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = result.Data.Page,
                 PageSize = result.Data.PageSize
@@ -84,14 +84,15 @@ namespace SMS.Application.Services
 
             return new PaginationResponse<ApplicationLogResponseDto>
             {
-                Items = result.Data.Items.Select(log => log.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(log => log.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = result.Data.Page,
                 PageSize = result.Data.PageSize
             };
         }
 
-        public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedByDateRangeAsync(DateTime startDate, DateTime endDate, PaginationRequest pagination)
+        public async Task<PaginationResponse<ApplicationLogResponseDto>> GetPagedByDateRangeAsync(DateTime startDate,
+            DateTime endDate, PaginationRequest pagination)
         {
             _validationHelper.ValidatePagination(pagination);
             DateGuard.AgainstFutureDate(startDate, nameof(startDate));
@@ -107,12 +108,11 @@ namespace SMS.Application.Services
 
             return new PaginationResponse<ApplicationLogResponseDto>
             {
-                Items = result.Data.Items.Select(log => log.ToDto()).ToList(),
+                Items = result.Data!.Items.Select(log => log.ToDto()).ToList(),
                 TotalCount = result.Data.TotalCount,
                 Page = result.Data.Page,
                 PageSize = result.Data.PageSize
             };
         }
-
     }
 }
