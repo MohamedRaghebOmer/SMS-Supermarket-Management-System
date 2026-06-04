@@ -13,6 +13,7 @@ namespace SMS.Application
             services.AddScoped<IValidationHelper, ValidationHelper>();
             services.AddScoped<IImageHelper, ImageHelper>();
             services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<ICustomerLedgerService, CustomerLedgerService>();
             services.AddScoped<IPersonService, PersonService>();

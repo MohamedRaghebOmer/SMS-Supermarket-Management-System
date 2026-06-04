@@ -14,6 +14,7 @@ namespace SMS.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddScoped<ICountryRepository, CountryRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICustomerLedgerRepository, CustomerLedgerRepository>();
             services.AddScoped<IPersonRepository, PersonRepository>();
