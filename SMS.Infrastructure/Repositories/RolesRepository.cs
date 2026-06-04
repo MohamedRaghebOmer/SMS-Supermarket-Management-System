@@ -1,7 +1,6 @@
 ﻿using SMS.Application.Common.Results;
 using SMS.Application.Interfaces.DataAccess;
 using SMS.Application.Interfaces.Repositories;
-using SMS.Shared.Guards;
 
 namespace SMS.Infrastructure.Repositories
 {

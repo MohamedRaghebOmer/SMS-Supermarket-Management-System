@@ -14,6 +14,7 @@ namespace SMS.Application
             services.AddScoped<IImageHelper, ImageHelper>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<ICustomerLedgerService, CustomerLedgerService>();
             services.AddScoped<IPersonService, PersonService>();
