@@ -26,9 +26,9 @@ namespace SMS.Infrastructure
             services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
             services.AddScoped<IRoleEntityPermissionRepository, RoleEntityPermissionsRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IStringHelper, StringHelper>();
-            services.AddScoped<IRolesRepository, RolesRepository>();
             services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
             services.AddScoped<ISaleRepository, SaleRepository>();
             services.AddScoped<ISaleItemRepository, SaleItemRepository>();
