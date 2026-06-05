@@ -22,6 +22,7 @@ namespace SMS.Application
             services.AddScoped<IAuditLogService, AuditLogService>();
             services.AddScoped<IApplicationLogService, ApplicationLogService>();
             services.AddScoped<IRoleEntityPermissionService, RoleEntityPermissionService>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();

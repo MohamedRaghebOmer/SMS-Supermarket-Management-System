@@ -16,14 +16,14 @@ namespace SMS.Application.Services
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepo;
-        private readonly IRolesRepository _rolesRepo;
+        private readonly IRoleRepository _rolesRepo;
         private readonly IConfiguration _configuration;
         private readonly IStringHelper _stringHelper;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
 
         public AuthService(IUserRepository userRepository,
-            IRolesRepository rolesRepository,
+            IRoleRepository rolesRepository,
             IConfiguration configuration,
             IStringHelper stringHelper,
             IRefreshTokenService refreshTokenService,

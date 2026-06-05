@@ -1,6 +1,6 @@
 ﻿namespace SMS.Domain.Entities
 {
-    public class SaleItem
+    public sealed class SaleItem
     {
         /*
 
