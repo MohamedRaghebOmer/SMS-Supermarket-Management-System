@@ -2,7 +2,6 @@
 using SMS.Application.Helpers;
 using SMS.Application.Interfaces.Helpers;
 using SMS.Application.Interfaces.Services;
-using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Services;
 
 namespace SMS.Application
@@ -30,6 +29,7 @@ namespace SMS.Application
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
             services.AddScoped<ISaleService, SaleService>();
+            services.AddScoped<ISaleItemService, SaleItemService>();
 
             return services;
         }

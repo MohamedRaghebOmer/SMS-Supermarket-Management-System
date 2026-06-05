@@ -1,7 +1,6 @@
 using SMS.Contracts.Requests.Products;
 using SMS.Contracts.Responses;
 using SMS.Shared.Common;
-using System;
 
 namespace SMS.Application.Interfaces.Services
 {

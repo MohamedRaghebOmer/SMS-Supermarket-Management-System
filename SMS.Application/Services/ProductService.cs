@@ -8,7 +8,6 @@ using SMS.Contracts.Responses;
 using SMS.Domain.Entities;
 using SMS.Shared.Common;
 using SMS.Shared.Guards;
-using System;
 
 namespace SMS.Application.Services
 {

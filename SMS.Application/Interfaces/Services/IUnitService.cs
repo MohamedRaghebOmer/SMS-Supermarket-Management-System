@@ -1,4 +1,3 @@
-using SMS.Application.Common.Results;
 using SMS.Contracts.Requests.Units;
 using SMS.Contracts.Responses;
 using SMS.Shared.Common;

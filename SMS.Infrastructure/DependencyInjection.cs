@@ -31,6 +31,7 @@ namespace SMS.Infrastructure
             services.AddScoped<IRolesRepository, RolesRepository>();
             services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
             services.AddScoped<ISaleRepository, SaleRepository>();
+            services.AddScoped<ISaleItemRepository, SaleItemRepository>();
 
             return services;
         }

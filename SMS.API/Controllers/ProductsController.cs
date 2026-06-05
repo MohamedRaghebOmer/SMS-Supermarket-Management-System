@@ -182,7 +182,7 @@ namespace SMS.API.Controllers
         public async Task<ActionResult> GetImageGuid([FromRoute] int productId)
         {
             var result = await _service.GetImageGuidAsync(productId);
-            return result.HasValue? Ok(result) : Ok();
+            return result.HasValue ? Ok(result) : Ok();
         }
 
         [RequirePermission(PermissionAction.Update, SystemEntity.Products)]
