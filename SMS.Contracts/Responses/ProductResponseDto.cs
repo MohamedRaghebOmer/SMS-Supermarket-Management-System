@@ -1,5 +1,3 @@
-using System;
-
 namespace SMS.Contracts.Responses
 {
     public sealed record ProductResponseDto

@@ -128,7 +128,7 @@ namespace SMS.Infrastructure.Repositories
             cmd.Parameters.Add("@CashierId", SqlDbType.Int).Value = sale.CashierId;
             cmd.Parameters.Add("@PaymentMethod", SqlDbType.TinyInt).Value = sale.PaymentMethod.HasValue
                 ? (byte)sale.PaymentMethod.Value
-                : (object)DBNull.Value;
+                : DBNull.Value;
             cmd.Parameters.Add("@SubTotal", SqlDbType.Decimal).Value = sale.SubTotal;
             cmd.Parameters.Add("@DiscountAmount", SqlDbType.Decimal).Value = sale.DiscountAmount;
             cmd.Parameters.Add("@NetTotal", SqlDbType.Decimal).Value = sale.NetTotal;
