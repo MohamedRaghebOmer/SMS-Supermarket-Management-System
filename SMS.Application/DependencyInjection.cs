@@ -2,6 +2,7 @@
 using SMS.Application.Helpers;
 using SMS.Application.Interfaces.Helpers;
 using SMS.Application.Interfaces.Services;
+using SMS.Application.Interfaces.Repositories;
 using SMS.Application.Services;
 
 namespace SMS.Application
@@ -16,6 +17,7 @@ namespace SMS.Application
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICustomerLedgerService, CustomerLedgerService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IAuditLogService, AuditLogService>();
