@@ -21,7 +21,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> RegisterAsync(User user)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Insert");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_Insert");
 
             AddCommonUserParameters(cmd, user);
 
@@ -37,7 +37,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<User?>> FindByIdAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetById");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetById");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToUser);
@@ -46,7 +46,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<User?>> FindByUsernameAsync(string username)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByUsername");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByUsername");
 
             cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToUser);
@@ -58,7 +58,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> GetUserIdByUsernameAsync(string username)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByUsername");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByUsername");
 
             cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username;
 
@@ -68,7 +68,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<User?>> FindByPersonIdAsync(int personId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByPersonId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByPersonId");
 
             cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToUser);
@@ -80,7 +80,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> GetUserIdByPersonIdAsync(int personId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByPersonId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByPersonId");
 
             cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
 
@@ -90,7 +90,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<User?>> FindByEmailAsync(string email)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByEmail");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetByEmail");
 
             cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = email;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToUser);
@@ -102,7 +102,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> GetUserIdByEmailAsync(string email)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByEmail");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetUserIdByEmail");
 
             cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = email;
 
@@ -112,7 +112,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ExistsByIdAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsById");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsById");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             return await _executor.ExecuteExistsAsync(conn, cmd);
@@ -121,7 +121,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ExistsByUsername(string username)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsByUsername");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsByUsername");
 
             cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username;
             return await _executor.ExecuteExistsAsync(conn, cmd);
@@ -130,7 +130,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ExistsByEmail(string email)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsByEmail");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_ExistsByEmail");
 
             cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = email;
             return await _executor.ExecuteExistsAsync(conn, cmd);
@@ -142,7 +142,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> IsActive(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_IsActive");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_IsActive");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             return await _executor.ExecuteExistsAsync(conn, cmd);
@@ -151,7 +151,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> IsEmailOwnedByUserAsync(string email, int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_IsEmailOwnedByUser");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_IsEmailOwnedByUser");
 
             cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = email;
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
@@ -162,7 +162,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<string>> GetPasswordHashAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPasswordHash");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPasswordHash");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
 
@@ -172,7 +172,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<User>>> GetByRoleId(int roleId, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedByRoleId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedByRoleId");
 
             cmd.Parameters.Add("@RoleId", SqlDbType.Int).Value = roleId;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToUser);
@@ -181,7 +181,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<User>>> GetPagedAsync(PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPaged");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPaged");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToUser);
         }
@@ -189,7 +189,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<User>>> GetActiveUsers(PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedActiveUsers");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_GetPagedActiveUsers");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToUser);
         }
@@ -197,7 +197,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> RegisterLoginAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_RegisterLogin");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_RegisterLogin");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
 
@@ -208,7 +208,7 @@ namespace SMS.Infrastructure.Repositories
             string newPasswordHash)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_ChangePassword");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_ChangePassword");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             cmd.Parameters.Add("@NewPasswordHash", SqlDbType.NVarChar, 256).Value = newPasswordHash;
@@ -219,7 +219,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ActivateAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Activate");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_Activate");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);
@@ -228,7 +228,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> DeactivateAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Deactivate");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_Deactivate");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);
@@ -237,7 +237,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> UpdateAsync(User user)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Update");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_Update");
 
             AddCommonUserParameters(cmd, user);
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.UserId;
@@ -249,7 +249,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> DeleteAsync(int userId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Users_Delete");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Users_Delete");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);

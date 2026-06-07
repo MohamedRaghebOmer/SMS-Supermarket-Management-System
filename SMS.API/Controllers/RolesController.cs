@@ -127,7 +127,7 @@ namespace SMS.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> GetByCreatedAtRange([FromQuery] PaginationRequest paginationRequest,
-            [FromBody] DateTime from, [FromBody] DateTime to)
+            [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
             var result = await _service.GetPagedByCreatedAtRangeAsync(paginationRequest, from, to);
             return Ok(result);

@@ -27,7 +27,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> UpdateSystemSettingsAsync(SystemSettings settings)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_SystemSettings_Update");
+            await using var cmd = _executor.CreateCommand(conn, "usp_SystemSettings_Update");
 
             AddSystemSettingsParameters(cmd, settings);
             return await _executor.ExecuteNonQueryAsync(cmd, conn);

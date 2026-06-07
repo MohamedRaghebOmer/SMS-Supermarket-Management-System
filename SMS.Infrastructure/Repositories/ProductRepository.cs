@@ -20,7 +20,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> AddAsync(Product product)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_Insert");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_Insert");
 
             AddParameters(cmd, product, isUpdate: false);
 
@@ -36,7 +36,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<Product?>> FindByIdAsync(int productId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetById");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetById");
 
             cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToProduct);
@@ -46,7 +46,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest request)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByCategoryId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByCategoryId");
 
             cmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId;
             return await _executor.ExecutePaginationAsync(cmd, conn, request, MapToProduct);
@@ -55,7 +55,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<Product>>> GetPagedAsync(PaginationRequest request)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPaged");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPaged");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, request, MapToProduct);
         }
@@ -63,7 +63,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<Product?>> FindByNameAsync(string productName)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetByName");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetByName");
 
             cmd.Parameters.Add("@ProductName", SqlDbType.NVarChar, 150).Value = productName;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToProduct);
@@ -72,7 +72,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<Product?>> FindBySkuAsync(string sku)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetBySku");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetBySku");
 
             cmd.Parameters.Add("@SKU", SqlDbType.NVarChar, 50).Value = sku;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToProduct);
@@ -82,7 +82,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest request)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByUnitId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByUnitId");
 
             cmd.Parameters.Add("@UnitId", SqlDbType.Int).Value = unitId;
             return await _executor.ExecutePaginationAsync(cmd, conn, request, MapToProduct);
@@ -92,7 +92,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest request, decimal minPercent, decimal maxPercent)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByDiscountPercentRange");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByDiscountPercentRange");
 
             cmd.Parameters.Add("@MinDiscountPercent", SqlDbType.Decimal).Value = minPercent;
             cmd.Parameters.Add("@MaxDiscountPercent", SqlDbType.Decimal).Value = maxPercent;
@@ -103,7 +103,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest request, bool isActive)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByIsActive");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByIsActive");
 
             cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive;
             return await _executor.ExecutePaginationAsync(cmd, conn, request, MapToProduct);
@@ -113,7 +113,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest request, DateTime from, DateTime to)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByCreatedAtRange");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByCreatedAtRange");
 
             cmd.Parameters.Add("@MinCreatedAt", SqlDbType.DateTime2).Value = from;
             cmd.Parameters.Add("@MaxCreatedAt", SqlDbType.DateTime2).Value = to;
@@ -124,7 +124,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest request, DateTime from, DateTime to)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByUpdatedAtRange");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetPagedByUpdatedAtRange");
 
             cmd.Parameters.Add("@MinUpdatedAt", SqlDbType.DateTime2).Value = from;
             cmd.Parameters.Add("@MaxUpdatedAt", SqlDbType.DateTime2).Value = to;
@@ -134,7 +134,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<decimal>> GetDiscountPercentAsync(int productId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetDiscountPercent");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetDiscountPercent");
 
             cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
             return await _executor.ExecuteScalarAsync<decimal>(cmd, conn);
@@ -143,7 +143,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<Guid?>> GetImageGuidAsync(int productId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_GetImageGuid");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_GetImageGuid");
 
             cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
             return await _executor.ExecuteSingleAsync(cmd, conn, reader =>
@@ -156,7 +156,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> UpdateAsync(Product product)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_Update");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_Update");
 
             AddParameters(cmd, product, isUpdate: true);
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);
@@ -165,7 +165,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ActivateAsync(int productId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_Activate");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_Activate");
 
             cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);
@@ -174,7 +174,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> DeactivateAsync(int productId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Products_Deactivate");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Products_Deactivate");
 
             cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
             return await _executor.ExecuteBooleanOperationAsync(cmd, conn);

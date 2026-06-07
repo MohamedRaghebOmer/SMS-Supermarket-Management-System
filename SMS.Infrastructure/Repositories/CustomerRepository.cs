@@ -21,7 +21,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> AddAsync(Customer customer)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_Insert");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_Insert");
 
             AddCustomerParameters(cmd, customer, includeCustomerId: false);
 
@@ -37,7 +37,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<Customer?>> FindByIdAsync(int customerId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetById");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetById");
 
             cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToCustomer);
@@ -46,7 +46,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<Customer?>> FindByPersonIdAsync(int personId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetByPersonId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetByPersonId");
 
             cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToCustomer);
@@ -56,7 +56,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetPaged");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetPaged");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomer);
         }
@@ -65,7 +65,7 @@ namespace SMS.Infrastructure.Repositories
             PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetPagedActive");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_GetPagedActive");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomer);
         }
@@ -73,7 +73,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ExistsByIdAsync(int customerId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_ExistsById");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_ExistsById");
 
             cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
             return await _executor.ExecuteExistsAsync(conn, cmd);
@@ -82,7 +82,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ExistsByPersonIdAsync(int personId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_ExistsByPersonId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_ExistsByPersonId");
 
             cmd.Parameters.Add("@PersonId", SqlDbType.Int).Value = personId;
             return await _executor.ExecuteExistsAsync(conn, cmd);
@@ -104,7 +104,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> IsBlocked(int customerId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_IsBlocked");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_IsBlocked");
 
             cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
             return await _executor.ExecuteExistsAsync(conn, cmd);
@@ -113,7 +113,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> UpdateAsync(Customer customer)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_Update");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_Update");
 
             AddCustomerParameters(cmd, customer, includeCustomerId: true);
 
@@ -123,7 +123,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> DeactivateAsync(int customerId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_Customers_Delete");
+            await using var cmd = _executor.CreateCommand(conn, "usp_Customers_Delete");
 
             cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
             return await _executor.ExecuteNonQueryAsync(cmd, conn);
