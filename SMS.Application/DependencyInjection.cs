@@ -17,6 +17,7 @@ namespace SMS.Application
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductStockService, ProductStockService>();
             services.AddScoped<ICustomerLedgerService, CustomerLedgerService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IAuditLogService, AuditLogService>();

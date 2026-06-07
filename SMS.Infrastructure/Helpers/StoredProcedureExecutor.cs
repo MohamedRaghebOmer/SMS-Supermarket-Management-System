@@ -138,7 +138,7 @@ namespace SMS.Infrastructure.Helpers
         public async Task<OperationResult<decimal>> ExecuteDecimalScalarAsync(string storedProcedure)
         {
             await using var conn = CreateConnection();
-            using var cmd = CreateCommand(conn, storedProcedure);
+            await using var cmd = CreateCommand(conn, storedProcedure);
 
             return await ExecuteScalarAsync<decimal>(cmd, conn);
         }
@@ -146,7 +146,7 @@ namespace SMS.Infrastructure.Helpers
         public async Task<OperationResult<int>> ExecuteIntScalarAsync(string storedProcedure)
         {
             await using var conn = CreateConnection();
-            using var cmd = CreateCommand(conn, storedProcedure);
+            await using var cmd = CreateCommand(conn, storedProcedure);
 
             return await ExecuteScalarAsync<int>(cmd, conn);
         }
@@ -154,7 +154,7 @@ namespace SMS.Infrastructure.Helpers
         public async Task<OperationResult<bool>> ExecuteBoolScalarAsync(string storedProcedure)
         {
             await using var conn = CreateConnection();
-            using var cmd = CreateCommand(conn, storedProcedure);
+            await using var cmd = CreateCommand(conn, storedProcedure);
 
             return await ExecuteScalarAsync<bool>(cmd, conn);
         }
@@ -163,7 +163,7 @@ namespace SMS.Infrastructure.Helpers
             decimal value)
         {
             await using var conn = CreateConnection();
-            using var cmd = CreateCommand(conn, storedProcedure);
+            await using var cmd = CreateCommand(conn, storedProcedure);
 
             cmd.Parameters.Add(parameterName, SqlDbType.Decimal).Value = value;
             return await ExecuteNonQueryAsync(cmd, conn);
@@ -173,7 +173,7 @@ namespace SMS.Infrastructure.Helpers
             int value)
         {
             await using var conn = CreateConnection();
-            using var cmd = CreateCommand(conn, storedProcedure);
+            await using var cmd = CreateCommand(conn, storedProcedure);
 
             cmd.Parameters.Add(parameterName, SqlDbType.Int).Value = value;
             return await ExecuteNonQueryAsync(cmd, conn);
@@ -183,7 +183,7 @@ namespace SMS.Infrastructure.Helpers
             bool value)
         {
             await using var conn = CreateConnection();
-            using var cmd = CreateCommand(conn, storedProcedure);
+            await using var cmd = CreateCommand(conn, storedProcedure);
 
             cmd.Parameters.Add(parameterName, SqlDbType.Bit).Value = value;
             return await ExecuteNonQueryAsync(cmd, conn);

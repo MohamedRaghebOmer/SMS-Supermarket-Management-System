@@ -20,7 +20,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<int>> AddAsync(CustomerLedger ledger)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_Insert");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_Insert");
 
             AddCustomerLedgerParameters(cmd, ledger);
 
@@ -36,7 +36,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<CustomerLedger?>> FindByIdAsync(int ledgerId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetById");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetById");
 
             cmd.Parameters.Add("@LedgerId", SqlDbType.Int).Value = ledgerId;
             return await _executor.ExecuteSingleAsync(cmd, conn, MapToCustomerLedger);
@@ -45,7 +45,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<PaginationResponse<CustomerLedger>>> GetPagedAsync(PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPaged");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPaged");
 
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomerLedger);
         }
@@ -54,7 +54,7 @@ namespace SMS.Infrastructure.Repositories
             int customerId, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByCustomerId");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByCustomerId");
 
             cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = customerId;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomerLedger);
@@ -64,7 +64,7 @@ namespace SMS.Infrastructure.Repositories
             Shared.Enums.CustomerLedgerEntryType entryType, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByEntryType");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByEntryType");
 
             cmd.Parameters.Add("@EntryType", SqlDbType.TinyInt).Value = (byte)entryType;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomerLedger);
@@ -74,7 +74,7 @@ namespace SMS.Infrastructure.Repositories
             Shared.Enums.CustomerLedgerReferenceType referenceType, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByReferenceType");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByReferenceType");
 
             cmd.Parameters.Add("@ReferenceType", SqlDbType.TinyInt).Value = (byte)referenceType;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomerLedger);
@@ -84,7 +84,7 @@ namespace SMS.Infrastructure.Repositories
             int createdBy, PaginationRequest paginationRequest)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByCreatedBy");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_GetPagedByCreatedBy");
 
             cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = createdBy;
             return await _executor.ExecutePaginationAsync(cmd, conn, paginationRequest, MapToCustomerLedger);
@@ -93,7 +93,7 @@ namespace SMS.Infrastructure.Repositories
         public async Task<OperationResult<bool>> ExistsByIdAsync(int ledgerId)
         {
             await using var conn = _executor.CreateConnection();
-            using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_ExistsById");
+            await using var cmd = _executor.CreateCommand(conn, "usp_CustomerLedger_ExistsById");
 
             cmd.Parameters.Add("@LedgerId", SqlDbType.Int).Value = ledgerId;
             return await _executor.ExecuteExistsAsync(conn, cmd);
