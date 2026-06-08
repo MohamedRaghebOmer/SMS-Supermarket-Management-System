@@ -33,6 +33,7 @@ namespace SMS.Application
             services.AddScoped<ISaleService, SaleService>();
             services.AddScoped<ISaleItemService, SaleItemService>();
             services.AddScoped<IReturnService, ReturnService>();
+            services.AddScoped<IReturnItemService, ReturnItemService>();
 
             return services;
         }

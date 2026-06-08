@@ -8,9 +8,6 @@ namespace SMS.Contracts.Requests.Returns
         [Range(1, int.MaxValue)]
         public int SaleId { get; init; }
 
-        [Range(1, int.MaxValue)]
-        public int? CustomerId { get; init; }
-
         [StringLength(250)]
         public string? ReturnReason { get; init; }
 

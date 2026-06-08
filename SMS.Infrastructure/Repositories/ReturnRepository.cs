@@ -23,7 +23,6 @@ namespace SMS.Infrastructure.Repositories
             await using var cmd = _executor.CreateCommand(conn, "usp_Returns_Insert");
 
             cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = returnEntity.SaleId;
-            cmd.Parameters.Add("@CustomerId", SqlDbType.Int).Value = returnEntity.CustomerId ?? (object)DBNull.Value;
             cmd.Parameters.Add("@ReturnReason", SqlDbType.NVarChar, 250).Value = returnEntity.ReturnReason ?? (object)DBNull.Value;
             cmd.Parameters.Add("@ReturnTotal", SqlDbType.Decimal).Value = returnEntity.ReturnTotal;
             cmd.Parameters.Add("@CreatedBy", SqlDbType.Int).Value = returnEntity.CreatedBy;

@@ -10,7 +10,7 @@ namespace SMS.Application.Mapping
         {
             return new Return(
                 saleId: dto.SaleId,
-                customerId: dto.CustomerId,
+                customerId: null,
                 returnReason: dto.ReturnReason,
                 returnTotal: dto.ReturnTotal,
                 createdBy: createdBy);
