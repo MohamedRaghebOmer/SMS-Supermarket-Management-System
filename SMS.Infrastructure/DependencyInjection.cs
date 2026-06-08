@@ -33,6 +33,7 @@ namespace SMS.Infrastructure
             services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
             services.AddScoped<ISaleRepository, SaleRepository>();
             services.AddScoped<ISaleItemRepository, SaleItemRepository>();
+            services.AddScoped<IReturnRepository, ReturnRepository>();
 
             return services;
         }

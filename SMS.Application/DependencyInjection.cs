@@ -32,6 +32,7 @@ namespace SMS.Application
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
             services.AddScoped<ISaleService, SaleService>();
             services.AddScoped<ISaleItemService, SaleItemService>();
+            services.AddScoped<IReturnService, ReturnService>();
 
             return services;
         }

@@ -19,8 +19,11 @@
             }
         }
 
-        public static void AgainstInvalidDateRange(DateTime startDate, DateTime endDate, string startParameterName, string endParameterName)
+        public static void AgainstInvalidDateRange(DateTime? startDate, DateTime? endDate, string startParameterName, string endParameterName)
         {
+            if (!startDate.HasValue || !endDate.HasValue)
+                return;
+
             if (startDate > endDate)
             {
                 throw new ArgumentException($"{startParameterName} cannot be later than {endParameterName}.");
