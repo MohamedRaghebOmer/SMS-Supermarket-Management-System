@@ -6,7 +6,7 @@ A highly robust, scalable, and relentlessly secure Backend API meticulously engi
 
 > This is not a standard CRUD application.
 >
-> It is the result of over **two months of intensive architectural planning and backend development**.
+> It is the result of over **three months of intensive architectural planning and backend development**.
 >
 > The project strictly adheres to **Clean Architecture**, shifts business logic away from controllers, and implements enterprise-grade database security, dynamic Resource-Based Authorization, and a comprehensive Audit Logging pipeline.
 
